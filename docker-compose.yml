@@ -2,7 +2,11 @@ version: '3.8'
 
 services:
   radio-app:
-    build: .
+    # A seção 'build' foi alterada para passar o contexto e os argumentos
+    build:
+      context: .
+      args:
+        - REACT_APP_API_URL=${REACT_APP_API_URL}
     container_name: radio-dedalos-app
     restart: unless-stopped
     env_file:
