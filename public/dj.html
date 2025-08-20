@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel DJ</title>
+    <link rel="icon" href="assets/img/logo.png" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/dj.css">
+</head>
+
+<body>
+    <main id="app-container" class="gradient-border">
+        <input type="file" id="overlay-upload-input" accept="image/png" style="display: none;" />
+
+        <header id="panel-header">
+            <div>
+                <h1 class="header-title gradient-text">Painel DJ</h1>
+                <p class="header-subtitle">Controle total da programação musical</p>
+            </div>
+            <div class="header-buttons">
+                <button id="logs-btn" class="button ghost-button small">
+                    <i class="fas fa-file-alt"></i> Logs
+                </button>
+                <button id="report-problem-btn" class="button ghost-button small">
+                    <i class="fas fa-bug"></i> Relatar Problema
+                </button>
+                <button id="logout-btn" class="button ghost-button small">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
+        </header>
+
+        <div id="success-message" class="alert success-alert hidden">
+            <i class="fas fa-check-circle"></i>
+            <span id="success-text"></span>
+        </div>
+
+        <section class="info-section">
+            <h2 id="daily-theme-title" class="section-title">
+                <i class="fas fa-info-circle icon"></i> Playlist do Dia
+            </h2>
+            <div id="daily-theme-artists" class="artist-tags-grid"></div>
+            <p id="playlist-info-text">Carregando informações da playlist...</p>
+        </section>
+
+        <section id="player-controls-section">
+            <div class="player-grid">
+                <div class="current-track-info">
+                    <div>
+                        <div id="now-playing-title" class="track-title">--</div>
+                        <div id="now-playing-artist" class="track-artist">--</div>
+                    </div>
+                </div>
+                <div class="main-controls">
+                    <div class="player-buttons">
+                        <div id="player-main-buttons">
+                            <button id="upload-overlay-btn" class="control-button" title="Enviar Overlay"><i class="fas fa-plus"></i></button>
+                            <button id="play-pause-btn" class="control-button main-button"><i id="play-pause-icon" class="fas fa-play"></i></button>
+                            <button id="skip-btn" class="control-button"><i class="fas fa-step-forward"></i></button>
+                        </div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <span id="current-time">0:00</span>
+                        <div class="progress-bar">
+                            <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
+                        </div>
+                        <span id="total-time">0:00</span>
+                    </div>
+                </div>
+                <div class="extra-controls">
+                    <div class="volume-control">
+                        <i id="volume-icon" class="fas fa-volume-up"></i>
+                        <input id="volume-slider" type="range" min="0" max="100" value="80">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="playlist-section">
+            <h2 class="section-title">
+                <i class="fas fa-music icon"></i> Fila de Reprodução
+            </h2>
+            <div class="form-group">
+                <div class="dropdown">
+                    <input type="text" id="add-song-input" class="form-input" placeholder="Buscar música para adicionar à fila...">
+                    <div class="dropdown-content" id="add-song-dropdown"></div>
+                </div>
+                <p id="add-song-error" class="error-message hidden"></p>
+            </div>
+            <div class="playlist-table">
+                <div class="playlist-header">
+                    <div>#</div>
+                    <div>Música</div>
+                    <div>Artista</div>
+                    <div>Duração</div>
+                    <div>Ações</div>
+                </div>
+                <div id="playlist-body" class="playlist-body">
+                </div>
+            </div>
+        </section>
+
+        <section id="ban-section">
+            <h2 class="section-title">
+                <i class="fas fa-ban icon"></i> Banir Música
+            </h2>
+            <div class="ban-form">
+                <div class="ban-controls-wrapper">
+                    <div class="form-group" style="flex-grow: 1;">
+                        <label>Selecionar Música:</label>
+                        <div id="ban-search-view">
+                            <div class="dropdown">
+                                <input type="text" id="ban-song-input" class="form-input" placeholder="Digite para buscar...">
+                                <div class="dropdown-content" id="ban-song-dropdown"></div>
+                            </div>
+                        </div>
+                        <div id="ban-locked-view" class="locked-input-wrapper hidden">
+                            <span id="ban-song-name" class="form-input readonly"></span>
+                            <button id="edit-ban-song-btn" class="button primary-button icon-only small" title="Alterar música">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Clique para Banir por:</label>
+                        <div id="ban-duration-options" class="day-options">
+                            <button class="day-option" data-duration="today">Só hoje</button>
+                            <button class="day-option" data-duration="week">7 dias</button>
+                            <button class="day-option" data-duration="permanent">Permanente</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div id="ban-list-container">
+            <div class="ban-group">
+                <h4>Banidas Hoje</h4>
+                <div id="ban-list-today" class="ban-list"></div>
+            </div>
+            <div class="ban-group">
+                <h4>Banidas por 7 Dias</h4>
+                <div id="ban-list-week" class="ban-list"></div>
+            </div>
+            <div class="ban-group">
+                <h4>Banidas Permanentemente</h4>
+                <div id="ban-list-permanent" class="ban-list"></div>
+            </div>
+        </div>
+
+        <section id="available-playlists-section" class="published-playlists">
+            <h2 class="section-title"><i class="fas fa-calendar-alt icon"></i> Playlists Disponíveis</h2>
+            <div class="playlists-container">
+                <button class="scroll-btn prev"><i class="fas fa-chevron-left"></i></button>
+                <div id="available-playlists-grid" class="card-grid"></div>
+                <button class="scroll-btn next"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <div class="side-by-side-wrapper">
+            <section id="commercials-section">
+                <h2 class="section-title">
+                    <i class="fas fa-ad icon"></i> Comerciais
+                </h2>
+                <div id="commercials-grid" class="card-grid"></div>
+            </section>
+
+            <section id="special-playlists-section">
+                <h2 class="section-title">
+                    <i class="fas fa-star icon"></i> Playlists Especiais
+                </h2>
+                <div id="special-playlists-grid" class="card-grid"></div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>Developed by <a href="#" class="devsyon-link">DEVsyon</a> a Tech Solutions. &copy; 2025. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/djUI.js"></script>
+</body>
+
+</html>

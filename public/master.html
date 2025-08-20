@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin Master</title>
+    <link rel="icon" href="assets/img/logo.png" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/master.css">
+</head>
+<body>
+    <main id="app-container" class="gradient-border">
+        <header id="panel-header">
+            <div>
+                <h1 class="header-title gradient-text">Painel Admin Master</h1>
+                <p class="header-subtitle">Gerencie usuários, solicitações e acessos</p>
+            </div>
+            <div class="header-buttons">
+                <button id="logs-btn" class="button ghost-button small"><i class="fas fa-file-alt"></i> Logs</button>
+                <button id="report-problem-btn" class="button ghost-button small"><i class="fas fa-bug"></i> Relatar Problema</button>
+                <button id="logout-btn" class="button ghost-button small"><i class="fas fa-sign-out-alt"></i> Sair</button>
+            </div>
+        </header>
+
+        <div id="users-management-area">
+            <div id="list-users-view">
+                <section class="card-style">
+                    <h2 class="section-title"><i class="fas fa-users icon"></i> Usuários Cadastrados</h2>
+                    <div class="table-container">
+                        <table class="results-table">
+                            <thead>
+                                <tr><th>ID</th><th>Usuário</th><th>Descrição</th><th>Ações</th></tr>
+                            </thead>
+                            <tbody id="users-list"></tbody>
+                        </table>
+                    </div>
+                    <div class="view-actions">
+                        <button id="show-add-view-btn" class="button primary-button"><i class="fas fa-plus"></i> Adicionar Novo Usuário</button>
+                    </div>
+                </section>
+            </div>
+
+            <div id="add-user-view" class="hidden">
+                <section class="card-style">
+                    <h2 class="section-title"><i class="fas fa-user-plus icon"></i> Adicionar Novo Usuário</h2>
+                    <form id="add-user-form" class="user-form-grid">
+                        <div class="form-group full-width">
+                            <label for="new-username">Nome de usuário</label>
+                            <input type="text" id="new-username" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-role">Função / Instância</label>
+                            <select id="new-role" class="form-input" required>
+                                <option value="" disabled selected>Selecione uma função</option>
+                                <option value="master">1 - Master</option>
+                                <option value="admin">2 - DBA (Administrador de banco de dados)</option>
+                                <option value="playlist_creator">3 - GP (Gerenciador de playlists)</option>
+                                <option value="adm_tabela">4 - ADP (Administrador da tabela de preços)</option>
+                                <option value="dj">5 - DJ (Controlador da Radio)</option>
+                                <option value="jukebox_user">6 - CU1 (Usuário da jukebox)</option>
+                                <option value="view_tabela">7 - CU2 (Usuário da tabela de preços)</option>
+                            </select>
+                        </div>
+                        <div class="form-group hidden" id="new-filial-group">
+                            <label for="new-filial">Filial</label>
+                            <select id="new-filial" class="form-input">
+                                <option value="" disabled selected>Selecione uma filial</option>
+                                <option value="sp">São Paulo</option>
+                                <option value="bh">Belo Horizonte</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="new-password">Senha</label>
+                            <input type="password" id="new-password" class="form-input" required>
+                        </div>
+                        <div class="form-actions full-width">
+                            <button type="button" class="button secondary-button cancel-btn">Cancelar</button>
+                            <button type="submit" class="button success-button">Salvar Usuário</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+
+            <div id="edit-user-view" class="hidden">
+                 <section class="card-style">
+                    <h2 class="section-title"><i class="fas fa-user-edit icon"></i> Editar Usuário</h2>
+                    <form id="edit-user-form" class="user-form-grid">
+                        <input type="hidden" id="edit-user-id">
+                        <div class="form-group full-width">
+                            <label for="edit-username">Nome de usuário</label>
+                            <input type="text" id="edit-username" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-role">Função / Instância</label>
+                            <select id="edit-role" class="form-input" required>
+                                <option value="master">1 - Master</option>
+                                <option value="admin">2 - DBA (Administrador de banco de dados)</option>
+                                <option value="playlist_creator">3 - GP (Gerenciador de playlists)</option>
+                                <option value="adm_tabela">4 - ADP (Administrador da tabela de preços)</option>
+                                <option value="dj">5 - DJ (Controlador da Radio)</option>
+                                <option value="jukebox_user">6 - CU1 (Usuário da jukebox)</option>
+                                <option value="view_tabela">7 - CU2 (Usuário da tabela de preços)</option>
+                            </select>
+                        </div>
+                        <div class="form-group hidden" id="edit-filial-group">
+                            <label for="edit-filial">Filial</label>
+                            <select id="edit-filial" class="form-input">
+                                <option value="" disabled selected>Selecione uma filial</option>
+                                <option value="sp">São Paulo</option>
+                                <option value="bh">Belo Horizonte</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="edit-password">Nova senha (deixe em branco para manter)</label>
+                            <input type="password" id="edit-password" class="form-input">
+                        </div>
+                        <div class="form-actions full-width">
+                            <button type="button" class="button secondary-button cancel-btn">Cancelar</button>
+                            <button type="submit" class="button success-button">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </div>
+
+        <div id="success-message" class="alert success-alert hidden">
+            <i class="fas fa-check-circle"></i>
+            <span id="success-text"></span>
+        </div>
+
+        <section class="card-style">
+            <div class="section-header-with-filter">
+                <h2 class="section-title">
+                    <span><i class="fas fa-flag icon"></i> Relatos de Problemas</span>
+                </h2>
+                <div class="filter-wrapper">
+                    <button id="reports-filter-btn" class="button small icon-only secondary-button" title="Filtrar relatos">
+                        <i class="fas fa-filter"></i>
+                    </button>
+                    <div id="reports-filter-popup" class="filter-popup hidden">
+                        <div class="form-group">
+                            <label for="filter-status">Filtrar por Status</label>
+                            <select id="filter-status" class="form-input small">
+                                <option value="">Todos</option>
+                                <option value="pendente">Pendente</option>
+                                <option value="em_analise">Em Análise</option>
+                                <option value="resolvido">Resolvido</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filter-category">Filtrar por Categoria</label>
+                            <select id="filter-category" class="form-input small">
+                                <option value="">Todas</option>
+                            </select>
+                        </div>
+                        <button id="clear-filters-btn" class="button small secondary-button">Limpar Filtros</button>
+                    </div>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="results-table">
+                    <thead>
+                        <tr><th>Data/Hora</th><th>Categoria</th><th>Descrição</th><th>Status</th></tr>
+                    </thead>
+                    <tbody id="reports-list"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card-style">
+            <div class="section-header-with-filter">
+                <h2 class="section-title">
+                    <span><i class="fas fa-history icon"></i> Log de Acessos</span>
+                </h2>
+                <div class="filter-wrapper">
+                    <button id="logs-filter-btn" class="button small icon-only secondary-button" title="Filtrar logs">
+                        <i class="fas fa-filter"></i>
+                    </button>
+                    <div id="logs-filter-popup" class="filter-popup hidden">
+                        <div class="form-group">
+                            <label for="filter-month">Mês</label>
+                            <select id="filter-month" class="form-input small">
+                                <option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filter-year">Ano</label>
+                            <select id="filter-year" class="form-input small"></select>
+                        </div>
+                        <button id="reset-logs-filter-btn" class="button small secondary-button">Ver Mês Atual</button>
+                    </div>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="results-table">
+                    <thead>
+                        <tr><th>Data/Hora</th><th>Usuário</th><th>IP</th><th>Ação</th></tr>
+                    </thead>
+                    <tbody id="access-logs"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>Developed by <a href="#" class="devsyon-link">DEVsyon</a> a Tech Solutions. &copy; 2025. Todos os direitos reservados.</p>
+    </footer>
+
+    <div id="delete-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="delete-modal-title">Confirmar Exclusão</h3>
+            </div>
+            <p id="delete-modal-text" class="modal-text"></p>
+            <div class="modal-warning">
+                <i class="fas fa-exclamation-triangle"></i>Esta ação não pode ser desfeita!
+            </div>
+            <div class="form-actions">
+                <button type="button" id="cancel-delete-btn" class="button secondary-button">Cancelar</button>
+                <button type="button" id="confirm-delete-btn" class="button danger-button">Confirmar Exclusão</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/master.js"></script>
+</body>
+</html>

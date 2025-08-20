@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Músicas</title>
+    <link rel="icon" href="assets/img/logo.png" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/musics.css">
+</head>
+
+<body>
+    <main id="app-container" class="gradient-border">
+        <header id="panel-header">
+            <div>
+                <h1 class="header-title gradient-text">Gerenciamento de Músicas</h1>
+                <p class="header-subtitle">Controle completo do banco de dados musical</p>
+            </div>
+            <div class="header-buttons">
+                <button id="logs-btn" class="button ghost-button small">
+                    <i class="fas fa-file-alt"></i> Logs
+                </button>
+                <button id="report-problem-btn" class="button ghost-button small">
+                    <i class="fas fa-bug"></i> Relatar Problema
+                </button>
+                <button id="logout-btn" class="button ghost-button small">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
+        </header>
+
+        <section class="main-actions">
+            <div class="main-actions-header">
+                <div class="action-buttons-group">
+                    <button id="add-music-btn" class="button primary-button">
+                        <i class="fa-solid fa-plus"></i> Adicionar Música
+                    </button>
+                    <button id="search-music-btn" class="button secondary-button">
+                        <i class="fa-solid fa-magnifying-glass"></i> Consultar Músicas
+                    </button>
+                </div>
+                <div class="action-buttons-group">
+                    <button id="consult-suggestions-btn" class="button secondary-button">
+                        <i class="fa-solid fa-lightbulb"></i> Consultar Sugestões
+                    </button>
+                    <button id="consult-bans-btn" class="button secondary-button">
+                        <i class="fa-solid fa-ban"></i> Consultar Banimentos
+                    </button>
+                </div>
+            </div>
+
+            <div id="add-music-form" class="form-section hidden">
+                <div class="section-header">
+                    <h2 id="form-title" class="section-title"><i class="fa-solid fa-compact-disc icon"></i> Adicionar Nova Música</h2>
+                    <button class="close-section-btn" title="Fechar"><i class="fa-solid fa-times"></i></button>
+                </div>
+                <form id="music-form" class="form-layout" autocomplete="off">
+                    <input type="hidden" id="music-id">
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="music-name">Nome da Música *</label>
+                            <input type="text" id="music-name" class="form-input" required>
+                        </div>
+                        <div class="form-group autocomplete-container">
+                            <label for="artist-name">Artista *</label>
+                            <input type="text" id="artist-name" class="form-input" required>
+                            <div id="artist-autocomplete-list" class="autocomplete-list"></div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="featuring-artist-input">Artistas Participantes</label>
+                            <div class="tag-input-wrapper autocomplete-container">
+                                <input type="text" id="featuring-artist-input" class="form-input" placeholder="Adicionar participante">
+                                <div id="featuring-artist-autocomplete-list" class="autocomplete-list"></div>
+                                <button type="button" id="add-featuring-artist-btn" class="button primary-button icon-only"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                            <div id="featuring-artists-container" class="tags-display-area"></div>
+                        </div>
+                        <div class="form-group autocomplete-container">
+                            <label for="album-name">Álbum</label>
+                            <input type="text" id="album-name" class="form-input">
+                            <div id="album-autocomplete-list" class="autocomplete-list"></div>
+                        </div>
+                        <div class="form-group autocomplete-container">
+                            <label for="label-name">Gravadora</label>
+                            <input type="text" id="label-name" class="form-input">
+                            <div id="label-autocomplete-list" class="autocomplete-list"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="release-year">Ano</label>
+                            <input type="text" id="release-year" class="form-input" pattern="[0-9]*" maxlength="4">
+                        </div>
+                        <div class="form-group">
+                            <label for="video-director">Diretor do Videoclipe</label>
+                            <input type="text" id="video-director" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-tag-input">Categorias (Tags)</label>
+                            <div class="tag-input-wrapper autocomplete-container">
+                                <input type="text" id="new-tag-input" class="form-input" placeholder="Nova tag">
+                                <div id="tag-autocomplete-list" class="autocomplete-list"></div>
+                                <button type="button" id="add-tag-btn" class="button primary-button icon-only"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                            <div id="tags-container" class="tags-display-area"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="duration">Duração</label>
+                            <input type="text" id="duration" class="form-input" placeholder="MM:SS">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Dias da Semana Disponíveis</label>
+                            <div class="day-options">
+                                <button type="button" class="day-option">Seg</button>
+                                <button type="button" class="day-option">Ter</button>
+                                <button type="button" class="day-option">Qua</button>
+                                <button type="button" class="day-option">Qui</button>
+                                <button type="button" class="day-option">Sex</button>
+                                <button type="button" class="day-option">Sáb</button>
+                                <button type="button" class="day-option">Dom</button>
+                                <button type="button" class="day-option selected" data-all="true">Todos</button>
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Arquivo de Mídia (.mp4, .mp3) *</label>
+                            <div class="file-input-wrapper">
+                                <label for="media-file-input" class="button primary-button">
+                                    <i class="fa-solid fa-upload"></i> Escolher Arquivo
+                                </label>
+                                <input type="file" id="media-file-input" name="mediaFile" class="file-input-hidden" accept="video/mp4,audio/mpeg">
+                                <span id="file-name-display" class="file-name">Nenhum arquivo selecionado</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <div class="form-buttons">
+                            <button type="button" class="button secondary-button cancel-btn">Cancelar</button>
+                            <button id="form-submit-btn" type="submit" class="button primary-button">Salvar Música</button>
+                        </div>
+                        <div id="upload-status-container" class="hidden">
+                            <div class="spinner"></div>
+                            <span id="upload-status-text"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div id="search-music-section" class="form-section hidden">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fa-solid fa-magnifying-glass icon"></i> Consultar Músicas</h2>
+                    <button class="close-section-btn" title="Fechar"><i class="fa-solid fa-times"></i></button>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="search-music-input" class="form-input" placeholder="Buscar por nome, artista ou álbum...">
+                </div>
+                <div class="table-container">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Música</th>
+                                <th>Artista</th>
+                                <th>Álbum</th>
+                                <th>Ano</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="search-results"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="consult-suggestions-section" class="form-section hidden">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fa-solid fa-lightbulb icon"></i> Consultar Sugestões</h2>
+                    <button class="close-section-btn" title="Fechar"><i class="fa-solid fa-times"></i></button>
+                </div>
+                <p class="placeholder-text">Área de sugestões em desenvolvimento.</p>
+            </div>
+            <div id="consult-bans-section" class="form-section hidden">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fa-solid fa-ban icon"></i> Consultar Banimentos</h2>
+                    <button class="close-section-btn" title="Fechar"><i class="fa-solid fa-times"></i></button>
+                </div>
+                <p class="placeholder-text">Área de banimentos em desenvolvimento.</p>
+            </div>
+            <div id="success-message" class="alert success-alert hidden">
+                <i class="fa-solid fa-circle-check"></i><span id="success-text"></span>
+            </div>
+        </section>
+
+        <section class="db-management">
+            <h2 class="section-title"><i class="fa-solid fa-database icon"></i> Gerenciar Banco de Dados</h2>
+            <div class="db-grid">
+                <div class="db-card">
+                    <div class="db-card-header" data-target="artists-content">
+                        <h3><i class="fa-solid fa-microphone-lines"></i> Artistas</h3><button class="expand-btn"><i class="fa-solid fa-chevron-down"></i></button>
+                    </div>
+                    <div id="artists-content" class="db-card-content hidden">
+                        <div class="db-input-group"><input type="text" class="form-input small" placeholder="Novo artista"><button class="button primary-button small icon-only add-db-item-btn" data-type="artist"><i class="fa-solid fa-plus"></i></button></div>
+                        <div class="db-list"></div>
+                    </div>
+                </div>
+                <div class="db-card">
+                    <div class="db-card-header" data-target="tags-content">
+                        <h3><i class="fa-solid fa-tags"></i> Tags</h3><button class="expand-btn"><i class="fa-solid fa-chevron-down"></i></button>
+                    </div>
+                    <div id="tags-content" class="db-card-content hidden">
+                        <div class="db-input-group"><input type="text" class="form-input small" placeholder="Nova tag"><button class="button primary-button small icon-only add-db-item-btn" data-type="tag"><i class="fa-solid fa-plus"></i></button></div>
+                        <div class="db-list tags-list"></div>
+                    </div>
+                </div>
+                <div class="db-card">
+                    <div class="db-card-header" data-target="albums-content">
+                        <h3><i class="fa-solid fa-record-vinyl"></i> Álbuns</h3><button class="expand-btn"><i class="fa-solid fa-chevron-down"></i></button>
+                    </div>
+                    <div id="albums-content" class="db-card-content hidden">
+                        <div class="db-list albums-list"></div>
+                    </div>
+                </div>
+                <div class="db-card">
+                    <div class="db-card-header" data-target="commercials-content">
+                        <h3><i class="fa-solid fa-bullhorn"></i> Comerciais</h3><button class="expand-btn"><i class="fa-solid fa-chevron-down"></i></button>
+                    </div>
+                    <div id="commercials-content" class="db-card-content hidden">
+                        <div class="db-list commercials-list"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>Developed by <a href="#" class="devsyon-link">DEVsyon</a> a Tech Solutions. &copy; 2025. Todos os direitos reservados.</p>
+    </footer>
+
+    <div id="delete-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="delete-modal-title">Confirmar Exclusão</h3>
+            </div>
+            <p id="delete-modal-text" class="modal-text"></p>
+            <div class="modal-warning"><i class="fa-solid fa-triangle-exclamation"></i>Esta ação não pode ser desfeita!</div>
+            <div class="form-actions">
+                <button type="button" id="cancel-delete" class="button secondary-button">Cancelar</button>
+                <button type="button" id="confirm-delete" class="button danger-button">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/musicsState.js"></script>
+    <script src="js/musicsUI.js"></script>
+</body>
+
+</html>

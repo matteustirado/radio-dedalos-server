@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Solicitações - Rádio Dedalos</title>
+    <link rel="icon" href="assets/img/logo.png" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/jukebox.css">
+</head>
+
+<body>
+    <main id="app-container" class="gradient-border">
+        <header id="panel-header">
+            <div>
+                <h1 class="header-title gradient-text">Solicitação de Músicas</h1>
+                <p class="header-subtitle">Peça sua música favorita agora mesmo!</p>
+            </div>
+            <div id="fullscreen-trigger" class="fullscreen-trigger-area" title="Ativar/Desativar modo tela cheia"></div>
+        </header>
+
+        <div id="success-message" class="alert success-alert hidden">
+            <i class="fa-solid fa-circle-check"></i>
+            <span id="success-text"></span>
+        </div>
+
+        <section class="main-content-grid">
+            <div class="card-style">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-magnifying-glass icon"></i> Buscar Música
+                </h2>
+
+                <div class="form-group">
+                    <label for="search-input">Nome da Música ou Artista</label>
+                    <div class="dropdown">
+                        <input type="text" id="search-input" class="form-input" placeholder="Digite para buscar...">
+                        <div id="dropdown-content" class="dropdown-content"></div>
+                    </div>
+                </div>
+
+                <div class="form-row-combined">
+                    <div class="form-group">
+                        <label for="client-code">Numero da Pulseira</label>
+                        <input type="text" id="client-code" class="form-input" placeholder="Ex: 123456">
+                    </div>
+                    <div class="form-actions">
+                        <button id="request-btn" class="button success-button">
+                            <i class="fa-solid fa-music"></i> Pedir Música
+                        </button>
+                        <button id="suggest-btn" class="button primary-button hidden">
+                            <i class="fa-solid fa-lightbulb"></i> Sugerir Adição
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-style now-playing-card">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-volume-high icon"></i> Tocando Agora
+                </h2>
+                <div class="now-playing-content">
+                    <div class="track-info">
+                        <h3 id="now-playing-title" class="track-title">A Rádio está no Ar</h3>
+                        <p id="now-playing-artist" class="track-artist">Faça seu pedido!</p>
+                    </div>
+                    <div class="progress-bar-container">
+                        <span id="current-time">0:00</span>
+                        <div class="progress-bar">
+                            <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
+                        </div>
+                        <span id="total-time">0:00</span>
+                    </div>
+                    <div id="next-up-grid" class="next-up-grid">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card-style">
+            <h2 id="daily-theme-title" class="section-title">
+                <i class="fa-solid fa-circle-info icon"></i> Playlist de Hoje
+            </h2>
+            <div class="playlist-info-content">
+                <div id="daily-theme-artists" class="artist-tags-grid"></div>
+                <p id="playlist-description" class="playlist-description"></p>
+            </div>
+        </section>
+    </main>
+
+    <div id="password-popup" class="password-popup hidden">
+        <div class="form-group">
+            <label for="exit-password">Senha para Sair</label>
+            <div class="password-input-wrapper">
+                <input type="password" id="exit-password" class="form-input small">
+                <button id="submit-password-btn" class="button primary-button small icon-only">
+                    <i class="fa-solid fa-unlock"></i>
+                </button>
+            </div>
+            <p id="password-error" class="password-error hidden">Senha incorreta.</p>
+        </div>
+    </div>
+
+    <div id="reenter-fullscreen-overlay" class="reenter-overlay hidden"></div>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/jukeboxCode.js"></script>
+    <script src="js/jukeboxUI.js"></script>
+</body>
+
+</html>

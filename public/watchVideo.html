@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rádio Dédalos - Ao Vivo</title>
+    <link rel="icon" href="assets/img/logo.png" type="image/x-icon" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <link rel="stylesheet" href="/css/watchVideo.css">
+</head>
+<body>
+
+    <div id="video-container">
+        <video id="live-video" autoplay muted playsinline></video>
+        <img id="video-overlay" src="" alt="Overlay" class="hidden">
+
+        <div id="ficha-tecnica">
+            <div><span class="ficha-label">Música:</span> <span id="ficha-musica"></span></div>
+            <div><span class="ficha-label">Álbum:</span> <span id="ficha-album"></span></div>
+            <div><span class="ficha-label">Artista:</span> <span id="ficha-artista"></span></div>
+            <div><span class="ficha-label">Gravadora:</span> <span id="ficha-gravadora"></span></div>
+            <div><span class="ficha-label">Direção:</span> <span id="ficha-direcao"></span></div>
+        </div>
+
+        <div id="unmute-overlay">
+            <span>🔉 Clique em qualquer lugar para ativar o som</span>
+        </div>
+
+        <div id="bottom-controls" class="hidden">
+            <button id="mute-toggle-button">🔇</button>
+            <button id="fullscreen-button"><i class="fas fa-expand"></i></button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/watchVideo.js"></script>
+
+</body>
+</html>

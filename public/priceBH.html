@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuração de Preços - BH</title>
+    <link rel="icon" href="assets/img/logo.png" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/priceSP.css">
+</head>
+<body>
+    <div id="app-container" class="gradient-border">
+        <header id="panel-header">
+            <div class="header-info">
+                <h1 class="header-title gradient-text">Configuração - Belo Horizonte</h1>
+                <p class="header-subtitle">Gerencie os preços da página pública</p>
+            </div>
+            <div class="header-buttons">
+                <button id="logs-btn" class="button ghost-button small">
+                    <i class="fas fa-file-alt"></i> Logs
+                </button>
+                <button id="report-problem-btn" class="button ghost-button small">
+                    <i class="fas fa-bug"></i> Relatar Problema
+                </button>
+                <button id="logout-btn" class="button ghost-button small">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
+        </header>
+
+        <div class="main-content-grid">
+            <section class="form-section">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fas fa-edit icon"></i> Editar Informações</h2>
+                </div>
+
+                <div class="form-group">
+                    <label>1. Dias da Semana (Selecione múltiplos)</label>
+                    <div class="day-options-container">
+                        <button data-day="segunda" class="day-option">Segunda</button>
+                        <button data-day="terca" class="day-option">Terça</button>
+                        <button data-day="quarta" class="day-option">Quarta</button>
+                        <button data-day="quinta" class="day-option">Quinta</button>
+                        <button data-day="sexta" class="day-option">Sexta</button>
+                        <button data-day="sabado" class="day-option">Sábado</button>
+                        <button data-day="domingo" class="day-option">Domingo</button>
+                        <button data-day="feriados" class="day-option">Feriados</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>2. Configuração de Preços</label>
+                    <div class="price-type-sections">
+                        <div class="price-type-card">
+                            <h4 class="price-type-title">Player (Entrada Individual)</h4>
+                            <div class="input-grid">
+                                <div class="input-group"><label class="input-label">Manhã</label><span class="currency-symbol">R$</span><input type="number" step="0.01" class="form-input price-input" data-type="player" data-period="manha"></div>
+                                <div class="input-group"><label class="input-label">Tarde</label><span class="currency-symbol">R$</span><input type="number" step="0.01" class="form-input price-input" data-type="player" data-period="tarde"></div>
+                                <div class="input-group"><label class="input-label">Noite</label><span class="currency-symbol">R$</span><input type="number" step="0.01" class="form-input price-input" data-type="player" data-period="noite"></div>
+                                <div class="input-group"><label for="playerMessage" class="input-label">Mensagem</label><input type="text" id="playerMessage" class="form-input" placeholder="Mensagem opcional..."></div>
+                            </div>
+                        </div>
+                        <div class="price-type-card">
+                            <h4 class="price-type-title">Mão Amiga (2 pessoas)</h4>
+                            <div class="input-grid">
+                                <div class="input-group"><label class="input-label">Manhã</label><span class="currency-symbol">R$</span><input type="number" step="0.01" class="form-input price-input" data-type="amiga" data-period="manha"></div>
+                                <div class="input-group"><label class="input-label">Tarde</label><span class="currency-symbol">R$</span><input type="number" step="0.01" class="form-input price-input" data-type="amiga" data-period="tarde"></div>
+                                <div class="input-group"><label class="input-label">Noite</label><span class="currency-symbol">R$</span><input type="number" step="0.01" class="form-input price-input" data-type="amiga" data-period="noite"></div>
+                                <div class="input-group"><label for="amigaMessage" class="input-label">Mensagem</label><input type="text" id="amigaMessage" class="form-input" placeholder="*Necessário cupom"></div>
+                            </div>
+                        </div>
+                        <div class="price-type-card">
+                            <h4 class="price-type-title">Marmita (3 pessoas)</h4>
+                            <div class="input-grid">
+                                <div class="input-group"><label class="input-label">Manhã</label><span class="currency-symbol">R$</span><input type="number" step="0.01" class="form-input price-input" data-type="marmita" data-period="manha"></div>
+                                <div class="input-group"><label class="input-label">Tarde</label><span class="currency-symbol">R$</span><input type="number" step="0.01" class="form-input price-input" data-type="marmita" data-period="tarde"></div>
+                                <div class="input-group"><label class="input-label">Noite</label><span class="currency-symbol">R$</span><input type="number" step="0.01" class="form-input price-input" data-type="marmita" data-period="noite"></div>
+                                <div class="input-group"><label for="marmitaMessage" class="input-label">Mensagem</label><input type="text" id="marmitaMessage" class="form-input" placeholder="*Necessário cupom"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button id="saveBtn" class="button primary-button">Salvar Alterações de Preços</button>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="sticky-sidebar">
+                <div class="form-section">
+                    <div class="section-header">
+                        <h2 class="section-title"><i class="fas fa-dollar-sign icon"></i> Preços Atuais em BH</h2>
+                    </div>
+                    <div id="currentPricesContainer" class="prices-display-area">
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <p>Developed by <a href="#" class="devsyon-link">DEVsyon</a> a Tech Solutions. &copy; 2025. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/priceBH.js"></script> </body>
+</html>

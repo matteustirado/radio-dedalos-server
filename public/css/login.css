@@ -1,0 +1,225 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    body {
+        padding: 0.5rem;
+    }
+}
+
+@keyframes gradientBorder {
+    0% {
+        border-image-source: linear-gradient(135deg, #ff0022, #ff4d00, #ffcc00);
+    }
+    50% {
+        border-image-source: linear-gradient(135deg, #ffcc00, #ff0022, #ff4d00);
+    }
+    100% {
+        border-image-source: linear-gradient(135deg, #ff4d00, #ffcc00, #ff0022);
+    }
+}
+
+#login-container {
+    width: 100%;
+    max-width: 380px;
+    background-color: var(--bg-panel);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    position: relative;
+    animation: gradientBorder 8s infinite alternate;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.login-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.login-header img {
+    height: 100px;
+}
+
+.view-subtitle {
+    text-align: center;
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+}
+
+#loginForm,
+#reportProblemForm {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-wrapper i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-primary);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.form-input {
+    padding: 0.8rem 1rem 0.8rem 3rem;
+}
+
+.form-input.error {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.4);
+}
+
+textarea.form-input {
+    resize: none;
+    padding: 0.8rem;
+}
+
+select.form-input {
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 3rem;
+    color: var(--color-text-muted);
+    transition: color 0.2s;
+}
+
+.password-toggle-btn:hover {
+    color: var(--color-text);
+}
+
+#password {
+    padding-right: 3rem;
+}
+
+.button.full-width {
+    width: 100%;
+}
+
+.primary-button {
+    background: linear-gradient(to right, #c2410c, #ea580c);
+    box-shadow: 0 4px 15px rgba(234, 88, 12, 0.2);
+}
+
+.primary-button:hover {
+    background: linear-gradient(to right, #ea580c, #c2410c);
+    box-shadow: 0 6px 20px rgba(234, 88, 12, 0.3);
+}
+
+.primary-button.error {
+    background: var(--color-danger);
+}
+
+.primary-button.error:hover {
+    background: #b91c1c;
+}
+
+.loading-spinner {
+    margin-left: 0.5rem;
+    animation: spin 1s linear infinite;
+}
+
+.report-section-toggle {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.report-toggle-btn {
+    width: 100%;
+    background: none;
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.report-toggle-btn:hover {
+    color: var(--color-primary);
+}
+
+.report-toggle-btn i {
+    margin-right: 0.5rem;
+}
+
+.view-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-text-muted);
+    margin-bottom: 2rem;
+}
+
+.view-header h2 {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.view-header i {
+    font-size: 1.2rem;
+    color: var(--color-secondary);
+}
+
+.form-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+#report-confirmation-view {
+    padding: 2rem 1rem;
+}
+
+.confirmation-content {
+    text-align: center;
+}
+
+.confirmation-icon {
+    font-size: 3rem;
+    color: var(--color-success);
+    margin-bottom: 1rem;
+}
+
+.confirmation-content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+}
+
+.confirmation-content p {
+    color: var(--color-text-muted);
+}
+
+.confirmation-content .button {
+    margin-top: 1.5rem;
+}

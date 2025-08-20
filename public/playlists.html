@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Playlists - Rádio Dedalos</title>
+    <link rel="icon" href="assets/img/logo.png" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/playlists.css">
+</head>
+
+<body>
+    <main id="app-container" class="gradient-border">
+        <header id="panel-header">
+            <div>
+                <h1 class="header-title gradient-text">Gerenciador de Playlists</h1>
+                <p class="header-subtitle">Crie e gerencie a programação da Rádio Dedalos</p>
+            </div>
+            <div class="header-buttons">
+                <button id="logs-btn" class="button ghost-button small">
+                    <i class="fas fa-file-alt"></i> Logs
+                </button>
+                <button id="report-problem-btn" class="button ghost-button small">
+                    <i class="fas fa-bug"></i> Relatar Problema
+                </button>
+                <button id="logout-btn" class="button ghost-button small">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
+        </header>
+
+        <div class="main-layout-grid">
+            <div class="playlist-creation-column">
+                <section class="card-style">
+                    <h2 class="section-title"><i class="fas fa-plus-circle icon"></i> Criar Nova Playlist</h2>
+                    <div class="form-row-space-between">
+                        <div class="form-group">
+                            <label for="playlist-name">Nome da Playlist</label>
+                            <input type="text" id="playlist-name" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de Playlist</label>
+                            <div id="playlist-type-group" class="button-group">
+                                <button class="button small active" data-type="padrao">Padrão</button>
+                                <button class="button small secondary" data-type="diaria">Diária</button>
+                                <button class="button small secondary" data-type="especial">Especial</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Agendamento</label>
+                        <div id="day-options-container" class="day-options">
+                            <button class="day-option" data-day="monday">Seg</button>
+                            <button class="day-option" data-day="tuesday">Ter</button>
+                            <button class="day-option" data-day="wednesday">Qua</button>
+                            <button class="day-option" data-day="thursday">Qui</button>
+                            <button class="day-option" data-day="friday">Sex</button>
+                            <button class="day-option" data-day="saturday">Sáb</button>
+                            <button class="day-option" data-day="sunday">Dom</button>
+                        </div>
+                        <div id="date-selection-container" class="hidden">
+                            <div id="selected-dates-container" class="tags-display-area"></div>
+                            <div class="date-controls">
+                                <button id="specific-date-btn" class="day-option"><i class="fas fa-calendar-plus"></i> Selecionar Data</button>
+                                <p id="date-limit-warning" class="date-warning hidden">Limite de datas atingido.</p>
+                            </div>
+                        </div>
+                        <div class="calendar-container">
+                            <div id="calendar-popup" class="calendar-popup">
+                                <div class="calendar-header">
+                                    <button id="prev-month"><i class="fas fa-chevron-left"></i></button>
+                                    <span id="current-month">Agosto 2025</span>
+                                    <button id="next-month"><i class="fas fa-chevron-right"></i></button>
+                                </div>
+                                <div id="calendar-grid" class="calendar-grid"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="drafts-column">
+                <section class="card-style">
+                    <div id="drafts-preview-view">
+                        <h2 class="section-title"><i class="fas fa-file-alt icon"></i> Seus Rascunhos</h2>
+                        <div id="drafts-preview-list" class="drafts-container"></div>
+                        <div class="draft-footer">
+                            <button id="view-more-drafts-btn" class="view-more-btn">
+                                <i class="fas fa-eye"></i> Ver mais rascunhos
+                            </button>
+                        </div>
+                    </div>
+                    <div id="drafts-expanded-view" class="hidden">
+                        <div class="section-header">
+                            <h2 class="section-title"><i class="fas fa-file-alt icon"></i> Todos os Rascunhos</h2>
+                            <button id="close-drafts-btn" class="close-section-btn" title="Fechar"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="search-bar">
+                            <input type="text" id="draft-search-input" class="form-input" placeholder="Buscar rascunho por nome...">
+                        </div>
+                        <div id="drafts-full-list" class="drafts-full-list"></div>
+                        <div class="draft-footer">
+                            <button id="view-less-drafts-btn" class="view-more-btn">
+                                <i class="fas fa-eye-slash"></i> Ver menos
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div class="add-music-grid">
+            <section class="card-style">
+                <div class="section-header-alt">
+                    <h2 class="section-title"><i class="fas fa-music icon"></i> Adicionar Músicas</h2>
+                    <div class="search-controls">
+                        <button id="toggle-filter-btn" class="button small icon-only secondary-button">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="filter-section" class="filter-section hidden">
+                    <div class="filter-header">
+                        <h4>Filtros Avançados</h4>
+                        <button id="close-filter-btn" class="close-section-btn" title="Fechar Filtros">&times;</button>
+                    </div>
+                    <div class="filter-grid">
+                        <div class="form-group">
+                            <label>Ano de Lançamento</label>
+                            <div class="year-range-inputs">
+                                <input type="number" id="filter-year-start" class="form-input small" placeholder="De">
+                                <input type="number" id="filter-year-end" class="form-input small" placeholder="Até">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="filter-tags-trigger">Tags</label>
+                            <div id="filter-tags-container" class="custom-select">
+                                <button type="button" id="filter-tags-trigger" class="form-input">
+                                    <span id="filter-tags-text">Selecione as tags...</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                                <div id="filter-tags-dropdown" class="custom-select-dropdown hidden">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="filter-weekday">Dia da Semana</label>
+                            <select id="filter-weekday" class="form-input">
+                                <option value="">Qualquer dia</option>
+                                <option value="monday">Segunda-feira</option>
+                                <option value="tuesday">Terça-feira</option>
+                                <option value="wednesday">Quarta-feira</option>
+                                <option value="thursday">Quinta-feira</option>
+                                <option value="friday">Sexta-feira</option>
+                                <option value="saturday">Sábado</option>
+                                <option value="sunday">Domingo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-actions">
+                        <button id="clear-filters-btn" class="button secondary-button small">Limpar</button>
+                        <button id="apply-filters-btn" class="button primary-button small">Aplicar Filtros</button>
+                    </div>
+                </div>
+                <div class="search-wrapper">
+                    <div class="dropdown">
+                        <input type="text" id="song-search-input" class="form-input" placeholder="Buscar por artista ou música..." disabled>
+                        <div id="song-search-dropdown" class="dropdown-content"></div>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <div id="playlist-tips" class="tips-container">
+                    <div class="tips-header">
+                        <i class="fas fa-lightbulb"></i>
+                        <h2>Dicas</h2>
+                    </div>
+                    <p>Preencha os dados da playlist para começar.</p>
+                </div>
+            </section>
+        </div>
+
+        <section class="card-style">
+            <div class="section-header-alt">
+                <h2 class="section-title"><i class="fas fa-compact-disc icon"></i> Sua Playlist</h2>
+                <div id="playlist-duration" class="playlist-summary">0 músicas • 0:00</div>
+            </div>
+            <div id="current-playlist" class="playlist-table">
+                <div class="playlist-empty-message">
+                    <i class="fas fa-music"></i>
+                    <p>Sua playlist está vazia</p>
+                    <span class="text-sm">Preencha os dados da playlist para adicionar músicas</span>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button id="save-draft-btn" class="button secondary-button" disabled>
+                    <i class="fas fa-save"></i> Salvar Rascunho
+                </button>
+                <button id="submit-playlist-btn" class="button primary-button" disabled>
+                    <i class="fas fa-paper-plane"></i> Enviar Playlist
+                </button>
+            </div>
+            <div id="success-message" class="alert success-alert hidden">
+                <i class="fas fa-check-circle"></i>
+                <span>Playlist enviada com sucesso!</span>
+            </div>
+        </section>
+
+        <section id="standard-playlists" class="published-playlists">
+            <h2 class="section-title"><i class="fas fa-calendar-week icon"></i> Playlists Padrão (Semana)</h2>
+            <div class="playlists-container">
+                <button class="scroll-btn prev"><i class="fas fa-chevron-left"></i></button>
+                <div class="card-grid"></div>
+                <button class="scroll-btn next"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <section id="daily-playlists" class="published-playlists">
+            <h2 class="section-title"><i class="fas fa-calendar-day icon"></i> Playlists Diárias</h2>
+            <div class="playlists-container">
+                <button class="scroll-btn prev"><i class="fas fa-chevron-left"></i></button>
+                <div class="card-grid"></div>
+                <button class="scroll-btn next"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <section id="special-playlists" class="published-playlists">
+            <h2 class="section-title"><i class="fas fa-star icon"></i> Playlists Especiais</h2>
+            <div class="playlists-container">
+                <button class="scroll-btn prev"><i class="fas fa-chevron-left"></i></button>
+                <div class="card-grid"></div>
+                <button class="scroll-btn next"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>Developed by <a href="#" class="devsyon-link">DEVsyon</a> a Tech Solutions. &copy; 2025. Todos os direitos reservados.</p>
+    </footer>
+
+    <div id="delete-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="delete-modal-title">Confirmar Exclusão</h3>
+            </div>
+            <p id="delete-modal-text" class="modal-text"></p>
+            <div class="modal-warning">
+                <i class="fas fa-exclamation-triangle"></i>Esta ação não pode ser desfeita!
+            </div>
+            <div class="form-actions">
+                <button type="button" id="cancel-delete-btn" class="button secondary-button">Cancelar</button>
+                <button type="button" id="confirm-delete-btn" class="button danger-button">Confirmar Exclusão</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/playlistState.js"></script>
+    <script src="js/playlistsUI.js"></script>
+</body>
+
+</html>

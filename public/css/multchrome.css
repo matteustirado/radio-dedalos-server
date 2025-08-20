@@ -1,0 +1,115 @@
+.multi {
+    position: absolute;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.multichrome-light {
+    position: absolute;
+    width: 200vh;
+    height: 200vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    mask-image: radial-gradient(
+        circle at center,
+        rgba(255, 255, 255, 1) 30%,
+        rgba(255, 255, 255, 0.8) 50%,
+        rgba(255, 255, 255, 0) 70%
+    );
+    -webkit-mask-image: radial-gradient(
+        circle at center,
+        rgba(255, 255, 255, 1) 30%,
+        rgba(255, 255, 255, 0.8) 50%,
+        rgba(255, 255, 255, 0) 70%
+    );
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    background: radial-gradient(
+        circle,
+        rgba(230, 142, 9, 0.15) 0%,
+        rgba(40, 36, 30, 0.1) 40%,
+        rgba(10, 10, 15, 0) 70%
+    );
+    opacity: 0.8;
+    filter: blur(15px);
+    transition: all 0.5s ease-out;
+    pointer-events: none;
+}
+
+.multichrome-ambient-1,
+.multichrome-ambient-2,
+.multichrome-ambient-3 {
+    position: absolute;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    filter: blur(80px);
+    opacity: 0.5;
+    transition: transform 3s ease-out;
+    mask-image: radial-gradient(
+        circle at center,
+        rgba(255, 255, 255, 1) 30%,
+        rgba(255, 255, 255, 0.6) 60%,
+        rgba(255, 255, 255, 0) 80%
+    );
+    -webkit-mask-image: radial-gradient(
+        circle at center,
+        rgba(255, 255, 255, 1) 30%,
+        rgba(255, 255, 255, 0.6) 60%,
+        rgba(255, 255, 255, 0) 80%
+    );
+}
+
+.multichrome-ambient-1 {
+    width: 110vh;
+    height: 110vh;
+    background: radial-gradient(
+        circle,
+        rgba(245, 166, 35, 0.20) 0%,
+        rgba(247, 107, 28, 0.12) 40%,
+        rgba(10, 10, 15, 0) 70%
+    );
+    top: 30%;
+    left: 35%;
+}
+
+.multichrome-ambient-2 {
+    width: 130vh;
+    height: 130vh;
+    background: radial-gradient(
+        circle,
+        rgba(255, 36, 36, 0.15) 0%,
+        rgba(230, 142, 9, 0.10) 50%,
+        rgba(10, 10, 15, 0) 75%
+    );
+    bottom: 30%;
+    right: 20%;
+}
+
+.multichrome-ambient-3 {
+    width: 140vh;
+    height: 140vh;
+    background: radial-gradient(
+        circle,
+        rgba(230, 142, 9, 0.15) 0%,
+        rgba(255, 36, 36, 0.10) 40%,
+        rgba(10, 10, 15, 0) 70%
+    );
+    top: 60%;
+    left: 60%;
+}
+
+.float-effect-1 { animation: float-1 15s infinite ease-in-out; }
+.float-effect-2 { animation: float-2 18s infinite ease-in-out; }
+.float-effect-3 { animation: float-3 20s infinite ease-in-out; }
+
+#particleCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
