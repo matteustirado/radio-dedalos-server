@@ -46,39 +46,50 @@
                         <div class="form-group">
                             <label>Tipo de Playlist</label>
                             <div id="playlist-type-group" class="button-group">
-                                <button class="button small active" data-type="padrao">Padrão</button>
+                                <button class="button small secondary" data-type="padrao">Padrão</button>
                                 <button class="button small secondary" data-type="diaria">Diária</button>
                                 <button class="button small secondary" data-type="especial">Especial</button>
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
+                    
+                    <div id="schedule-options-container" class="form-group hidden">
                         <label>Agendamento</label>
-                        <div id="day-options-container" class="day-options">
-                            <button class="day-option" data-day="monday">Seg</button>
-                            <button class="day-option" data-day="tuesday">Ter</button>
-                            <button class="day-option" data-day="wednesday">Qua</button>
-                            <button class="day-option" data-day="thursday">Qui</button>
-                            <button class="day-option" data-day="friday">Sex</button>
-                            <button class="day-option" data-day="saturday">Sáb</button>
-                            <button class="day-option" data-day="sunday">Dom</button>
+                        
+                        <div id="padrao-options" class="schedule-row hidden">
+                            <select id="weekday-select" class="form-input">
+                                <option value="" disabled selected>Selecione o dia</option>
+                                <option value="monday">Segunda-feira</option>
+                                <option value="tuesday">Terça-feira</option>
+                                <option value="wednesday">Quarta-feira</option>
+                                <option value="thursday">Quinta-feira</option>
+                                <option value="friday">Sexta-feira</option>
+                                <option value="saturday">Sábado</option>
+                                <option value="sunday">Domingo</option>
+                            </select>
                         </div>
-                        <div id="date-selection-container" class="hidden">
-                            <div id="selected-dates-container" class="tags-display-area"></div>
-                            <div class="date-controls">
-                                <button id="specific-date-btn" class="day-option"><i class="fas fa-calendar-plus"></i> Selecionar Data</button>
-                                <p id="date-limit-warning" class="date-warning hidden">Limite de datas atingido.</p>
-                            </div>
+                        
+                        <div id="diaria-options" class="schedule-row hidden">
+                            <input type="date" id="scheduled-date" class="form-input" title="Data de início">
+                            <input type="time" id="scheduled-time" class="form-input" title="Horário de início">
                         </div>
-                        <div class="calendar-container">
-                            <div id="calendar-popup" class="calendar-popup">
-                                <div class="calendar-header">
-                                    <button id="prev-month"><i class="fas fa-chevron-left"></i></button>
-                                    <span id="current-month">Agosto 2025</span>
-                                    <button id="next-month"><i class="fas fa-chevron-right"></i></button>
-                                </div>
-                                <div id="calendar-grid" class="calendar-grid"></div>
-                            </div>
+
+                        <div id="especial-options" class="schedule-row hidden">
+                            <select id="special-type-select" class="form-input">
+                                <option value="fixa">Fixa</option>
+                                <option value="semanal">Semanal</option>
+                            </select>
+                            <select id="special-weekday-select" class="form-input hidden">
+                                <option value="" disabled selected>Selecione o dia</option>
+                                <option value="monday">Segunda-feira</option>
+                                <option value="tuesday">Terça-feira</option>
+                                <option value="wednesday">Quarta-feira</option>
+                                <option value="thursday">Quinta-feira</option>
+                                <option value="friday">Sexta-feira</option>
+                                <option value="saturday">Sábado</option>
+                                <option value="sunday">Domingo</option>
+                            </select>
+                            <input type="time" id="special-scheduled-time" class="form-input hidden">
                         </div>
                     </div>
                 </section>
@@ -169,7 +180,7 @@
                 </div>
                 <div class="search-wrapper">
                     <div class="dropdown">
-                        <input type="text" id="song-search-input" class="form-input" placeholder="Buscar por artista ou música..." disabled>
+                        <input type="text" id="song-search-input" class="form-input" placeholder="Selecione um tipo de playlist para começar" disabled>
                         <div id="song-search-dropdown" class="dropdown-content"></div>
                     </div>
                 </div>
@@ -180,7 +191,7 @@
                         <i class="fas fa-lightbulb"></i>
                         <h2>Dicas</h2>
                     </div>
-                    <p>Preencha os dados da playlist para começar.</p>
+                    <p>Selecione um tipo de playlist para configurar o agendamento.</p>
                 </div>
             </section>
         </div>

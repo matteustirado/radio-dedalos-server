@@ -1,6 +1,7 @@
 const radioPlayer = (() => {
     const state = {
         allSongs: [],
+        availableJukeboxSongs: [],
         allArtists: [],
         commercials: [],
         availablePlaylists: [],
@@ -36,16 +37,10 @@ const radioPlayer = (() => {
 
         const enrich = (req) => {
             if (!req) return null;
-            const song = state.allSongs.find(s => s.id === req.song_id) || state.commercials.find(c => c.id === req.song_id);
+            const song = state.allSongs.find(s => String(s.id) === String(req.song_id)) || state.commercials.find(c => String(c.id) === String(req.song_id));
             if (!song) return null;
-            const artist = state.allArtists.find(a => a.id === song.artist_id);
-            let fullArtistString = artist ? artist.name : 'Comercial';
-            if (req.requester_info !== 'Commercial' && song.featuring_artists?.length > 0) {
-                fullArtistString += `, ${song.featuring_artists.map(f => f.name).join(', ')}`;
-            }
             return { ...req,
-                ...song,
-                artist_name: fullArtistString
+                ...song
             };
         };
 
@@ -116,25 +111,50 @@ const radioPlayer = (() => {
         notify();
         try {
             const isJukeboxPage = window.location.pathname.toLowerCase().includes('jukebox');
-            const songsEndpoint = isJukeboxPage ? '/jukebox/songs' : '/songs';
             
-            const [songs, artists, commercials, playlists, bans, initialQueue] = await Promise.all([
-                apiFetch(songsEndpoint),
+            const allSongsPromise = apiFetch('/songs');
+            const jukeboxSongsPromise = isJukeboxPage ? apiFetch('/jukebox/songs') : Promise.resolve(null);
+
+            const [allSongs, artists, commercials, playlists, bans, initialQueue, jukeboxSongs] = await Promise.all([
+                allSongsPromise,
                 apiFetch('/artists'),
                 apiFetch('/commercials'),
                 apiFetch('/playlists?status=published'),
                 apiFetch('/bans'),
-                apiFetch('/dj/queue')
+                apiFetch('/dj/queue'),
+                jukeboxSongsPromise
             ]);
 
-            state.allSongs = songs || [];
             state.allArtists = artists || [];
             state.commercials = commercials || [];
             state.availablePlaylists = playlists || [];
             state.bannedSongs = bans || [];
+            state.allSongs = allSongs || [];
+            state.availableJukeboxSongs = jukeboxSongs || allSongs || [];
 
-            const artistMap = new Map(state.allArtists.map(a => [a.id, a.name]));
-            state.allSongs.forEach(s => s.artist_name = artistMap.get(s.artist_id) || 'Desconhecido');
+            const artistMap = new Map(state.allArtists.map(a => [String(a.id), a.name]));
+
+            const enrichArtistNames = (songList) => {
+                songList.forEach(s => {
+                    let mainArtistName = artistMap.get(String(s.artist_id));
+                    if (!mainArtistName) {
+                        s.artist_name = 'Desconhecido';
+                        return;
+                    }
+                    let fullArtistString = mainArtistName;
+                    if (s.featuring_artists && s.featuring_artists.length > 0) {
+                        const featuringArtistsNames = s.featuring_artists.map(f => f.name).join(', ');
+                        fullArtistString += `, ${featuringArtistsNames}`;
+                    }
+                    s.artist_name = fullArtistString;
+                });
+            };
+            
+            enrichArtistNames(state.allSongs);
+            if (jukeboxSongs) {
+                enrichArtistNames(state.availableJukeboxSongs);
+            }
+
             state.commercials.forEach(c => c.artist_name = c.album || 'Comercial');
 
             _processQueueData(initialQueue);
@@ -201,15 +221,13 @@ const radioPlayer = (() => {
             })
         }),
         jukeboxSuggest: (searchTerm, requesterInfo) => {
-            const [title, artist_name] = searchTerm.includes('-') ? searchTerm.split('-').map(s => s.trim()) : [searchTerm, 'Desconhecido'];
             return apiFetch('/jukebox/suggest', {
                 method: 'POST',
                 body: JSON.stringify({
-                    song_title: title,
-                    artist_name,
+                    suggestion_text: searchTerm,
                     requester_info: requesterInfo
                 })
-            })
+            });
         },
         setLogo: (filename) => apiFetch('/settings/active_logo_filename', {
             method: 'PUT',

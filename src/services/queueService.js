@@ -1,12 +1,15 @@
 const db = require('../config/database');
+const PlaylistModel = require('../api/models/playlistModel');
 
 let requestQueue = [];
 let playHistory = [];
 let currentSong = null;
 
-let activePlaylistInfo = {
-    id: null,
-    description: 'Nenhuma playlist ativa. Fila de pedidos aberta.'
+let queueState = {
+    playlistId: null,
+    playlistName: null,
+    source: null,
+    lastManualActionTimestamp: null
 };
 
 let playerState = {
@@ -23,6 +26,35 @@ const ARTIST_COOLDOWN_SONG_LIMIT = 5;
 const USER_REQUEST_LIMIT = 5;
 
 const queueService = {
+    activatePlaylist: async (playlistId, source = 'dj') => {
+        const playlist = await PlaylistModel.findById(playlistId);
+        if (!playlist || !playlist.items || playlist.items.length === 0) {
+            console.error(`[QueueService] Tentativa de ativar playlist vazia ou inexistente: ID ${playlistId}`);
+            return null;
+        }
+        
+        const pendingUserRequests = requestQueue.filter(req => req.requester_info !== 'Playlist' && req.requester_info !== 'Commercial');
+        
+        const playlistItems = playlist.items.map(song => ({
+            ...song,
+            requester_info: 'Playlist',
+        }));
+
+        requestQueue = [...pendingUserRequests, ...playlistItems];
+        
+        queueState.playlistId = playlist.id;
+        queueState.playlistName = playlist.name;
+        queueState.source = source;
+
+        if (source === 'dj') {
+            queueState.lastManualActionTimestamp = Date.now();
+        }
+        
+        queueService.playNextInQueue();
+        
+        return queueState;
+    },
+
     validateAndAddRequest: async (requestData) => {
         const { song_id, artist_id, requester_info } = requestData;
         const [banned] = await db.execute('SELECT * FROM banned_songs WHERE song_id = ? AND (expires_at > NOW() OR expires_at IS NULL)', [song_id]);
@@ -48,7 +80,8 @@ const queueService = {
 
     validateAndAddDjRequest: (requestData) => {
         const newRequest = { id: Date.now(), requestedAt: new Date(), ...requestData };
-
+        queueState.lastManualActionTimestamp = Date.now();
+        
         let insertionIndex = 0;
         for (let i = 0; i < requestQueue.length; i++) {
             const req = requestQueue[i];
@@ -109,7 +142,10 @@ const queueService = {
         currentSong = null;
         playerState.isPlaying = false;
         playerState.playbackStartTimestamp = null;
-        activePlaylistInfo = { id: null, description: 'Nenhuma playlist ativa. Fila de pedidos aberta.' };
+        
+        queueState.playlistId = null;
+        queueState.playlistName = null;
+        queueState.source = null;
     },
 
     pause: () => {
@@ -128,19 +164,14 @@ const queueService = {
         playerState.lastPauseTimestamp = null;
     },
 
-    getCurrentSong: () => {
-        return currentSong;
-    },
-
+    getCurrentSong: () => currentSong,
     setVolume: (level) => {
         playerState.volume = Math.max(0, Math.min(100, level));
         return playerState.volume;
     },
-
-    getPlayerState: () => {
-        return { ...playerState };
-    },
-
+    getPlayerState: () => ({ ...playerState }),
+    getQueueState: () => queueState,
+    isPlaying: () => playerState.isPlaying,
     banSong: async (songId, duration) => {
         let expires_at;
         const now = new Date();
@@ -160,7 +191,6 @@ const queueService = {
         }
         return true;
     },
-
     promoteRequest: (requestId) => {
         const requestIndex = requestQueue.findIndex(req => req.id === requestId);
         if (requestIndex > 0) {
@@ -170,7 +200,6 @@ const queueService = {
         }
         return false;
     },
-
     reorderQueue: (orderedRequestIds) => {
         const queueMap = new Map(requestQueue.map(req => [req.id.toString(), req]));
         const newQueue = [];
@@ -181,40 +210,7 @@ const queueService = {
         requestQueue.push(...newQueue);
         return true;
     },
-
-    loadPlaylistIntoQueue: async (playlist) => {
-        const pendingRequests = requestQueue.filter(req => req.requester_info !== 'Playlist');
-        requestQueue = [];
-        
-        const sql = `
-            SELECT s.*, a.name as artist_name FROM playlist_items pi
-            JOIN songs s ON pi.song_id = s.id
-            JOIN artists a ON s.artist_id = a.id
-            WHERE pi.playlist_id = ? 
-            AND pi.song_id NOT IN (
-                SELECT bs.song_id FROM banned_songs bs WHERE bs.expires_at > NOW() OR bs.expires_at IS NULL
-            ) 
-            ORDER BY pi.sequence_order ASC
-        `;
-        
-        const [items] = await db.execute(sql, [playlist.id]);
-        
-        const playlistItems = items.map(song => ({
-            ...song,
-            song_id: song.id,
-            requester_info: 'Playlist',
-        }));
-
-        requestQueue = [...pendingRequests, ...playlistItems];
-        
-        activePlaylistInfo = {
-            id: playlist.id,
-            name: playlist.name,
-            description: playlist.description
-        };
-    },
-
-    getActivePlaylistInfo: () => activePlaylistInfo,
+    getActivePlaylistInfo: () => ({ id: queueState.playlistId, name: queueState.playlistName }),
     getQueue: () => [...requestQueue],
     getHistory: () => [...playHistory]
 };

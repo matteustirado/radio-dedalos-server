@@ -1,59 +1,19 @@
 const db = require('../../config/database');
 
 class PlaylistModel {
-    static async createOrUpdatePadrao(playlistData) {
-        const {
-            name,
-            type,
-            status,
-            weekday
-        } = playlistData;
-        const connection = await db.getConnection();
-        try {
-            await connection.beginTransaction();
-
-            const [existing] = await connection.execute(
-                "SELECT id FROM playlists WHERE type = 'padrao' AND weekday = ?",
-                [weekday]
-            );
-
-            let playlistId;
-            if (existing.length > 0) {
-                playlistId = existing[0].id;
-                await connection.execute(
-                    "UPDATE playlists SET name = ?, status = ? WHERE id = ?",
-                    [name, status || 'rascunho', playlistId]
-                );
-            } else {
-                const [result] = await connection.execute(
-                    "INSERT INTO playlists (name, type, status, weekday) VALUES (?, ?, ?, ?)",
-                    [name, type, status || 'rascunho', weekday]
-                );
-                playlistId = result.insertId;
-            }
-
-            await connection.commit();
-
-            const [rows] = await connection.execute('SELECT * FROM playlists WHERE id = ?', [playlistId]);
-            return rows[0];
-
-        } catch (error) {
-            await connection.rollback();
-            throw error;
-        } finally {
-            connection.release();
-        }
-    }
-
     static async create(playlistData) {
-        const {
+        const { name, type, special_type, status, weekday, scheduled_date, scheduled_time } = playlistData;
+        const sql = 'INSERT INTO playlists (name, type, special_type, status, weekday, scheduled_date, scheduled_time) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        const params = [
             name,
             type,
-            status
-        } = playlistData;
-        const sql = 'INSERT INTO playlists (name, type, status) VALUES (?, ?, ?)';
-        const [result] = await db.execute(sql, [name, type, status || 'rascunho']);
-
+            special_type || null,
+            status || 'rascunho',
+            weekday || null,
+            scheduled_date || null,
+            scheduled_time || null
+        ];
+        const [result] = await db.execute(sql, params);
         return this.findById(result.insertId);
     }
 
@@ -98,15 +58,19 @@ class PlaylistModel {
     }
 
     static async update(id, playlistData) {
-        const {
+        const { name, type, special_type, status, weekday, scheduled_date, scheduled_time } = playlistData;
+        const sql = 'UPDATE playlists SET name = ?, type = ?, special_type = ?, status = ?, weekday = ?, scheduled_date = ?, scheduled_time = ? WHERE id = ?';
+        const params = [
             name,
             type,
+            special_type || null,
             status,
-            weekday
-        } = playlistData;
-        const sql = 'UPDATE playlists SET name = ?, type = ?, status = ?, weekday = ? WHERE id = ?';
-        await db.execute(sql, [name, type, status, weekday || null, id]);
-
+            weekday || null,
+            scheduled_date || null,
+            scheduled_time || null,
+            id
+        ];
+        await db.execute(sql, params);
         return this.findById(id);
     }
 
@@ -162,6 +126,42 @@ class PlaylistModel {
         } finally {
             connection.release();
         }
+    }
+
+    static async findPlaylistsForScheduler(weekday, date, time) {
+        const specificSql = `
+            SELECT p.*
+            FROM playlists p
+            LEFT JOIN playlist_dates pd ON p.id = pd.playlist_id
+            WHERE
+                p.status = 'publicada'
+                AND p.scheduled_time = ?
+                AND (
+                    (p.type = 'diaria' AND pd.play_date = ?)
+                    OR
+                    (p.type = 'padrao' AND p.weekday = ?)
+                    OR
+                    (p.type = 'especial' AND p.special_type = 'semanal' AND p.weekday = ?)
+                )
+            ORDER BY FIELD(p.type, 'diaria', 'especial', 'padrao')
+            LIMIT 1
+        `;
+        const [specificRows] = await db.execute(specificSql, [time, date, weekday, weekday]);
+        const specificPlaylist = specificRows[0] ? await this.findById(specificRows[0].id) : null;
+
+        const fallbackSql = `
+            SELECT p.*
+            FROM playlists p
+            WHERE
+                p.status = 'publicada'
+                AND p.type = 'padrao'
+                AND p.weekday = ?
+            LIMIT 1
+        `;
+        const [fallbackRows] = await db.execute(fallbackSql, [weekday]);
+        const fallbackPlaylist = fallbackRows[0] ? await this.findById(fallbackRows[0].id) : null;
+        
+        return { specificPlaylist, fallbackPlaylist };
     }
 }
 

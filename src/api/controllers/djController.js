@@ -144,19 +144,22 @@ class DjController {
     static async activatePlaylist(request, response) {
         try {
             const { id } = request.params;
-            const playlist = await PlaylistModel.findById(id);
-            if (!playlist || playlist.status !== 'publicada') {
-                return response.status(404).json({ message: 'Playlist não encontrada.' });
+            const newState = await queueService.activatePlaylist(id, 'dj');
+            
+            if (!newState) {
+                return response.status(404).json({ message: 'Playlist não encontrada, está vazia ou não está publicada.' });
             }
-            await queueService.loadPlaylistIntoQueue(playlist);
-            await logService.logAction(request, 'PLAYLIST_ACTIVATED', { playlistId: id, name: playlist.name });
 
-            await _playNextSongAndNotify(request);
+            await logService.logAction(request, 'PLAYLIST_ACTIVATED', { playlistId: id, name: newState.playlistName });
+
             startMaestroLoop(request);
             
-            response.status(200).json({ message: `Playlist "${playlist.name}" ativada.` });
+            enrichAndEmitQueue();
+            
+            response.status(200).json({ message: `Playlist "${newState.playlistName}" ativada.` });
 
         } catch (error) {
+            console.error('ERRO AO ATIVAR PLAYLIST (DJ Controller):', error);
             response.status(500).json({ message: 'Erro ao ativar a playlist.', error: error.message });
         }
     }

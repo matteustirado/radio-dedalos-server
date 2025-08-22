@@ -17,17 +17,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitPlaylistBtn = document.getElementById('submit-playlist-btn');
     const saveDraftBtn = document.getElementById('save-draft-btn');
     const successMessage = document.getElementById('success-message');
-    const dayOptionsContainer = document.getElementById('day-options-container');
-    const dayOptions = dayOptionsContainer.querySelectorAll('.day-option');
-    const dateSelectionContainer = document.getElementById('date-selection-container');
-    const specificDateBtn = document.getElementById('specific-date-btn');
-    const calendarPopup = document.getElementById('calendar-popup');
-    const calendarGrid = document.getElementById('calendar-grid');
-    const currentMonthEl = document.getElementById('current-month');
-    const prevMonthBtn = document.getElementById('prev-month');
-    const nextMonthBtn = document.getElementById('next-month');
-    const selectedDatesContainer = document.getElementById('selected-dates-container');
-    const dateLimitWarning = document.getElementById('date-limit-warning');
+    
+    const scheduleOptionsContainer = document.getElementById('schedule-options-container');
+    const padraoOptions = document.getElementById('padrao-options');
+    const weekdaySelect = document.getElementById('weekday-select');
+    const diariaOptions = document.getElementById('diaria-options');
+    const scheduledDateInput = document.getElementById('scheduled-date');
+    const scheduledTimeInput = document.getElementById('scheduled-time');
+    const especialOptions = document.getElementById('especial-options');
+    const specialTypeSelect = document.getElementById('special-type-select');
+    const specialWeekdaySelect = document.getElementById('special-weekday-select');
+    const specialScheduledTimeInput = document.getElementById('special-scheduled-time');
+
     const standardPlaylistsContainer = document.querySelector('#standard-playlists .card-grid');
     const dailyPlaylistsContainer = document.querySelector('#daily-playlists .card-grid');
     const specialPlaylistsContainer = document.querySelector('#special-playlists .card-grid');
@@ -45,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const deleteModalText = document.getElementById('delete-modal-text');
     const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
     const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
-
     const toggleFilterBtn = document.getElementById('toggle-filter-btn');
     const filterSection = document.getElementById('filter-section');
     const closeFilterBtn = document.getElementById('close-filter-btn');
@@ -58,18 +58,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterWeekday = document.getElementById('filter-weekday');
     const applyFiltersBtn = document.getElementById('apply-filters-btn');
     const clearFiltersBtn = document.getElementById('clear-filters-btn');
+    const playlistTips = document.getElementById('playlist-tips');
 
-    let currentDate = new Date();
     let itemToDelete = null;
 
     const weekdayMap = {
-        monday: 'Segunda-feira',
-        tuesday: 'Terça-feira',
-        wednesday: 'Quarta-feira',
-        thursday: 'Quinta-feira',
-        friday: 'Sexta-feira',
-        saturday: 'Sábado',
-        sunday: 'Domingo'
+        monday: 'Segunda-feira', tuesday: 'Terça-feira', wednesday: 'Quarta-feira',
+        thursday: 'Quinta-feira', friday: 'Sexta-feira', saturday: 'Sábado', sunday: 'Domingo'
     };
 
     const formatDuration = (seconds) => {
@@ -82,15 +77,41 @@ document.addEventListener('DOMContentLoaded', () => {
         return timeString;
     };
 
+    const resetForm = () => {
+        playlistState.resetActivePlaylist();
+        playlistNameInput.value = '';
+        playlistTypeButtons.forEach(b => {
+            b.classList.remove('active');
+            b.classList.add('secondary');
+        });
+        
+        weekdaySelect.value = '';
+        scheduledDateInput.value = '';
+        scheduledTimeInput.value = '';
+        specialTypeSelect.value = 'fixa';
+        specialWeekdaySelect.value = '';
+        specialScheduledTimeInput.value = '';
+
+        updateScheduleVisibility();
+        renderCurrentPlaylist();
+    };
+
     const checkFormCompletion = () => {
         const { activePlaylist, currentPlaylistSongs } = playlistState.getState();
         const isNameFilled = activePlaylist.name && activePlaylist.name.trim() !== '';
-        const isScheduled = (activePlaylist.type === 'padrao' && activePlaylist.weekday) || (activePlaylist.type !== 'padrao' && activePlaylist.special_dates.length > 0);
-        const isMetadataComplete = isNameFilled && isScheduled;
+        let isScheduled = false;
+        switch (activePlaylist.type) {
+            case 'padrao': isScheduled = !!activePlaylist.weekday; break;
+            case 'diaria': isScheduled = !!activePlaylist.scheduled_date; break;
+            case 'especial': isScheduled = true; break;
+        }
+
+        const isMetadataComplete = isNameFilled && activePlaylist.type && isScheduled;
 
         songSearchInput.disabled = !isMetadataComplete;
-        songSearchInput.placeholder = isMetadataComplete ? `Buscar por música ou artista...` : "Preencha os dados da playlist";
-        
+        songSearchInput.placeholder = isMetadataComplete ? `Buscar por música ou artista...` : "Preencha nome e agendamento";
+        playlistTips.querySelector('p').textContent = isMetadataComplete ? 'Agora adicione músicas buscando no campo acima.' : 'Selecione um tipo de playlist para configurar o agendamento.';
+
         const canSave = isMetadataComplete && currentPlaylistSongs.length > 0;
         submitPlaylistBtn.disabled = !canSave;
         saveDraftBtn.disabled = !canSave;
@@ -131,8 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentPlaylistElement.appendChild(playlistBody);
 
             new Sortable(playlistBody, {
-                animation: 150,
-                handle: '.drag-handle',
+                animation: 150, handle: '.drag-handle',
                 onEnd: (evt) => {
                     playlistState.reorderCurrentPlaylist(evt.oldIndex, evt.newIndex);
                     renderCurrentPlaylist();
@@ -145,83 +165,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updateScheduleVisibility = () => {
         const { activePlaylist } = playlistState.getState();
-        const isPadrao = activePlaylist.type === 'padrao';
-        dayOptionsContainer.classList.toggle('hidden', !isPadrao);
-        dateSelectionContainer.classList.toggle('hidden', isPadrao);
-        renderSelectedDates();
-        checkFormCompletion();
-    };
+        const type = activePlaylist.type;
 
-    const renderSelectedDates = () => {
-        const { activePlaylist } = playlistState.getState();
-        selectedDatesContainer.innerHTML = '';
-        (activePlaylist.special_dates || []).forEach((date, index) => {
-            const datePill = document.createElement('div');
-            datePill.className = 'tag-pill';
-            datePill.innerHTML = `<span>${new Date(date).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}</span><button class="delete-tag-btn" data-index="${index}"><i class="fa-solid fa-times"></i></button>`;
-            selectedDatesContainer.appendChild(datePill);
-        });
+        scheduleOptionsContainer.classList.toggle('hidden', !type);
+        padraoOptions.classList.add('hidden');
+        diariaOptions.classList.add('hidden');
+        especialOptions.classList.add('hidden');
 
-        const dateLimit = activePlaylist.type === 'diaria' ? 1 : 5;
-        const limitReached = (activePlaylist.special_dates || []).length >= dateLimit;
-        dateLimitWarning.classList.toggle('hidden', !limitReached);
-        specificDateBtn.classList.toggle('hidden', limitReached);
-    };
-
-    const renderCalendar = (date) => {
-        const { activePlaylist } = playlistState.getState();
-        const month = date.getMonth();
-        const year = date.getFullYear();
-        currentMonthEl.textContent = `${date.toLocaleString('pt-BR', { month: 'long' })} ${year}`;
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        calendarGrid.innerHTML = '';
-        ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].forEach(day => {
-            const dayEl = document.createElement('div');
-            dayEl.className = 'calendar-day-name';
-            dayEl.textContent = day;
-            calendarGrid.appendChild(dayEl);
-        });
-        for (let i = 0; i < firstDay; i++) calendarGrid.appendChild(document.createElement('div'));
-        for (let i = 1; i <= daysInMonth; i++) {
-            const dayEl = document.createElement('div');
-            dayEl.className = 'calendar-day';
-            dayEl.textContent = i;
-            const thisDate = new Date(Date.UTC(year, month, i));
-            const thisDateString = thisDate.toDateString();
-            const isSelected = (activePlaylist.special_dates || []).some(d => new Date(d).toDateString() === thisDateString);
-
-            if (isSelected) dayEl.classList.add('selected');
-
-            dayEl.onclick = () => {
-                const { activePlaylist } = playlistState.getState();
-                const newDates = [...(activePlaylist.special_dates || [])];
-                const dateLimit = activePlaylist.type === 'diaria' ? 1 : 5;
-                const dateIndex = newDates.findIndex(d => new Date(d).toDateString() === thisDateString);
-
-                if (dateIndex > -1) {
-                    newDates.splice(dateIndex, 1);
-                } else {
-                    if (newDates.length >= dateLimit) {
-                        alert(`Você pode selecionar no máximo ${dateLimit} data(s).`);
-                        return;
-                    }
-                    if (activePlaylist.type === 'diaria') newDates.length = 0;
-                    newDates.push(thisDate);
-                }
-
-                newDates.sort((a, b) => a - b);
-                playlistState.updateActivePlaylistField('special_dates', newDates);
-
-                renderSelectedDates();
-                checkFormCompletion();
-                renderCalendar(currentDate);
-                if (activePlaylist.type === 'diaria' && newDates.length > 0) {
-                    calendarPopup.classList.remove('show');
-                }
-            };
-            calendarGrid.appendChild(dayEl);
+        switch (type) {
+            case 'padrao':
+                padraoOptions.classList.remove('hidden');
+                break;
+            case 'diaria':
+                diariaOptions.classList.remove('hidden');
+                break;
+            case 'especial':
+                especialOptions.classList.remove('hidden');
+                const isSemanal = activePlaylist.special_type === 'semanal';
+                specialWeekdaySelect.classList.toggle('hidden', !isSemanal);
+                specialScheduledTimeInput.classList.toggle('hidden', !isSemanal);
+                break;
         }
+        checkFormCompletion();
     };
 
     const renderAllPlaylists = () => {
@@ -236,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderPlaylistCards = (playlists, container) => {
         const parentContainer = container.closest('.playlists-container');
         if (!playlists || playlists.length === 0) {
-            container.innerHTML = `<div class="placeholder-text">Você ainda não criou nenhuma playlist nesse estilo. Ao trabalho!</div>`;
+            container.innerHTML = `<div class="placeholder-text">Nenhuma playlist deste tipo foi criada.</div>`;
             parentContainer.classList.add('empty');
             return;
         }
@@ -245,27 +210,30 @@ document.addEventListener('DOMContentLoaded', () => {
         playlists.forEach(p => {
             const card = document.createElement('div');
             card.className = 'card';
-            let scheduleInfo = '';
-            if (p.type === 'padrao') {
-                scheduleInfo = weekdayMap[p.weekday] || p.weekday;
-            } else if (p.special_dates && p.special_dates.length > 0) {
-                scheduleInfo = new Date(p.special_dates[0]).toLocaleDateString('pt-BR', {
-                    timeZone: 'UTC'
-                });
-            } else {
-                scheduleInfo = 'N/A';
+            let scheduleInfo = 'Ativação Manual';
+
+            if (p.type === 'padrao' && p.weekday) {
+                scheduleInfo = `Toda ${weekdayMap[p.weekday]}`;
+            } else if (p.type === 'diaria' && p.scheduled_date) {
+                scheduleInfo = new Date(p.scheduled_date).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+            } else if (p.type === 'especial') {
+                if (p.special_type === 'semanal' && p.weekday) {
+                    scheduleInfo = `Especial, toda ${weekdayMap[p.weekday]}`;
+                } else {
+                    scheduleInfo = `Especial Fixa`;
+                }
             }
+
+            if (p.scheduled_time) {
+                scheduleInfo += ` às ${p.scheduled_time.substring(0, 5)}`;
+            }
+            
             const songCount = p.song_count || 0;
             const totalDuration = formatDuration(p.total_duration);
             const playlistStats = `${songCount} músicas • ${totalDuration}`;
             card.innerHTML = `
-                <div class="card-header">
-                    <h3>${p.name}</h3>
-                    <span class="status-tag active">Publicada</span>
-                </div>
-                <div class="card-info">
-                    <p>${scheduleInfo}</p>
-                </div>
+                <div class="card-header"><h3>${p.name}</h3><span class="status-tag active">Publicada</span></div>
+                <div class="card-info"><p>${scheduleInfo}</p></div>
                 <div class="card-footer">
                     <p class="playlist-stats">${playlistStats}</p>
                     <div class="action-buttons">
@@ -343,18 +311,13 @@ document.addEventListener('DOMContentLoaded', () => {
             await playlistState.saveActivePlaylist(status);
             successMessage.classList.remove('hidden');
             setTimeout(() => successMessage.classList.add('hidden'), 3000);
-
             await playlistState.fetchAllPlaylists();
-
-            playlistState.resetActivePlaylist();
+            resetForm();
             renderAllPlaylists();
-            playlistNameInput.value = '';
-            renderCurrentPlaylist();
-            updateScheduleVisibility();
-            checkFormCompletion();
-
         } catch (error) {
             alert(`Erro ao salvar playlist: ${error.message}`);
+            submitPlaylistBtn.disabled = false;
+            saveDraftBtn.disabled = false;
         }
     };
 
@@ -371,17 +334,11 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             prevBtn.addEventListener('click', () => {
                 const scrollAmount = cardGrid.offsetWidth * 0.8;
-                cardGrid.scrollBy({
-                    left: -scrollAmount,
-                    behavior: 'smooth'
-                });
+                cardGrid.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
             });
             nextBtn.addEventListener('click', () => {
                 const scrollAmount = cardGrid.offsetWidth * 0.8;
-                cardGrid.scrollBy({
-                    left: scrollAmount,
-                    behavior: 'smooth'
-                });
+                cardGrid.scrollBy({ left: scrollAmount, behavior: 'smooth' });
             });
             cardGrid.addEventListener('scroll', updateButtons);
             setTimeout(updateButtons, 100);
@@ -394,10 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
         allCategories.forEach(category => {
             const label = document.createElement('label');
             label.className = 'custom-select-option';
-            label.innerHTML = `
-                <input type="checkbox" value="${category.id}">
-                <span>${category.name}</span>
-            `;
+            label.innerHTML = `<input type="checkbox" value="${category.id}"><span>${category.name}</span>`;
             filterTagsDropdown.appendChild(label);
         });
     };
@@ -432,52 +386,43 @@ document.addEventListener('DOMContentLoaded', () => {
         playlistState.updateActivePlaylistField('name', e.target.value);
         checkFormCompletion();
     });
+    
     playlistTypeButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             const newType = btn.dataset.type;
             playlistState.updateActivePlaylistField('type', newType);
             playlistTypeButtons.forEach(b => {
-                b.classList.toggle('active', b.dataset.type === newType);
-                b.classList.toggle('secondary', b.dataset.type !== newType);
+                b.classList.remove('active');
+                b.classList.add('secondary');
             });
-            playlistState.updateActivePlaylistField('weekday', null);
-            playlistState.updateActivePlaylistField('special_dates', []);
-            dayOptions.forEach(opt => opt.classList.remove('selected'));
+            btn.classList.add('active');
+            btn.classList.remove('secondary');
             updateScheduleVisibility();
         });
     });
-    dayOptions.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const day = btn.dataset.day;
-            playlistState.updateActivePlaylistField('weekday', day);
-            dayOptions.forEach(opt => opt.classList.toggle('selected', opt.dataset.day === day));
-            checkFormCompletion();
-        });
+
+    weekdaySelect.addEventListener('input', (e) => {
+        playlistState.updateActivePlaylistField('weekday', e.target.value);
+        checkFormCompletion();
     });
-    specificDateBtn.addEventListener('click', () => {
-        renderCalendar(currentDate);
-        calendarPopup.classList.toggle('show');
+    scheduledDateInput.addEventListener('input', (e) => {
+        playlistState.updateActivePlaylistField('scheduled_date', e.target.value);
+        checkFormCompletion();
     });
-    prevMonthBtn.onclick = () => {
-        currentDate.setMonth(currentDate.getMonth() - 1);
-        renderCalendar(currentDate);
-    };
-    nextMonthBtn.onclick = () => {
-        currentDate.setMonth(currentDate.getMonth() + 1);
-        renderCalendar(currentDate);
-    };
-    selectedDatesContainer.addEventListener('click', (e) => {
-        const deleteBtn = e.target.closest('.delete-tag-btn');
-        if (deleteBtn) {
-            const index = parseInt(deleteBtn.dataset.index, 10);
-            const { activePlaylist } = playlistState.getState();
-            const newDates = [...(activePlaylist.special_dates || [])];
-            newDates.splice(index, 1);
-            playlistState.updateActivePlaylistField('special_dates', newDates);
-            renderSelectedDates();
-            checkFormCompletion();
-        }
+    scheduledTimeInput.addEventListener('input', (e) => {
+        playlistState.updateActivePlaylistField('scheduled_time', e.target.value);
     });
+    specialTypeSelect.addEventListener('input', (e) => {
+        playlistState.updateActivePlaylistField('special_type', e.target.value);
+        updateScheduleVisibility();
+    });
+    specialWeekdaySelect.addEventListener('input', (e) => {
+        playlistState.updateActivePlaylistField('weekday', e.target.value);
+    });
+    specialScheduledTimeInput.addEventListener('input', (e) => {
+        playlistState.updateActivePlaylistField('scheduled_time', e.target.value);
+    });
+    
     songSearchInput.addEventListener('input', () => updateSongSearchResults());
     currentPlaylistElement.addEventListener('click', (e) => {
         const removeBtn = e.target.closest('.remove-song-btn');
@@ -559,21 +504,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const playlistId = editBtn.dataset.id;
             await playlistState.loadPlaylistForEditing(playlistId);
             const { activePlaylist } = playlistState.getState();
+            
             playlistNameInput.value = activePlaylist.name;
             playlistTypeButtons.forEach(b => {
                 const isCurrentType = b.dataset.type === activePlaylist.type;
                 b.classList.toggle('active', isCurrentType);
                 b.classList.toggle('secondary', !isCurrentType);
             });
-            dayOptions.forEach(opt => {
-                opt.classList.toggle('selected', opt.dataset.day === activePlaylist.weekday);
-            });
+            
+            weekdaySelect.value = activePlaylist.weekday || '';
+            scheduledDateInput.value = activePlaylist.scheduled_date ? new Date(activePlaylist.scheduled_date).toISOString().split('T')[0] : '';
+            scheduledTimeInput.value = activePlaylist.scheduled_time || '';
+            specialTypeSelect.value = activePlaylist.special_type || 'fixa';
+            specialWeekdaySelect.value = activePlaylist.weekday || '';
+            specialScheduledTimeInput.value = activePlaylist.scheduled_time || '';
+
             renderCurrentPlaylist();
             updateScheduleVisibility();
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             hideExpandedDrafts();
         }
 
@@ -582,19 +530,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const playlistId = deleteBtn.dataset.id;
             const card = deleteBtn.closest('.card, .draft-item, .draft-full-item');
             const playlistName = card ? (card.querySelector('h3, .draft-title').textContent) : 'esta playlist';
-            itemToDelete = {
-                id: playlistId,
-                name: playlistName
-            };
+            itemToDelete = { id: playlistId, name: playlistName };
             deleteModalTitle.textContent = 'Confirmar Exclusão';
             deleteModalText.textContent = `Tem certeza que deseja excluir a playlist "${itemToDelete.name}"?`;
             deleteModal.classList.remove('hidden');
             document.body.classList.add('modal-open');
         }
-
-        if (calendarPopup && !calendarPopup.contains(e.target) && !specificDateBtn.contains(e.target)) {
-            calendarPopup.classList.remove('show');
-        }
+        
         if (songSearchDropdown && !e.target.closest('.dropdown')) {
             songSearchDropdown.classList.remove('show');
         }
@@ -624,9 +566,8 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             await playlistState.initialize();
             populateFilterTags();
+            resetForm();
             renderAllPlaylists();
-            renderCurrentPlaylist();
-            updateScheduleVisibility();
             checkFormCompletion();
             setupScrollButtons();
             closeFilterBtn.classList.add('hidden');
@@ -637,43 +578,4 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     initializePage();
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const reportButton = document.querySelector('.report-button');
-    if (reportButton) {
-        reportButton.addEventListener('click', function() {
-            const category = prompt('Categoria do problema:\n1 - Erro de funcionalidade\n2 - Problema visual\n3 - Erro de dados\n4 - Outro\n\nDigite o número da categoria:');
-            if (!category || !['1', '2', '3', '4'].includes(category)) {
-                alert('Categoria inválida.');
-                return;
-            }
-
-            const categoryMap = {
-                '1': 'functional_error',
-                '2': 'visual_bug',
-                '3': 'data_error',
-                '4': 'other'
-            };
-
-            const description = prompt('Descreva o problema:');
-            if (!description || description.trim() === '') {
-                alert('Descrição é obrigatória.');
-                return;
-            }
-
-            apiFetch('/reports', {
-                method: 'POST',
-                body: JSON.stringify({
-                    category: categoryMap[category],
-                    description: description.trim(),
-                    instance: 'playlists'
-                })
-            }).then(() => {
-                alert('Relatório enviado com sucesso!');
-            }).catch(error => {
-                alert('Erro ao enviar relatório: ' + error.message);
-            });
-        });
-    }
 });

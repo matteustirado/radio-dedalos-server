@@ -1,23 +1,16 @@
 const PlaylistModel = require('../models/playlistModel');
 const queueService = require('../../services/queueService');
 const storageService = require('../../services/storageService');
+const socketService = require('../../services/socketService');
 
 class PlaylistController {
     static async createPlaylist(request, response) {
         try {
-            const {
-                special_dates,
-                ...playlistData
-            } = request.body;
-            let newPlaylist;
+            const { special_dates, ...playlistData } = request.body;
+            const newPlaylist = await PlaylistModel.create(playlistData);
 
-            if (playlistData.type === 'padrao') {
-                newPlaylist = await PlaylistModel.createOrUpdatePadrao(playlistData);
-            } else {
-                newPlaylist = await PlaylistModel.create(playlistData);
-                if ((newPlaylist.type === 'especial' || newPlaylist.type === 'diaria') && special_dates) {
-                    await PlaylistModel.manageSpecialDates(newPlaylist.id, special_dates);
-                }
+            if ((newPlaylist.type === 'especial' || newPlaylist.type === 'diaria') && special_dates) {
+                await PlaylistModel.manageSpecialDates(newPlaylist.id, special_dates);
             }
 
             const fullPlaylistObject = await PlaylistModel.findById(newPlaylist.id);
@@ -33,21 +26,16 @@ class PlaylistController {
 
     static async getAllPlaylists(request, response) {
         try {
-            const {
-                status
-            } = request.query;
-            const statusMap = {
-                published: 'publicada',
-                draft: 'rascunho'
-            };
+            const { status } = request.query;
+            const statusMap = { published: 'publicada', draft: 'rascunho' };
             const dbStatus = statusMap[status] || status;
 
             const playlists = await PlaylistModel.findAll(dbStatus);
-            const activePlaylistInfo = queueService.getActivePlaylistInfo();
+            const queueState = queueService.getQueueState();
 
             const playlistsWithStatus = playlists.map(p => ({
                 ...p,
-                is_active: p.id === activePlaylistInfo.id
+                is_active: p.id === queueState.playlistId
             }));
 
             response.status(200).json(playlistsWithStatus);
@@ -60,9 +48,7 @@ class PlaylistController {
 
     static async getPlaylistDetails(request, response) {
         try {
-            const {
-                id
-            } = request.params;
+            const { id } = request.params;
             const playlistInfo = await PlaylistModel.findById(id);
             if (!playlistInfo) {
                 return response.status(404).json({
@@ -79,13 +65,8 @@ class PlaylistController {
 
     static async updatePlaylist(request, response) {
         try {
-            const {
-                id
-            } = request.params;
-            const {
-                special_dates,
-                ...playlistData
-            } = request.body;
+            const { id } = request.params;
+            const { special_dates, ...playlistData } = request.body;
             const playlistExists = await PlaylistModel.findById(id);
 
             if (!playlistExists) {
@@ -107,6 +88,32 @@ class PlaylistController {
                 message: 'Erro ao atualizar playlist.',
                 error: error.message
             });
+        }
+    }
+    
+    static async activatePlaylist(request, response) {
+        try {
+            const { id } = request.params;
+            const newState = await queueService.activatePlaylist(id, 'dj');
+            
+            if (!newState) {
+                return response.status(404).json({ message: 'Playlist não encontrada ou está vazia.' });
+            }
+
+            const io = socketService.getIo();
+            io.emit('queue:updated', {
+                upcoming_requests: queueService.getQueue(),
+                play_history: queueService.getHistory(),
+                player_state: queueService.getPlayerState(),
+                current_song: queueService.getCurrentSong()
+            });
+
+            response.status(200).json({
+                message: `Playlist "${newState.playlistName}" ativada com sucesso.`
+            });
+        } catch (error) {
+            console.error('ERRO AO ATIVAR PLAYLIST:', error);
+            response.status(500).json({ message: 'Erro ao ativar playlist.', error: error.message });
         }
     }
 
@@ -171,12 +178,8 @@ class PlaylistController {
     }
 
     static async managePlaylistItems(request, response) {
-        const {
-            id
-        } = request.params;
-        const {
-            items
-        } = request.body;
+        const { id } = request.params;
+        const { items } = request.body;
         try {
             await PlaylistModel.managePlaylistItems(id, items);
             const updatedPlaylist = await PlaylistModel.findById(id);

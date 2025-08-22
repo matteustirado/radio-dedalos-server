@@ -40,8 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const render = () => {
         const state = radioPlayer.getState();
         const { upcomingRequests, playerState, currentSong } = state;
-        const nowPlaying = currentSong;
-        updatePlayerUI(nowPlaying, playerState);
+        updatePlayerUI(currentSong, playerState);
         renderNextUp(upcomingRequests);
         renderPlaylistInfo(upcomingRequests);
     };
@@ -127,13 +126,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const setupAutocomplete = () => {
         searchInput.addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase().trim();
-            const { allSongs } = radioPlayer.getState();
+            const { availableJukeboxSongs } = radioPlayer.getState();
             dropdownContent.innerHTML = '';
             if (!searchTerm) {
                 dropdownContent.parentElement.classList.remove('show');
                 return;
             }
-            const results = allSongs.filter(song => song.title.toLowerCase().includes(searchTerm) || (song.artist_name && song.artist_name.toLowerCase().includes(searchTerm)));
+            const results = availableJukeboxSongs.filter(song => song.title.toLowerCase().includes(searchTerm) || (song.artist_name && song.artist_name.toLowerCase().includes(searchTerm)));
             let exactMatchFound = false;
             results.slice(0, 10).forEach(song => {
                 const item = document.createElement('div');
@@ -207,11 +206,29 @@ document.addEventListener('DOMContentLoaded', () => {
     suggestBtn.addEventListener('click', async () => {
         const searchTerm = searchInput.value.trim();
         const requester_info = clientCodeInput.value.trim();
-        if (searchTerm.length < 3) return;
+        if (searchTerm.length < 3) {
+            showMessage('A sugestão precisa ter pelo menos 3 caracteres.', 'danger');
+            return;
+        }
         if (!requester_info) {
+            clientCodeInput.classList.add('error');
             showMessage('Digite seu nome ou código para sugerir.', 'danger');
             return;
         }
+
+        suggestBtn.disabled = true;
+        suggestBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validando...';
+
+        const isValid = await isClientCodeValid(requester_info);
+
+        if (!isValid) {
+            clientCodeInput.classList.add('error');
+            suggestBtn.disabled = false;
+            suggestBtn.innerHTML = '<i class="fas fa-lightbulb"></i> Sugerir Adição';
+            return;
+        }
+
+        suggestBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
         try {
             const response = await radioPlayer.actions.jukeboxSuggest(searchTerm, requester_info);
             showMessage(response.message || 'Sugestão enviada com sucesso!');
@@ -221,6 +238,9 @@ document.addEventListener('DOMContentLoaded', () => {
             suggestBtn.classList.add('hidden');
         } catch (error) {
             showMessage(`Erro: ${error.message}`, 'danger');
+        } finally {
+            suggestBtn.disabled = false;
+            suggestBtn.innerHTML = '<i class="fas fa-lightbulb"></i> Sugerir Adição';
         }
     });
     

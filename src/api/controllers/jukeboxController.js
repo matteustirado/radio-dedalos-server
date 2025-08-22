@@ -68,26 +68,22 @@ class JukeboxController {
 
     static async makeSuggestion(request, response) {
         try {
-            const {
-                suggestion_text,
-                requester_info
-            } = request.body;
-            let song_title = suggestion_text;
-            let artist_name = 'Não especificado';
+            const { suggestion_text, requester_info = null } = request.body;
 
-            if (suggestion_text && suggestion_text.includes('-')) {
-                const parts = suggestion_text.split('-');
-                song_title = parts[0].trim();
-                artist_name = parts[1].trim();
+            if (!suggestion_text || suggestion_text.trim() === '') {
+                return response.status(400).json({
+                    message: 'O texto da sugestão não pode estar vazio.'
+                });
             }
 
             const newSuggestion = await SuggestionModel.create({
-                song_title,
-                artist_name,
+                song_title: suggestion_text.trim(),
+                artist_name: 'Sugestão do Ouvinte',
                 requester_info
             });
             response.status(201).json(newSuggestion);
         } catch (error) {
+            console.error('ERRO DETALHADO AO CRIAR SUGESTÃO:', error);
             response.status(500).json({
                 message: 'Erro ao registrar sugestão.'
             });

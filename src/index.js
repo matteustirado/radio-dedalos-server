@@ -4,6 +4,7 @@ const http = require('http');
 const path = require('path');
 const cors = require('cors');
 const socketService = require('./services/socketService');
+const schedulerService = require('./services/schedulerService');
 
 const authRoutes = require('./api/routes/authRoutes');
 const songRoutes = require('./api/routes/songRoutes');
@@ -27,6 +28,7 @@ const httpServer = http.createServer(app);
 const PORT = process.env.PORT || 3000;
 
 socketService.init(httpServer);
+schedulerService.initialize();
 
 app.use(cors());
 
@@ -59,4 +61,4 @@ app.use('/api/slides', slideRoutes);
 
 httpServer.listen(PORT, () => {
     console.log(`Servidor da Rádio Dédalos rodando na porta ${PORT}`);
-}); 
+});

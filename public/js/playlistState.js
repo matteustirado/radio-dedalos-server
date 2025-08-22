@@ -7,9 +7,12 @@ const playlistState = (() => {
         activePlaylist: {
             id: null,
             name: '',
-            type: 'padrao',
+            type: null,
+            special_type: 'fixa',
             weekday: null,
             special_dates: [],
+            scheduled_date: null,
+            scheduled_time: null,
             status: 'rascunho'
         },
         currentPlaylistSongs: [],
@@ -60,6 +63,7 @@ const playlistState = (() => {
     const loadPlaylistForEditing = async (playlistId) => {
         const data = await apiFetch(`/playlists/${playlistId}`);
         state.activePlaylist = {
+            ...state.activePlaylist,
             ...data,
             special_dates: (data.special_dates || []).map(d => new Date(d))
         };
@@ -70,43 +74,59 @@ const playlistState = (() => {
 
     const saveActivePlaylist = async (status) => {
         state.activePlaylist.status = status;
+        
+        const payload = { ...state.activePlaylist };
+
+        if (payload.type === 'padrao') {
+            payload.scheduled_date = null;
+            payload.scheduled_time = null;
+            payload.special_type = null;
+            payload.special_dates = [];
+        } else if (payload.type === 'diaria') {
+            payload.weekday = null;
+            payload.special_type = null;
+            payload.special_dates = [];
+        } else if (payload.type === 'especial') {
+            payload.scheduled_date = null;
+            payload.special_dates = [];
+            if (payload.special_type === 'fixa') {
+                payload.weekday = null;
+                payload.scheduled_time = null;
+            }
+        }
+        
+        delete payload.items;
+        delete payload.song_count;
+        delete payload.total_duration;
+        
+        const isUpdating = !!payload.id;
+        let savedPlaylist;
+
+        if (isUpdating) {
+            savedPlaylist = await apiFetch(`/playlists/${payload.id}`, {
+                method: 'PUT',
+                body: JSON.stringify(payload)
+            });
+        } else {
+            savedPlaylist = await apiFetch('/playlists', {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+        }
+
+        if (!savedPlaylist || !savedPlaylist.id) {
+            throw new Error('Erro: O servidor não retornou a playlist salva com um ID válido.');
+        }
+
         const items = state.currentPlaylistSongs.map((song, index) => ({
             song_id: song.id,
             sequence_order: index + 1
         }));
-
-        const isUpdating = !!state.activePlaylist.id;
-
-        if (isUpdating) {
-            await apiFetch(`/playlists/${state.activePlaylist.id}`, {
-                method: 'DELETE'
-            });
-        }
-
-        const playlistToCreate = { ...state.activePlaylist
-        };
-        delete playlistToCreate.id;
-        delete playlistToCreate.items;
-        delete playlistToCreate.song_count;
-        delete playlistToCreate.total_duration;
-
-        const newPlaylist = await apiFetch('/playlists', {
+        
+        await apiFetch(`/playlists/${savedPlaylist.id}/items`, {
             method: 'POST',
-            body: JSON.stringify(playlistToCreate)
+            body: JSON.stringify({ items })
         });
-
-        if (!newPlaylist || !newPlaylist.id) {
-            throw new Error('Erro: O servidor não retornou a nova playlist com um ID válido.');
-        }
-
-        if (items.length > 0) {
-            await apiFetch(`/playlists/${newPlaylist.id}/items`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    items
-                })
-            });
-        }
     };
 
     const deletePlaylistById = async (playlistId) => {
@@ -119,9 +139,12 @@ const playlistState = (() => {
         state.activePlaylist = {
             id: null,
             name: '',
-            type: 'padrao',
+            type: null,
+            special_type: 'fixa',
             weekday: null,
             special_dates: [],
+            scheduled_date: null,
+            scheduled_time: null,
             status: 'rascunho'
         };
         state.currentPlaylistSongs = [];

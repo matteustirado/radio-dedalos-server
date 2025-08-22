@@ -722,3 +722,13 @@ input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+
+.schedule-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.schedule-row .form-input {
+    flex-grow: 1;
+}
