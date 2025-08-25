@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     let pricingData = {};
     const locationSlug = 'sp';
-    const serverUrl = 'http://192.168.1.49:3000';
+    const serverUrl = 'http://159.65.161.7:3000/';
     const weekDays = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
 
     async function fetchAndRenderPrices() {
