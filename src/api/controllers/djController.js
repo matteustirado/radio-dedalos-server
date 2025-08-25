@@ -152,6 +152,7 @@ class DjController {
 
             await logService.logAction(request, 'PLAYLIST_ACTIVATED', { playlistId: id, name: newState.playlistName });
 
+            await _playNextSongAndNotify(request);
             startMaestroLoop(request);
             
             enrichAndEmitQueue();
@@ -224,7 +225,7 @@ class DjController {
     }
 
     static async getPlaylistInfo(request, response) {
-      try {
+       try {
             const info = queueService.getActivePlaylistInfo();
             response.status(200).json({ description: info.description });
         } catch (error) {

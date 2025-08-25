@@ -50,8 +50,6 @@ const queueService = {
             queueState.lastManualActionTimestamp = Date.now();
         }
         
-        queueService.playNextInQueue();
-        
         return queueState;
     },
 

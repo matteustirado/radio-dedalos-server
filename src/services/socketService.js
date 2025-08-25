@@ -3,7 +3,6 @@ const {
 } = require('socket.io');
 const queueService = require('./queueService');
 const SongModel = require('../api/models/songModel');
-const SettingModel = require('../api/models/settingModel');
 
 let io = null;
 
@@ -12,22 +11,26 @@ const playNextSong = async () => {
 
     const songToPlay = queueService.playNextInQueue();
     if (songToPlay) {
-        const songDetails = await SongModel.findById(songToPlay.song_id);
+        const songDetails = await SongModel.findById(songToToPlay.song_id);
         if (!songDetails) {
             console.error(`Música com ID ${songToPlay.song_id} não encontrada no banco, pulando para a próxima.`);
             playNextSong();
             return;
         }
 
-        songToPlay.duration_seconds = songDetails.duration_seconds;
+        const videoUrl = `https://${process.env.BUNNY_STREAM_HOSTNAME}/${songDetails.filename}/playlist.m3u8`;
 
-        const activeLogo = await SettingModel.find('active_logo_filename');
-        const logo_filename = activeLogo ? activeLogo.setting_value : null;
+        const payload = {
+            videoUrl: videoUrl,
+            title: songDetails.title,
+            album: songDetails.album,
+            artist: songDetails.artist_name,
+            record_label: songDetails.record_label_name,
+            director: songDetails.director,
+            currentTime: 0
+        };
 
-        io.to('player_agents').emit('player:play', {
-            song: songDetails,
-            logo_filename
-        });
+        io.emit('song:change', payload);
 
         const playerState = queueService.getPlayerState();
         let history = queueService.getHistory();
@@ -57,7 +60,7 @@ const socketService = {
 
             socket.on('auth:agent', (secretKey) => {
                 if (secretKey === process.env.AGENT_SECRET_KEY) {
-                    console.log(`[Socket.io] Agente de Player ${socket.id} autenticado e adicionado à sala 'player_agents'.`);
+                    console.log(`[Socket.io] Agente de Player ${socket.id} autenticado.`);
                     socket.join('player_agents');
 
                     socket.on('player:song_ended', () => {
@@ -74,7 +77,8 @@ const socketService = {
             });
         });
     },
-    getIo: () => io
+    getIo: () => io,
+    playNextSong
 };
 
 module.exports = socketService;
