@@ -75,32 +75,27 @@ const radioPlayer = (() => {
         };
 
         socket.on('queue:updated', (data) => {
-            console.log('%c[player.js] Recebido "queue:updated"', 'color: lightblue; font-weight: bold;');
             _processQueueData(data);
             notify();
         });
 
         socket.on('song:change', () => {
-            console.log('%c[player.js] Recebido "song:change"', 'color: lightgreen; font-weight: bold;');
             refreshQueueState();
         });
 
         socket.on('player:pause', () => {
-            console.log('%c[player.js] Recebido "player:pause"', 'color: orange; font-weight: bold;');
             if (state.playerState) state.playerState.isPlaying = false;
             notify();
             refreshQueueState();
         });
 
         socket.on('player:play', () => {
-            console.log('%c[player.js] Recebido "player:play"', 'color: cyan; font-weight: bold;');
             if (state.playerState) state.playerState.isPlaying = true;
             notify();
             refreshQueueState();
         });
 
         socket.on('bans:updated', async () => {
-            console.log('Recebido: bans:updated');
             await _fetchBans();
             notify();
         });
@@ -181,13 +176,30 @@ const radioPlayer = (() => {
                 volume
             })
         }),
-        addDjRequest: (songId) => apiFetch('/dj/control/add-priority', {
-            method: 'POST',
-            body: JSON.stringify({
-                song_id: songId,
-                requester_info: "DJ"
-            })
-        }),
+        addDjRequest: async (songId) => {
+            const originalRequest = await apiFetch('/dj/control/add-priority', {
+                method: 'POST',
+                body: JSON.stringify({
+                    song_id: songId,
+                    requester_info: "DJ"
+                })
+            });
+
+            try {
+                const user = getUser();
+                await apiFetch('/request-history', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        song_id: songId,
+                        requester_type: 'dj',
+                        requester_identifier: user ? user.username : 'dj_desconhecido'
+                    })
+                });
+            } catch (logError) {
+                console.error("Falha ao registrar pedido do DJ no histórico:", logError);
+            }
+            return originalRequest;
+        },
         playCommercial: (commercialId) => apiFetch('/dj/control/play-commercial', {
             method: 'POST',
             body: JSON.stringify({
@@ -203,29 +215,51 @@ const radioPlayer = (() => {
                 ordered_request_ids: orderedRequestIds
             })
         }),
-        banSong: (songId, duration) => apiFetch('/dj/control/ban', {
-            method: 'POST',
-            body: JSON.stringify({
-                song_id: songId,
-                duration
-            })
-        }),
+        requestBanSong: async (songId, banPeriod) => {
+            await apiFetch('/bans', {
+                method: 'POST',
+                body: JSON.stringify({
+                    song_id: songId,
+                    ban_period: banPeriod
+                })
+            });
+            state.upcomingRequests = state.upcomingRequests.filter(req => String(req.song_id) !== String(songId));
+            await _fetchBans();
+            notify();
+        },
         unbanSong: (songId) => apiFetch(`/bans/${songId}`, {
             method: 'DELETE'
         }),
-        jukeboxRequest: (songId, requesterInfo) => apiFetch('/jukebox/request', {
-            method: 'POST',
-            body: JSON.stringify({
-                song_id: songId,
-                requester_info: requesterInfo
-            })
-        }),
+        jukeboxRequest: async (songId, requesterInfo) => {
+            const originalRequest = await apiFetch('/jukebox/request', {
+                method: 'POST',
+                body: JSON.stringify({
+                    song_id: songId,
+                    requester_info: requesterInfo
+                })
+            });
+
+            try {
+                await apiFetch('/request-history', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        song_id: songId,
+                        requester_type: 'jukebox',
+                        requester_identifier: requesterInfo
+                    })
+                });
+            } catch (logError) {
+                console.error("Falha ao registrar pedido da Jukebox no histórico:", logError);
+            }
+            return originalRequest;
+        },
         jukeboxSuggest: (searchTerm, requesterInfo) => {
             return apiFetch('/jukebox/suggest', {
                 method: 'POST',
                 body: JSON.stringify({
-                    suggestion_text: searchTerm,
-                    requester_info: requesterInfo
+                    suggestion_text: searchTerm.trim(),
+                    requester_info: requesterInfo,
+                    unit: JukeboxConfig ? JukeboxConfig.unit : null
                 })
             });
         },

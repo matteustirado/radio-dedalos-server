@@ -134,17 +134,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const createBanPill = (song) => {
             const pill = document.createElement('div');
             pill.className = 'tag-pill';
-            pill.innerHTML = `<span>${song.title} - ${song.artist_name}</span><button class="delete-tag-btn" data-song-id="${song.song_id}" title="Remover Banimento"><i class="fa-solid fa-times"></i></button>`;
+            pill.innerHTML = `<span>${song.song_title} - ${song.artist_name}</span>`;
             return pill;
         };
+
         const lists = {
             today: banListToday,
             week: banListWeek,
             permanent: banListPermanent
         };
+        
         Object.values(lists).forEach(list => list.innerHTML = '');
+        
         (bannedSongs || []).forEach(song => {
-            if (lists[song.ban_type]) lists[song.ban_type].appendChild(createBanPill(song));
+            if (lists[song.ban_period]) {
+                lists[song.ban_period].appendChild(createBanPill(song));
+            }
         });
 
         if (lists.today.children.length === 0) lists.today.innerHTML = '<div class="ban-list-empty">Você ainda não baniu nenhuma música hoje. Tá bonzinho!</div>';
@@ -327,22 +332,42 @@ document.addEventListener('DOMContentLoaded', () => {
             const playCommercialBtn = e.target.closest('.play-commercial-btn');
             if (playCommercialBtn) radioPlayer.actions.playCommercial(parseInt(playCommercialBtn.dataset.id, 10)).then(() => showMessage('Comando para tocar comercial enviado.'));
         });
+        
         banDurationOptions.addEventListener('click', (e) => {
             const durationBtn = e.target.closest('.day-option');
             if (!durationBtn || !selectedSongForBan) return;
-            radioPlayer.actions.banSong(selectedSongForBan.id, durationBtn.dataset.duration).then(() => {
-                showMessage(`"${selectedSongForBan.title}" foi banida.`);
-                showSearchBanView();
-            });
+            const songToBan = selectedSongForBan;
+        
+            radioPlayer.actions.requestBanSong(songToBan.id, durationBtn.dataset.duration)
+                .then(() => {
+                    showMessage(`Solicitação para banir "${songToBan.title}" foi enviada.`);
+                    showSearchBanView();
+                })
+                .catch(error => {
+                    showMessage(`Erro ao solicitar banimento: ${error.message}`, 'danger');
+                });
         });
+
         playlistBody.addEventListener('click', (e) => {
             const banBtn = e.target.closest('.ban-btn-from-queue');
-            if (banBtn) radioPlayer.actions.banSong(parseInt(banBtn.dataset.id), 'today').then(() => showMessage(`"${banBtn.dataset.name}" foi banida por hoje.`));
+            if (!banBtn) return;
+        
+            const songId = parseInt(banBtn.dataset.id, 10);
+            const songName = banBtn.dataset.name;
+        
+            radioPlayer.actions.requestBanSong(songId, 'today')
+                .then(() => {
+                    showMessage(`Solicitação para banir "${songName}" por hoje foi enviada.`);
+                })
+                .catch(error => {
+                    showMessage(`Erro ao solicitar banimento: ${error.message}`, 'danger');
+                });
         });
+
         document.getElementById('ban-list-container').addEventListener('click', (e) => {
-            const unbanBtn = e.target.closest('.delete-tag-btn');
-            if (unbanBtn) radioPlayer.actions.unbanSong(parseInt(unbanBtn.dataset.songId, 10)).then(() => showMessage('Banimento removido.'));
+            
         });
+
         editBanSongBtn.addEventListener('click', showSearchBanView);
     };
 

@@ -5,9 +5,12 @@ const roleMiddleware = require('../middlewares/roleMiddleware');
 
 const router = express.Router();
 
-router.use(authMiddleware, roleMiddleware(['admin', 'master']));
+const suggestionManagementRoles = ['admin', 'master', 'dj', 'musics'];
+
+router.use(authMiddleware, roleMiddleware(suggestionManagementRoles));
 
 router.get('/', SuggestionController.getAllSuggestions);
+router.put('/:id/status', SuggestionController.updateSuggestionStatus);
 router.delete('/:id', SuggestionController.deleteSuggestion);
 
 module.exports = router;

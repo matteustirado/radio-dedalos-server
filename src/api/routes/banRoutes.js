@@ -1,13 +1,15 @@
 const express = require('express');
-const BanController = require('../controllers/banController');
+const BanRequestController = require('../controllers/banController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const roleMiddleware = require('../middlewares/roleMiddleware');
 
 const router = express.Router();
 
-router.use(authMiddleware, roleMiddleware(['admin', 'master', 'dj']));
+const creationRoles = ['admin', 'master', 'playlist_creator','dj'];
+const managementRoles = ['admin', 'master', 'playlist_creator', 'dj'];
 
-router.get('/', BanController.getActiveBans);
-router.delete('/:song_id', BanController.removeBan);
+router.post('/', authMiddleware, roleMiddleware(creationRoles), BanRequestController.createBanRequest);
+router.get('/', authMiddleware, roleMiddleware(managementRoles), BanRequestController.getAllBanRequests);
+router.put('/:id/status', authMiddleware, roleMiddleware(managementRoles), BanRequestController.updateBanRequestStatus);
 
 module.exports = router;

@@ -34,6 +34,96 @@
             </div>
         </header>
 
+        <section class="main-actions">
+            <div class="main-actions-header">
+                <div class="action-buttons-group">
+                    </div>
+                <div class="action-buttons-group">
+                    <button id="history-btn" class="button secondary-button"><i class="fas fa-history"></i> Histórico de Pedidos</button>
+                    <button id="consult-bans-btn" class="button secondary-button"><i class="fas fa-gavel"></i> Consultar Banimentos</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="consult-history-section" class="card-style form-section hidden">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-history icon"></i> Histórico de Pedidos</h2>
+                <button class="close-section-btn" title="Fechar"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="filter-bar">
+                <div class="filter-wrapper">
+                    <button id="history-filter-btn" class="button small icon-only secondary-button" title="Filtrar"><i class="fas fa-filter"></i></button>
+                    <div id="history-filter-popup" class="filter-popup hidden">
+                        <div class="form-group">
+                            <label for="history-month-filter">Mês</label>
+                            <select id="history-month-filter" class="form-input small"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="history-year-filter">Ano</label>
+                            <select id="history-year-filter" class="form-input small"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="suggestions-content">
+                <div id="history-list" class="suggestions-list">
+                    </div>
+            </div>
+        </section>
+
+        <section id="consult-bans-section" class="card-style form-section hidden">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-gavel icon"></i> Gerenciar Banimentos</h2>
+                <button class="close-section-btn" title="Fechar"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="tabs-container">
+                <button class="tab-btn active" data-tab="pendente">Ativas</button>
+                <button class="tab-btn" data-tab="aceita">Aceitas</button>
+                <button class="tab-btn" data-tab="recusada">Recusadas</button>
+            </div>
+            <div class="suggestions-content">
+                <div id="pendente-bans-list" class="suggestions-list"></div>
+                <div id="aceita-bans-list" class="suggestions-list hidden">
+                    <div class="section-header-with-filter">
+                        <h3 class="section-subtitle">Banimentos Aceitos</h3>
+                        <div class="filter-wrapper">
+                            <button id="aceita-bans-filter-btn" class="button small icon-only secondary-button" title="Filtrar"><i class="fas fa-filter"></i></button>
+                            <div id="aceita-bans-filter-popup" class="filter-popup hidden">
+                                <div class="form-group">
+                                    <label for="aceita-bans-month-filter">Mês</label>
+                                    <select id="aceita-bans-month-filter" class="form-input small"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="aceita-bans-year-filter">Ano</label>
+                                    <select id="aceita-bans-year-filter" class="form-input small"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-content"></div>
+                </div>
+                <div id="recusada-bans-list" class="suggestions-list hidden">
+                    <div class="section-header-with-filter">
+                        <h3 class="section-subtitle">Banimentos Recusados</h3>
+                        <div class="filter-wrapper">
+                            <button id="recusada-bans-filter-btn" class="button small icon-only secondary-button" title="Filtrar"><i class="fas fa-filter"></i></button>
+                            <div id="recusada-bans-filter-popup" class="filter-popup hidden">
+                                <div class="form-group">
+                                    <label for="recusada-bans-month-filter">Mês</label>
+                                    <select id="recusada-bans-month-filter" class="form-input small"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="recusada-bans-year-filter">Ano</label>
+                                    <select id="recusada-bans-year-filter" class="form-input small"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-content"></div>
+                </div>
+            </div>
+        </section>
+
         <div class="main-layout-grid">
             <div class="playlist-creation-column">
                 <section class="card-style">
@@ -275,6 +365,9 @@
     <script src="js/api.js"></script>
     <script src="js/playlistState.js"></script>
     <script src="js/playlistsUI.js"></script>
+    <script src="js/banUI.js"></script>
+    <script src="js/historyUI.js"></script>
+
 </body>
 
 </html>

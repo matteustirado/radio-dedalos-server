@@ -22,35 +22,20 @@
                 <p class="header-subtitle">Controle completo do banco de dados musical</p>
             </div>
             <div class="header-buttons">
-                <button id="logs-btn" class="button ghost-button small">
-                    <i class="fas fa-file-alt"></i> Logs
-                </button>
-                <button id="report-problem-btn" class="button ghost-button small">
-                    <i class="fas fa-bug"></i> Relatar Problema
-                </button>
-                <button id="logout-btn" class="button ghost-button small">
-                    <i class="fas fa-sign-out-alt"></i> Sair
-                </button>
+                <button id="logs-btn" class="button ghost-button small"><i class="fas fa-file-alt"></i> Logs</button>
+                <button id="report-problem-btn" class="button ghost-button small"><i class="fas fa-bug"></i> Relatar Problema</button>
+                <button id="logout-btn" class="button ghost-button small"><i class="fas fa-sign-out-alt"></i> Sair</button>
             </div>
         </header>
 
         <section class="main-actions">
             <div class="main-actions-header">
                 <div class="action-buttons-group">
-                    <button id="add-music-btn" class="button primary-button">
-                        <i class="fa-solid fa-plus"></i> Adicionar Música
-                    </button>
-                    <button id="search-music-btn" class="button secondary-button">
-                        <i class="fa-solid fa-magnifying-glass"></i> Consultar Músicas
-                    </button>
+                    <button id="add-music-btn" class="button primary-button"><i class="fa-solid fa-plus"></i> Adicionar Música</button>
+                    <button id="search-music-btn" class="button secondary-button"><i class="fa-solid fa-magnifying-glass"></i> Consultar Músicas</button>
                 </div>
                 <div class="action-buttons-group">
-                    <button id="consult-suggestions-btn" class="button secondary-button">
-                        <i class="fa-solid fa-lightbulb"></i> Consultar Sugestões
-                    </button>
-                    <button id="consult-bans-btn" class="button secondary-button">
-                        <i class="fa-solid fa-ban"></i> Consultar Banimentos
-                    </button>
+                    <button id="consult-suggestions-btn" class="button secondary-button"><i class="fa-solid fa-lightbulb"></i> Consultar Sugestões</button>
                 </div>
             </div>
 
@@ -61,7 +46,6 @@
                 </div>
                 <form id="music-form" class="form-layout" autocomplete="off">
                     <input type="hidden" id="music-id">
-                    
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="music-name">Nome da Música *</label>
@@ -136,7 +120,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="form-actions">
                         <div class="form-buttons">
                             <button type="button" class="button secondary-button cancel-btn">Cancelar</button>
@@ -179,15 +162,54 @@
                     <h2 class="section-title"><i class="fa-solid fa-lightbulb icon"></i> Consultar Sugestões</h2>
                     <button class="close-section-btn" title="Fechar"><i class="fa-solid fa-times"></i></button>
                 </div>
-                <p class="placeholder-text">Área de sugestões em desenvolvimento.</p>
-            </div>
-            <div id="consult-bans-section" class="form-section hidden">
-                <div class="section-header">
-                    <h2 class="section-title"><i class="fa-solid fa-ban icon"></i> Consultar Banimentos</h2>
-                    <button class="close-section-btn" title="Fechar"><i class="fa-solid fa-times"></i></button>
+                <div class="tabs-container">
+                    <button class="tab-btn active" data-tab="pendente">Pendentes</button>
+                    <button class="tab-btn" data-tab="aceita">Aceitas</button>
+                    <button class="tab-btn" data-tab="recusada">Recusadas</button>
                 </div>
-                <p class="placeholder-text">Área de banimentos em desenvolvimento.</p>
+                <div class="suggestions-content">
+                    <div id="pendente-list" class="suggestions-list"></div>
+                    <div id="aceita-list" class="suggestions-list hidden">
+                        <div class="section-header-with-filter">
+                            <h3 class="section-subtitle">Sugestões Aceitas</h3>
+                            <div class="filter-wrapper">
+                                <button id="aceita-filter-btn" class="button small icon-only secondary-button" title="Filtrar"><i class="fas fa-filter"></i></button>
+                                <div id="aceita-filter-popup" class="filter-popup hidden">
+                                    <div class="form-group">
+                                        <label for="aceita-month-filter">Mês</label>
+                                        <select id="aceita-month-filter" class="form-input small"></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="aceita-year-filter">Ano</label>
+                                        <select id="aceita-year-filter" class="form-input small"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-content"></div>
+                    </div>
+                    <div id="recusada-list" class="suggestions-list hidden">
+                        <div class="section-header-with-filter">
+                            <h3 class="section-subtitle">Sugestões Recusadas</h3>
+                            <div class="filter-wrapper">
+                                <button id="recusada-filter-btn" class="button small icon-only secondary-button" title="Filtrar"><i class="fas fa-filter"></i></button>
+                                <div id="recusada-filter-popup" class="filter-popup hidden">
+                                    <div class="form-group">
+                                        <label for="recusada-month-filter">Mês</label>
+                                        <select id="recusada-month-filter" class="form-input small"></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="recusada-year-filter">Ano</label>
+                                        <select id="recusada-year-filter" class="form-input small"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-content"></div>
+                    </div>
+                </div>
             </div>
+            
             <div id="success-message" class="alert success-alert hidden">
                 <i class="fa-solid fa-circle-check"></i><span id="success-text"></span>
             </div>

@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     protectPage();
-    const validRoles = ['admin', 'master'];
+    const validRoles = ['admin', 'master', 'dj', 'musics'];
     if (!validRoles.includes(getUserRole())) {
         alert('Acesso negado.');
         window.location.href = '/';
@@ -15,11 +15,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const musicForm = document.getElementById('music-form');
     const musicIdInput = document.getElementById('music-id');
     const formTitle = document.getElementById('form-title');
-    const formActions = document.querySelector('.form-actions');
     const formButtons = document.querySelector('.form-buttons');
     const uploadStatusContainer = document.getElementById('upload-status-container');
     const uploadStatusText = document.getElementById('upload-status-text');
-    const dayOptions = document.querySelectorAll('.form-section .day-option');
+    const dayOptions = document.querySelectorAll('#add-music-form .day-option');
     const searchMusicInput = document.getElementById('search-music-input');
     const artistInput = document.getElementById('artist-name');
     const artistList = document.getElementById('artist-autocomplete-list');
@@ -39,16 +38,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const durationInput = document.getElementById('duration');
     const mediaFileInput = document.getElementById('media-file-input');
     const fileNameDisplay = document.getElementById('file-name-display');
+    const consultSuggestionsBtn = document.getElementById('consult-suggestions-btn');
+    const suggestionTabButtons = document.querySelectorAll('#consult-suggestions-section .tab-btn');
     
     let itemToDelete = {};
-
-    mediaFileInput.addEventListener('change', () => {
-        if (mediaFileInput.files.length > 0) {
-            fileNameDisplay.textContent = mediaFileInput.files[0].name;
-        } else {
-            fileNameDisplay.textContent = 'Nenhum arquivo selecionado';
-        }
-    });
+    let activeSuggestionTab = 'pendente';
 
     const showMessage = (message, type = 'success') => {
         messageTextEl.textContent = message;
@@ -118,7 +112,6 @@ document.addEventListener('DOMContentLoaded', function() {
         durationInput.value = formatSecondsToDuration(song.duration_seconds);
         labelInput.value = song.record_label_name || '';
         document.getElementById('video-director').value = song.director || '';
-        
         tagsContainer.innerHTML = '';
         (song.categories || []).forEach(cat => {
             const pill = document.createElement('div');
@@ -127,7 +120,6 @@ document.addEventListener('DOMContentLoaded', function() {
             tagsContainer.appendChild(pill);
             pill.querySelector('.delete-tag-btn').addEventListener('click', () => pill.remove());
         });
-        
         featuringArtistsContainer.innerHTML = '';
         (song.featuring_artists || []).forEach(artist => {
             const pill = document.createElement('div');
@@ -136,7 +128,6 @@ document.addEventListener('DOMContentLoaded', function() {
             featuringArtistsContainer.appendChild(pill);
             pill.querySelector('.delete-tag-btn').addEventListener('click', () => pill.remove());
         });
-
         if (song.weekdays && song.weekdays.length > 0) {
             dayOptions.forEach(opt => opt.classList.remove('selected'));
             const weekdayMap = { 'Seg': 'monday', 'Ter': 'tuesday', 'Qua': 'wednesday', 'Qui': 'thursday', 'Sex': 'friday', 'Sáb': 'saturday', 'Dom': 'sunday' };
@@ -148,7 +139,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
-        
         formTitle.innerHTML = '<i class="fas fa-compact-disc icon"></i> Editar Música';
         document.getElementById('form-submit-btn').textContent = 'Atualizar Música';
         openSection('add-music-form');
@@ -197,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${song.title}</td>
                 <td>${artistMap.get(song.artist_id) || 'Desconhecido'}</td>
                 <td>${song.album || '-'}</td>
-                <td>${song.release_year === '0000' ? '-' : song.release_year}</td>
+                <td>${song.release_year === '0000' ? '' : song.release_year}</td>
                 <td>
                     <div class="action-buttons">
                         <button class="button primary-button small icon-only edit-song-btn" data-id="${song.id}" title="Editar"><i class="fas fa-pen-to-square"></i></button>
@@ -213,7 +203,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const container = document.querySelector(`#${type}s-content .db-list`);
         let items = [];
         let renderType = type;
-
         if (type === 'artist') items = artists;
         if (type === 'commercial') items = commercials;
         if (type === 'tag') {
@@ -223,12 +212,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (type === 'album') {
             items = musicsState.getUniqueAlbums();
         }
-
         container.innerHTML = '';
         items.forEach(item => {
             const itemEl = document.createElement('div');
             itemEl.dataset.id = item.id;
-
             if (type === 'tag') {
                 itemEl.className = 'tag-pill';
                 itemEl.innerHTML = `<span>${item.name}</span><button class="delete-item-btn" data-id="${item.id}" data-name="${item.name}" data-type="category"><i class="fas fa-times"></i></button>`;
@@ -237,18 +224,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 itemEl.innerHTML = `<div><div>${item.title}</div><div class="album-artist">${item.artist_name}</div></div>`;
             } else if (type === 'commercial') {
                 itemEl.className = 'list-item';
-                itemEl.innerHTML = `<span class="item-name">${item.title}</span>
-                <div class="action-buttons">
-                    <button class="button primary-button small icon-only edit-song-btn" data-id="${item.id}" title="Editar"><i class="fas fa-pen-to-square"></i></button>
-                    <button class="button danger-button small icon-only delete-item-btn" data-id="${item.id}" data-name="${item.title}" data-type="song" title="Excluir"><i class="fas fa-trash-can"></i></button>
-                </div>`;
+                itemEl.innerHTML = `<span class="item-name">${item.title}</span><div class="action-buttons"><button class="button primary-button small icon-only edit-song-btn" data-id="${item.id}" title="Editar"><i class="fas fa-pen-to-square"></i></button><button class="button danger-button small icon-only delete-item-btn" data-id="${item.id}" data-name="${item.title}" data-type="song" title="Excluir"><i class="fas fa-trash-can"></i></button></div>`;
             } else {
                 itemEl.className = 'list-item';
-                itemEl.innerHTML = `<span class="item-name">${item.name}</span>
-                <div class="action-buttons">
-                    <button class="button primary-button small icon-only edit-item-btn" data-id="${item.id}" data-type="${renderType}" title="Editar"><i class="fas fa-pen-to-square"></i></button>
-                    <button class="button danger-button small icon-only delete-item-btn" data-id="${item.id}" data-name="${item.name}" data-type="${renderType}" title="Excluir"><i class="fas fa-trash-can"></i></button>
-                </div>`;
+                itemEl.innerHTML = `<span class="item-name">${item.name}</span><div class="action-buttons"><button class="button primary-button small icon-only edit-item-btn" data-id="${item.id}" data-type="${renderType}" title="Editar"><i class="fas fa-pen-to-square"></i></button><button class="button danger-button small icon-only delete-item-btn" data-id="${item.id}" data-name="${item.name}" data-type="${renderType}" title="Excluir"><i class="fas fa-trash-can"></i></button></div>`;
             }
             container.appendChild(itemEl);
         });
@@ -256,23 +235,18 @@ document.addEventListener('DOMContentLoaded', function() {
     
     musicForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-
         const songId = musicIdInput.value;
         const artistName = artistInput.value.trim();
         const title = document.getElementById('music-name').value.trim();
         const mediaFile = mediaFileInput.files[0];
-        
         if (!artistName || !title) {
             return showMessage('Nome da música e do artista são obrigatórios.', 'danger');
         }
         if (!songId && !mediaFile) {
             return showMessage('Um arquivo de mídia é obrigatório ao adicionar uma nova música.', 'danger');
         }
-
         const songDetails = {
-            title,
-            artistName,
-            mediaFile,
+            title, artistName, mediaFile,
             album: albumInput.value.trim(),
             releaseYear: releaseYearInput.value,
             director: document.getElementById('video-director').value.trim(),
@@ -285,7 +259,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return weekdayMap[opt.textContent];
             })
         };
-
         const onProgress = (progress) => {
             if (progress.stage === 'upload') {
                 uploadStatusText.textContent = `Enviando ${progress.percent}%...`;
@@ -296,11 +269,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 uploadStatusText.textContent = progress.status;
             }
         };
-
         formButtons.classList.add('hidden');
         uploadStatusContainer.classList.remove('hidden');
         uploadStatusText.textContent = 'Iniciando...';
-
         try {
             if (songId) {
                 await musicsState.updateSong(songId, songDetails, onProgress);
@@ -320,19 +291,152 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    const renderSuggestions = (suggestions, container) => {
+        const listContent = container.querySelector('.list-content') || container;
+        listContent.innerHTML = '';
+        if (suggestions.length === 0) {
+            listContent.innerHTML = `<div class="placeholder-text">Nenhuma sugestão encontrada.</div>`;
+            return;
+        }
+        const header = document.createElement('div');
+        header.className = 'suggestion-header';
+        let columnsClass = 'with-actions';
+        if (activeSuggestionTab === 'pendente') {
+            header.innerHTML = `<div>Data</div><div>Sugestão</div><div>Cliente</div><div>Unidade</div><div>Ações</div>`;
+        } else {
+            header.innerHTML = `<div>Data</div><div>Sugestão</div><div>Cliente</div><div>Unidade</div>`;
+            columnsClass = 'no-actions';
+        }
+        listContent.appendChild(header);
+        suggestions.forEach(sug => {
+            const item = document.createElement('div');
+            item.className = `suggestion-item ${columnsClass}`;
+            item.dataset.id = sug.id;
+            const date = new Date(sug.created_at).toLocaleString('pt-BR');
+            const suggestionText = `${sug.song_title} - ${sug.artist_name}`;
+            if (activeSuggestionTab === 'pendente') {
+                item.innerHTML = `
+                    <div>${date}</div>
+                    <div>${suggestionText}</div>
+                    <div>${sug.requester_info || '-'}</div>
+                    <div>${sug.unit ? sug.unit.toUpperCase() : '-'}</div>
+                    <div><div class="action-buttons"><button class="button success-button small icon-only accept-suggestion-btn" title="Aceitar"><i class="fas fa-check"></i></button><button class="button danger-button small icon-only reject-suggestion-btn" title="Recusar"><i class="fas fa-times"></i></button></div></div>`;
+            } else {
+                item.innerHTML = `
+                    <div>${date}</div>
+                    <div>${suggestionText}</div>
+                    <div>${sug.requester_info || '-'}</div>
+                    <div>${sug.unit ? sug.unit.toUpperCase() : '-'}</div>`;
+            }
+            listContent.appendChild(item);
+        });
+    };
+
+    const fetchAndRenderSuggestions = async () => {
+        const listContainer = document.getElementById(`${activeSuggestionTab}-list`);
+        if (!listContainer) return;
+
+        let url = `/suggestions?status=${activeSuggestionTab}`;
+        const filterPopup = document.getElementById(`${activeSuggestionTab}-filter-popup`);
+
+        if (activeSuggestionTab !== 'pendente' && filterPopup) {
+            const month = filterPopup.querySelector('select[id$="-month-filter"]').value;
+            const year = filterPopup.querySelector('select[id$="-year-filter"]').value;
+            url += `&month=${month}&year=${year}`;
+        }
+        
+        const listContent = listContainer.querySelector('.list-content') || listContainer;
+        listContent.innerHTML = '<div class="spinner-container"><div class="spinner"></div></div>';
+        
+        try {
+            const suggestions = await apiFetch(url);
+            renderSuggestions(suggestions, listContainer);
+        } catch (error) {
+            listContent.innerHTML = `<div class="placeholder-text error">Erro ao carregar sugestões.</div>`;
+            showMessage(error.message, 'danger');
+        }
+    };
+
+    const handleUpdateSuggestionStatus = async (id, newStatus) => {
+        try {
+            await apiFetch(`/suggestions/${id}/status`, {
+                method: 'PUT',
+                body: JSON.stringify({ status: newStatus })
+            });
+            showMessage(`Sugestão marcada como '${newStatus}' com sucesso!`);
+            fetchAndRenderSuggestions();
+        } catch (error) {
+            showMessage(error.message, 'danger');
+        }
+    };
+
+    const initializeSuggestions = () => {
+        const setupFilter = (type) => {
+            const btn = document.getElementById(`${type}-filter-btn`);
+            const popup = document.getElementById(`${type}-filter-popup`);
+            if (!btn || !popup) return;
+            const monthFilter = document.getElementById(`${type}-month-filter`);
+            const yearFilter = document.getElementById(`${type}-year-filter`);
+            const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            monthFilter.innerHTML = months.map((m, i) => `<option value="${i+1}">${m}</option>`).join('');
+            const currentYear = new Date().getFullYear();
+            yearFilter.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const year = currentYear - i;
+                yearFilter.add(new Option(year, year));
+            }
+            monthFilter.value = new Date().getMonth() + 1;
+            yearFilter.value = currentYear;
+            btn.addEventListener('click', () => popup.classList.toggle('hidden'));
+            monthFilter.addEventListener('change', fetchAndRenderSuggestions);
+            yearFilter.addEventListener('change', fetchAndRenderSuggestions);
+        };
+        
+        setupFilter('aceita');
+        setupFilter('recusada');
+
+        consultSuggestionsBtn.addEventListener('click', () => {
+            openSection('consult-suggestions-section');
+            activeSuggestionTab = 'pendente';
+            suggestionTabButtons.forEach(b => b.classList.toggle('active', b.dataset.tab === 'pendente'));
+            document.querySelectorAll('.suggestions-list').forEach(list => list.classList.add('hidden'));
+            document.getElementById('pendente-list').classList.remove('hidden');
+            fetchAndRenderSuggestions();
+        });
+
+        suggestionTabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                suggestionTabButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                activeSuggestionTab = btn.dataset.tab;
+                document.querySelectorAll('.suggestions-list').forEach(list => list.classList.add('hidden'));
+                document.getElementById(`${activeSuggestionTab}-list`).classList.remove('hidden');
+                fetchAndRenderSuggestions();
+            });
+        });
+
+        document.getElementById('consult-suggestions-section').addEventListener('click', (e) => {
+            const acceptBtn = e.target.closest('.accept-suggestion-btn');
+            const rejectBtn = e.target.closest('.reject-suggestion-btn');
+            if (acceptBtn) {
+                const id = acceptBtn.closest('.suggestion-item').dataset.id;
+                handleUpdateSuggestionStatus(id, 'aceita');
+            }
+            if (rejectBtn) {
+                const id = rejectBtn.closest('.suggestion-item').dataset.id;
+                handleUpdateSuggestionStatus(id, 'recusada');
+            }
+        });
+    };
+    
     document.getElementById('add-music-btn').addEventListener('click', () => {
         resetMusicForm();
         openSection('add-music-form');
     });
-
     document.getElementById('search-music-btn').addEventListener('click', () => {
         openSection('search-music-section');
         renderSongsTable(musicsState.getState().songs);
     });
-
-    document.getElementById('consult-suggestions-btn').addEventListener('click', () => openSection('consult-suggestions-section'));
-    document.getElementById('consult-bans-btn').addEventListener('click', () => openSection('consult-bans-section'));
-
     document.querySelectorAll('.close-section-btn, .cancel-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const wasEditing = musicIdInput.value !== '';
@@ -343,17 +447,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
     document.getElementById('logout-btn').addEventListener('click', logout);
-
     releaseYearInput.addEventListener('input', (e) => {
         e.target.value = e.target.value.replace(/[^0-9]/g, '');
     });
-
     durationInput.addEventListener('input', (e) => {
         e.target.value = e.target.value.replace(/[^0-9:]/g, '');
     });
-
     dayOptions.forEach(option => {
         option.addEventListener('click', function() {
             if (this.dataset.all) {
@@ -367,7 +467,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
     searchMusicInput.addEventListener('input', (e) => {
         const searchTerm = e.target.value.toLowerCase();
         const { songs, artists } = musicsState.getState();
@@ -380,7 +479,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         renderSongsTable(filteredSongs);
     });
-
     dbCards.forEach(card => {
         card.querySelector('.db-card-header').addEventListener('click', (e) => {
             const clickedCard = e.currentTarget.closest('.db-card');
@@ -402,7 +500,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
     document.querySelectorAll('.add-db-item-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const type = e.currentTarget.dataset.type;
@@ -419,7 +516,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
     document.body.addEventListener('click', async (e) => {
         const deleteBtn = e.target.closest('.delete-item-btn');
         const editArtistBtn = e.target.closest('.edit-item-btn');
@@ -445,10 +541,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nameSpan.replaceWith(input);
             input.focus();
             input.select();
-            actionButtonsDiv.innerHTML = `
-                <button class="button primary-button small icon-only confirm-edit-btn" title="Confirmar"><i class="fas fa-check"></i></button>
-                <button class="button secondary-button small icon-only cancel-edit-btn" title="Cancelar"><i class="fas fa-times"></i></button>
-            `;
+            actionButtonsDiv.innerHTML = `<button class="button primary-button small icon-only confirm-edit-btn" title="Confirmar"><i class="fas fa-check"></i></button><button class="button secondary-button small icon-only cancel-edit-btn" title="Cancelar"><i class="fas fa-times"></i></button>`;
         }
         if (cancelEditArtistBtn) {
             renderDbList('artist');
@@ -486,12 +579,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-
     document.getElementById('cancel-delete').addEventListener('click', () => {
         deleteModal.classList.add('hidden');
         document.body.classList.remove('modal-open');
     });
-
     document.getElementById('confirm-delete').addEventListener('click', async () => {
         try {
             await musicsState.deleteDbItem(itemToDelete.type, itemToDelete.id);
@@ -525,10 +616,13 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             setupPillInput(tagInput, addTagBtn, tagsContainer, tagList, () => musicsState.getState().categories);
             setupPillInput(featuringArtistInput, addFeaturingArtistBtn, featuringArtistsContainer, featuringArtistList, () => musicsState.getState().artists);
+            
+            initializeSuggestions();
         } catch (error) {
             console.error("Erro fatal na inicialização da UI:", error);
             alert("Ocorreu um erro crítico ao carregar a página de Admin. Verifique o console.");
         }
     };
+    
     initializePage();
 });

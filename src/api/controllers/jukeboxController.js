@@ -68,7 +68,7 @@ class JukeboxController {
 
     static async makeSuggestion(request, response) {
         try {
-            const { suggestion_text, requester_info = null } = request.body;
+            const { suggestion_text, requester_info, unit } = request.body;
 
             if (!suggestion_text || suggestion_text.trim() === '') {
                 return response.status(400).json({
@@ -76,11 +76,23 @@ class JukeboxController {
                 });
             }
 
-            const newSuggestion = await SuggestionModel.create({
-                song_title: suggestion_text.trim(),
-                artist_name: 'Sugestão do Ouvinte',
-                requester_info
-            });
+            let song_title = suggestion_text.trim();
+            let artist_name = 'Sugestão do Ouvinte';
+
+            if (song_title.includes('-')) {
+                const parts = song_title.split('-');
+                song_title = parts[0].trim();
+                artist_name = parts.slice(1).join('-').trim();
+            }
+
+            const suggestionData = {
+                song_title,
+                artist_name,
+                requester_info: requester_info || null,
+                unit: unit || null
+            };
+
+            const newSuggestion = await SuggestionModel.create(suggestionData);
             response.status(201).json(newSuggestion);
         } catch (error) {
             console.error('ERRO DETALHADO AO CRIAR SUGESTÃO:', error);

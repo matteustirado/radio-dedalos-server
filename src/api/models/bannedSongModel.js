@@ -1,27 +1,65 @@
 const db = require('../../config/database');
 
-class BannedSongModel {
-    static async findAllActive() {
-        const sql = `
+class BanRequestModel {
+    static async create({ song_id, user_id, ban_period }) {
+        const [result] = await db.execute(
+            'INSERT INTO ban_requests (song_id, user_id, ban_period) VALUES (?, ?, ?)',
+            [song_id, user_id, ban_period]
+        );
+        return { id: result.insertId, song_id, user_id, ban_period };
+    }
+
+    static async findAllByStatus({ status, month, year }) {
+        let sql = `
             SELECT 
-                bs.song_id,
-                s.title,
-                a.name as artist_name,
-                bs.ban_type
-            FROM banned_songs bs
-            JOIN songs s ON bs.song_id = s.id
+                br.id, 
+                br.status, 
+                br.ban_period, 
+                br.created_at,
+                s.title AS song_title,
+                a.name AS artist_name,
+                u.username AS user_name
+            FROM ban_requests br
+            JOIN songs s ON br.song_id = s.id
             JOIN artists a ON s.artist_id = a.id
-            WHERE bs.expires_at > NOW() OR bs.expires_at IS NULL
-            ORDER BY bs.banned_at DESC
+            JOIN users u ON br.user_id = u.id
         `;
-        const [rows] = await db.execute(sql);
+        
+        const params = [];
+        const whereClauses = [];
+
+        if (status) {
+            whereClauses.push('br.status = ?');
+            params.push(status);
+
+            if (status !== 'pendente' && month && year) {
+                whereClauses.push('MONTH(br.created_at) = ? AND YEAR(br.created_at) = ?');
+                params.push(month, year);
+            }
+        }
+
+        if (whereClauses.length > 0) {
+            sql += ` WHERE ${whereClauses.join(' AND ')}`;
+        }
+
+        sql += ' ORDER BY br.created_at DESC';
+
+        const [rows] = await db.execute(sql, params);
         return rows;
     }
 
-    static async remove(songId) {
-        const [result] = await db.execute('DELETE FROM banned_songs WHERE song_id = ?', [songId]);
+    static async updateStatus(id, newStatus) {
+        const [result] = await db.execute(
+            'UPDATE ban_requests SET status = ? WHERE id = ?',
+            [newStatus, id]
+        );
+        return result.affectedRows;
+    }
+
+    static async delete(id) {
+        const [result] = await db.execute('DELETE FROM ban_requests WHERE id = ?', [id]);
         return result.affectedRows;
     }
 }
 
-module.exports = BannedSongModel;
+module.exports = BanRequestModel;

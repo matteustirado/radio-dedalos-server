@@ -37,7 +37,7 @@
     };
 
     return {
-        location: location,
+        unit: location,
         getValidationFunction: () => {
             return async (code) => {
                 if (code === '0108') return true;

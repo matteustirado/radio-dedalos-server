@@ -22,6 +22,7 @@ const commercialRoutes = require('./api/routes/commercialRoutes');
 const settingRoutes = require('./api/routes/settingRoutes');
 const priceRoutes = require('./api/routes/priceRoutes');
 const slideRoutes = require('./api/routes/slideRoutes');
+const requestHistoryRoutes = require('./api/routes/requestHistoryRoutes'); 
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -58,6 +59,7 @@ app.use('/api/commercials', commercialRoutes);
 app.use('/api/settings', settingRoutes);
 app.use('/api/prices', priceRoutes);
 app.use('/api/slides', slideRoutes);
+app.use('/api/request-history', requestHistoryRoutes); 
 
 httpServer.listen(PORT, () => {
     console.log(`Servidor da Rádio Dédalos rodando na porta ${PORT}`);
