@@ -19,11 +19,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadActions = document.getElementById('uploadActions');
     const uploadSlideBtn = document.getElementById('uploadSlideBtn');
     const slidePreviewContainer = document.getElementById('slidePreviewContainer');
-    const currentSlidesContainer = document.getElementById('currentSlidesContainer');
+    
     const holidaySection = document.getElementById('holiday-management-section');
     const holidayDateInput = document.getElementById('holiday-date-input');
     const addHolidayBtn = document.getElementById('add-holiday-btn');
     const holidayListContainer = document.getElementById('holiday-list');
+
+    const slidesCollapsedView = document.getElementById('slides-collapsed-view');
+    const slidesExpandedView = document.getElementById('slides-expanded-view');
+    const slideThumbnailGrid = document.getElementById('slide-thumbnail-grid');
+    const currentSlidesContainer = document.getElementById('currentSlidesContainer');
+    const expandSlidesBtn = document.getElementById('expand-slides-btn');
+    const collapseSlidesBtn = document.getElementById('collapse-slides-btn');
 
     const weekDays = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo', 'feriados'];
     const weekDayInitials = {
@@ -31,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const renderHolidays = () => {
+        if (!holidayListContainer) return;
         holidayListContainer.innerHTML = '';
         const sortedHolidays = Array.from(holidays).sort();
         sortedHolidays.forEach(dateStr => {
@@ -120,10 +128,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadSlides = async () => {
         try {
             const uniqueSlides = await apiFetch(`/slides/${locationSlug}`);
+            
+            slideThumbnailGrid.innerHTML = '';
             currentSlidesContainer.innerHTML = '';
 
-            if (!uniqueSlides || uniqueSlides.length === 0) {
-                currentSlidesContainer.innerHTML = '<p style="color: var(--color-text-muted);">Nenhum slide cadastrado.</p>';
+            const hasSlides = uniqueSlides && uniqueSlides.length > 0;
+            
+            expandSlidesBtn.classList.toggle('hidden', !hasSlides);
+
+            if (!hasSlides) {
+                slideThumbnailGrid.innerHTML = '<p style="color: var(--color-text-muted);">Nenhum slide cadastrado.</p>';
                 return;
             }
 
@@ -131,6 +145,13 @@ document.addEventListener('DOMContentLoaded', () => {
             slidesGrid.className = 'slides-display-grid';
 
             uniqueSlides.forEach(slide => {
+                const thumbnailUrl = `/assets/uploads/${locationSlug}/${slide.image_filename}`;
+                
+                const thumbnail = document.createElement('img');
+                thumbnail.src = thumbnailUrl;
+                thumbnail.className = 'slide-thumbnail';
+                slideThumbnailGrid.appendChild(thumbnail);
+
                 const slideCard = document.createElement('div');
                 slideCard.className = 'slide-card';
 
@@ -140,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }).join('');
 
                 slideCard.innerHTML = `
-                    <img src="/assets/uploads/${locationSlug}/${slide.image_filename}" alt="Slide">
+                    <img src="${thumbnailUrl}" alt="Slide">
                     <button class="button danger-button delete-slide-btn" data-slide-id="${slide.representative_id}">
                         <i class="fas fa-trash-alt"></i>
                     </button>
@@ -271,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             alert('Tabela de preços atualizada com sucesso!');
             dayOptions.forEach(button => button.classList.remove('active'));
-            holidaySection.classList.add('hidden');
+            if (holidaySection) holidaySection.classList.add('hidden');
             loadPriceData();
         } catch (error) {
             alert(`Erro ao salvar preços: ${error.message}`);
@@ -308,24 +329,44 @@ document.addEventListener('DOMContentLoaded', () => {
     dayOptions.forEach(button => button.addEventListener('click', () => {
         button.classList.toggle('active');
         const isFeriadosActive = document.querySelector('.day-option[data-day="feriados"]').classList.contains('active');
-        holidaySection.classList.toggle('hidden', !isFeriadosActive);
+        if (holidaySection) {
+            holidaySection.classList.toggle('hidden', !isFeriadosActive);
+        }
     }));
 
-    addHolidayBtn.addEventListener('click', () => {
-        const dateValue = holidayDateInput.value;
-        if (dateValue) {
-            holidays.add(dateValue);
-            renderHolidays();
-            holidayDateInput.value = '';
-        }
+    if (addHolidayBtn) {
+        addHolidayBtn.addEventListener('click', () => {
+            const dateValue = holidayDateInput.value;
+            if (dateValue) {
+                holidays.add(dateValue);
+                renderHolidays();
+                holidayDateInput.value = '';
+            }
+        });
+    }
+
+    if (holidayListContainer) {
+        holidayListContainer.addEventListener('click', (e) => {
+            const deleteBtn = e.target.closest('.delete-holiday-btn');
+            if (deleteBtn) {
+                holidays.delete(deleteBtn.dataset.date);
+                renderHolidays();
+            }
+        });
+    }
+
+    expandSlidesBtn.addEventListener('click', () => {
+        slidesCollapsedView.classList.add('hidden');
+        slidesExpandedView.classList.remove('hidden');
+        expandSlidesBtn.classList.add('hidden');
+        collapseSlidesBtn.classList.remove('hidden');
     });
 
-    holidayListContainer.addEventListener('click', (e) => {
-        const deleteBtn = e.target.closest('.delete-holiday-btn');
-        if (deleteBtn) {
-            holidays.delete(deleteBtn.dataset.date);
-            renderHolidays();
-        }
+    collapseSlidesBtn.addEventListener('click', () => {
+        slidesExpandedView.classList.add('hidden');
+        slidesCollapsedView.classList.remove('hidden');
+        collapseSlidesBtn.classList.add('hidden');
+        expandSlidesBtn.classList.remove('hidden');
     });
 
     if (logoutBtn) logoutBtn.addEventListener('click', logout);

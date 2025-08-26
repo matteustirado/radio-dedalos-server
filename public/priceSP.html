@@ -113,8 +113,21 @@
                             </button>
                         </div>
                         <hr class="section-divider">
-                        <h4 class="current-slides-title">Slides Atuais</h4>
-                        <div id="currentSlidesContainer" class="current-slides-container"></div>
+                        <div class="current-slides-header">
+                            <h4 class="current-slides-title">Slides Atuais</h4>
+                            <div class="slides-view-toggle-buttons">
+                                <button id="expand-slides-btn" class="button ghost-button small">Expandir</button>
+                                <button id="collapse-slides-btn" class="button ghost-button small hidden">Recolher</button>
+                            </div>
+                        </div>
+                        <div id="current-slides-wrapper">
+                            <div id="slides-collapsed-view">
+                                <div id="slide-thumbnail-grid"></div>
+                            </div>
+                            <div id="slides-expanded-view" class="hidden">
+                                <div id="currentSlidesContainer"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
