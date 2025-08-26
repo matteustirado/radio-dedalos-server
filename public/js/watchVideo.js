@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const videoOverlay = document.getElementById('video-overlay');
     let hls = null;
     let currentFichaData = null;
+    let songChangeTimeout = null;
 
     const videoContainer = document.getElementById('video-container');
     const unmuteOverlay = document.getElementById('unmute-overlay');
@@ -30,17 +31,28 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const updateFichaTecnica = (songData) => {
-        if (!songData || !fichaTecnicaEl) {
+        if (!songData || songData.artist === 'Comercial' || !fichaTecnicaEl) {
             currentFichaData = null;
             fichaTecnicaEl.classList.remove('visible');
             return;
         }
         currentFichaData = songData;
-        fichaMusica.textContent = songData.title || '-';
-        fichaAlbum.textContent = songData.album || '-';
-        fichaArtista.textContent = songData.artist || '-';
-        fichaGravadora.textContent = songData.record_label || '-';
-        fichaDirecao.textContent = songData.director || '-';
+
+        const updateField = (element, value) => {
+            const parent = element.parentElement;
+            if (value && value.trim() !== '') {
+                element.textContent = value;
+                parent.style.display = 'block';
+            } else {
+                parent.style.display = 'none';
+            }
+        };
+
+        updateField(fichaMusica, songData.title);
+        updateField(fichaAlbum, songData.album);
+        updateField(fichaArtista, songData.artist);
+        updateField(fichaGravadora, songData.record_label);
+        updateField(fichaDirecao, songData.director);
     };
 
     const handleTimeUpdate = () => {
@@ -75,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     unmuteOverlay.addEventListener('click', () => {
         video.muted = false;
+        video.play().catch(() => {});
         syncUI();
     });
 
@@ -143,11 +156,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function processSongData(data) {
+        clearTimeout(songChangeTimeout); 
         if (data && data.videoUrl) {
             initPlayer(data.videoUrl, data.currentTime || 0);
             updateFichaTecnica(data);
         } else {
             updateFichaTecnica(null);
+            songChangeTimeout = setTimeout(fetchCurrentSong, 5000);
         }
     }
 
@@ -173,6 +188,10 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Falha ao buscar overlay atual:", error);
         }
     }
+    
+    video.addEventListener('ended', () => {
+        songChangeTimeout = setTimeout(fetchCurrentSong, 2000);
+    });
 
     const socket = io();
 
@@ -184,16 +203,8 @@ document.addEventListener('DOMContentLoaded', () => {
         video.pause();
     });
 
-    socket.on('player:play', (data) => {
-        if (data && data.videoUrl) {
-            if (video.src !== data.videoUrl) {
-                initPlayer(data.videoUrl, data.currentTime);
-            } else {
-                video.play().catch(e => console.error("Erro ao tentar dar play:", e));
-            }
-        } else {
-            video.play().catch(e => console.error("Erro ao tentar dar play:", e));
-        }
+    socket.on('player:play', () => {
+        video.play().catch(e => console.error("Erro ao tentar dar play:", e));
     });
 
     socket.on('overlay:updated', (data) => {

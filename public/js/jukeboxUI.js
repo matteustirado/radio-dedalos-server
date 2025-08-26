@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         suggestBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
         try {
-            const response = await radioPlayer.actions.jukeboxSuggest(searchTerm, requester_info);
+            const response = await radioPlayer.actions.jukeboxSuggest(searchTerm, requester_info, config.unit);
             showMessage(response.message || 'Sugestão enviada com sucesso!');
             searchInput.value = '';
             clientCodeInput.value = '';

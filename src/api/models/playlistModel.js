@@ -99,10 +99,20 @@ class PlaylistModel {
 
     static async getPlaylistItems(playlistId) {
         const sql = `
-            SELECT pi.sequence_order, s.id as song_id, s.title, a.name as artist_name, s.duration_seconds
+            SELECT 
+                pi.sequence_order, 
+                s.id as song_id, 
+                s.title, 
+                s.album,
+                s.director,
+                s.filename,
+                s.duration_seconds,
+                a.name as artist_name,
+                rl.name as record_label_name
             FROM playlist_items pi
             JOIN songs s ON pi.song_id = s.id
             JOIN artists a ON s.artist_id = a.id
+            LEFT JOIN record_labels rl ON s.record_label_id = rl.id
             WHERE pi.playlist_id = ?
             ORDER BY pi.sequence_order ASC
         `;

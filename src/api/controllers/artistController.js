@@ -14,11 +14,12 @@ class ArtistController {
 
     static async createArtist(request, response) {
         try {
-            const newArtist = await ArtistModel.create(request.body);
-            response.status(201).json(newArtist);
+            // Alterado de ArtistModel.create para ArtistModel.findOrCreate
+            const artist = await ArtistModel.findOrCreate(request.body.name);
+            response.status(201).json(artist);
         } catch (error) {
             response.status(500).json({
-                message: 'Erro ao criar artista.',
+                message: 'Erro ao criar ou encontrar artista.',
                 error: error.message
             });
         }

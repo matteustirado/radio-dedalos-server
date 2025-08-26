@@ -1,50 +1,65 @@
-const {
-    Server
-} = require('socket.io');
+const { Server } = require('socket.io');
 const queueService = require('./queueService');
-const SongModel = require('../api/models/songModel');
+const storageService = require('./storageService');
+const logService = require('./logService');
 
 let io = null;
 
-const playNextSong = async () => {
-    if (!io) return;
-
-    const songToPlay = queueService.playNextInQueue();
-    if (songToPlay) {
-        const songDetails = await SongModel.findById(songToToPlay.song_id);
-        if (!songDetails) {
-            console.error(`Música com ID ${songToPlay.song_id} não encontrada no banco, pulando para a próxima.`);
-            playNextSong();
-            return;
-        }
-
-        const videoUrl = `https://${process.env.BUNNY_STREAM_HOSTNAME}/${songDetails.filename}/playlist.m3u8`;
-
-        const payload = {
-            videoUrl: videoUrl,
-            title: songDetails.title,
-            album: songDetails.album,
-            artist: songDetails.artist_name,
-            record_label: songDetails.record_label_name,
-            director: songDetails.director,
-            currentTime: 0
-        };
-
-        io.emit('song:change', payload);
-
-        const playerState = queueService.getPlayerState();
-        let history = queueService.getHistory();
-        if (history.length > 0) {
-            history[history.length - 1] = { ...history[history.length - 1],
-                ...playerState
-            };
-        }
+const enrichAndEmitQueue = () => {
+    if (io) {
+        console.log('[Socket Service] Emitindo evento queue:updated');
         io.emit('queue:updated', {
             upcoming_requests: queueService.getQueue(),
-            play_history: history
+            play_history: queueService.getHistory(),
+            player_state: queueService.getPlayerState(),
+            current_song: queueService.getCurrentSong()
         });
     }
 };
+
+const playNextSong = async (request = null) => {
+    if (!io) return { success: false, message: 'Socket.IO não inicializado.' };
+
+    const songToPlay = queueService.playNextInQueue();
+    
+    if (songToPlay && songToPlay.filename) {
+        console.log(`[Socket Service] Tocando próxima música: ${songToPlay.title}`);
+        const videoUrl = storageService.getFileUrl(songToPlay.filename);
+        
+        let fullArtistString = songToPlay.artist_name;
+        if (songToPlay.featuring_artists && songToPlay.featuring_artists.length > 0) {
+            const featuringNames = songToPlay.featuring_artists.map(feat => feat.name).join(', ');
+            fullArtistString += ` feat. ${featuringNames}`;
+        }
+
+        const songDataForClient = {
+            videoUrl: videoUrl,
+            duration_seconds: songToPlay.duration_seconds,
+            title: songToPlay.title,
+            album: songToPlay.album,
+            artist: fullArtistString,
+            record_label: songToPlay.record_label_name,
+            director: songToPlay.director
+        };
+
+        io.emit('song:change', songDataForClient);
+
+        if (request) {
+            await logService.logAction(request, 'SONG_PLAYED', { songId: songToPlay.song_id, title: songToPlay.title });
+        }
+
+        enrichAndEmitQueue();
+        
+        return { success: true, song: songToPlay };
+    } else {
+        console.log('[Socket Service] Fila de reprodução terminada.');
+        queueService.stopPlayback();
+        io.emit('playlist:finished');
+        enrichAndEmitQueue();
+        return { success: false, message: 'Fila terminada.' };
+    }
+};
+
 
 const socketService = {
     init: (httpServer) => {
@@ -57,28 +72,14 @@ const socketService = {
 
         io.on('connection', (socket) => {
             console.log(`[Socket.io] Novo cliente conectado: ${socket.id}`);
-
-            socket.on('auth:agent', (secretKey) => {
-                if (secretKey === process.env.AGENT_SECRET_KEY) {
-                    console.log(`[Socket.io] Agente de Player ${socket.id} autenticado.`);
-                    socket.join('player_agents');
-
-                    socket.on('player:song_ended', () => {
-                        console.log(`[Socket.io] Agente ${socket.id} avisou que a música terminou. Tocando a próxima.`);
-                        playNextSong();
-                    });
-                } else {
-                    console.log(`[Socket.io] Tentativa de autenticação de agente falhou do ID: ${socket.id}`);
-                }
-            });
-
             socket.on('disconnect', () => {
                 console.log(`[Socket.io] Cliente desconectado: ${socket.id}`);
             });
         });
     },
     getIo: () => io,
-    playNextSong
+    playNextSong,
+    enrichAndEmitQueue
 };
 
 module.exports = socketService;

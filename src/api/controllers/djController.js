@@ -2,77 +2,28 @@ const fs = require('fs');
 const path = require('path');
 const queueService = require('../../services/queueService');
 const socketService = require('../../services/socketService');
-const PlaylistModel = require('../models/playlistModel');
 const SongModel = require('../models/songModel');
 const SettingModel = require('../models/settingModel');
 const logService = require('../../services/logService');
-const storageService = require('../../services/storageService');
+const BannedModel = require('../models/bannedModel');
 
 const overlayDir = path.resolve(__dirname, '../../../public/assets/uploads/overlay');
 let maestroInterval = null;
-
-const enrichAndEmitQueue = () => {
-    const io = socketService.getIo();
-    io.emit('queue:updated', {
-        upcoming_requests: queueService.getQueue(),
-        play_history: queueService.getHistory(),
-        player_state: queueService.getPlayerState(),
-        current_song: queueService.getCurrentSong()
-    });
-};
-
-const _playNextSongAndNotify = async (request) => {
-    const songToPlay = queueService.playNextInQueue();
-    const io = socketService.getIo();
-
-    if (songToPlay && songToPlay.filename) {
-        const videoUrl = storageService.getFileUrl(songToPlay.filename);
-        
-        let fullArtistString = songToPlay.artist_name;
-        if (songToPlay.featuring_artists && songToPlay.featuring_artists.length > 0) {
-            const featuringNames = songToPlay.featuring_artists.map(feat => feat.name).join(', ');
-            fullArtistString += ` feat. ${featuringNames}`;
-        }
-
-        const songDataForClient = {
-            videoUrl: videoUrl,
-            duration_seconds: songToPlay.duration_seconds,
-            title: songToPlay.title,
-            album: songToPlay.album,
-            artist: fullArtistString,
-            record_label: songToPlay.record_label_name,
-            director: songToPlay.director
-        };
-
-        io.emit('song:change', songDataForClient);
-
-        if (request) {
-            await logService.logAction(request, 'SONG_PLAYED', { songId: songToPlay.id, title: songToPlay.title });
-        }
-        enrichAndEmitQueue();
-        return { success: true, song: songToPlay };
-    } else {
-        queueService.stopPlayback();
-        io.emit('playlist:finished');
-        if (maestroInterval) {
-            clearInterval(maestroInterval);
-            maestroInterval = null;
-        }
-        enrichAndEmitQueue();
-        return { success: false, message: 'Fila terminada.' };
-    }
-};
 
 const startMaestroLoop = (request) => {
     if (maestroInterval) {
         clearInterval(maestroInterval);
     }
+    console.log('[Maestro] Iniciando loop de verificação do player.');
 
     maestroInterval = setInterval(async () => {
         const currentSong = queueService.getCurrentSong();
         const playerState = queueService.getPlayerState();
 
         if (!playerState.isPlaying || !currentSong) {
+            console.log('[Maestro] Player não está tocando ou não há música. Parando o loop.');
+            clearInterval(maestroInterval);
+            maestroInterval = null;
             return;
         }
 
@@ -83,11 +34,13 @@ const startMaestroLoop = (request) => {
         const pausedDuration = playerState.accumulatedPausedDuration;
         const elapsedTime = Date.now() - startTime - pausedDuration;
 
-        if (elapsedTime >= songDurationMs - 1000) {
-            await _playNextSongAndNotify(request);
+        if (elapsedTime >= songDurationMs) {
+            console.log(`[Maestro] Música "${currentSong.title}" terminou. Tocando a próxima.`);
+            await socketService.playNextSong(request);
         }
     }, 1000);
 };
+
 
 class DjController {
     static async uploadOverlay(request, response) {
@@ -110,7 +63,9 @@ class DjController {
             await SettingModel.upsert(settingKey, newFilename);
 
             const io = socketService.getIo();
-            io.emit('overlay:updated', { filename: newFilename });
+            if (io) {
+                io.emit('overlay:updated', { filename: newFilename });
+            }
             
             await logService.logAction(request, 'OVERLAY_UPDATED', { filename: newFilename });
             
@@ -144,6 +99,7 @@ class DjController {
     static async activatePlaylist(request, response) {
         try {
             const { id } = request.params;
+            console.log(`[DJ Controller] Recebida requisição para ativar playlist ID: ${id}`);
             const newState = await queueService.activatePlaylist(id, 'dj');
             
             if (!newState) {
@@ -152,12 +108,21 @@ class DjController {
 
             await logService.logAction(request, 'PLAYLIST_ACTIVATED', { playlistId: id, name: newState.playlistName });
 
-            await _playNextSongAndNotify(request);
+            await socketService.playNextSong(request);
             startMaestroLoop(request);
             
-            enrichAndEmitQueue();
+            const fullQueueState = {
+                upcoming_requests: queueService.getQueue(),
+                play_history: queueService.getHistory(),
+                player_state: queueService.getPlayerState(),
+                current_song: queueService.getCurrentSong()
+            };
             
-            response.status(200).json({ message: `Playlist "${newState.playlistName}" ativada.` });
+            console.log('[DJ Controller] Playlist ativada com sucesso. Enviando novo estado da fila.');
+            response.status(200).json({ 
+                message: `Playlist "${newState.playlistName}" ativada e tocando.`,
+                queueState: fullQueueState
+            });
 
         } catch (error) {
             console.error('ERRO AO ATIVAR PLAYLIST (DJ Controller):', error);
@@ -171,37 +136,27 @@ class DjController {
 
         if (playerState.isPlaying) {
             queueService.pause();
-            io.emit('player:pause');
+            if(io) io.emit('player:pause');
             await logService.logAction(request, 'PLAYER_PAUSED');
-            enrichAndEmitQueue();
+            socketService.enrichAndEmitQueue();
             response.status(200).json({ message: 'Transmissão pausada.' });
         } else {
             queueService.resume();
-            const currentSong = queueService.getCurrentSong();
-            if (currentSong) {
-                const updatedPlayerState = queueService.getPlayerState();
-                const startTime = updatedPlayerState.playbackStartTimestamp;
-                const pausedDuration = updatedPlayerState.accumulatedPausedDuration;
-                const currentTimeInSeconds = (Date.now() - startTime - pausedDuration) / 1000;
-
-                const videoUrl = storageService.getFileUrl(currentSong.filename);
-                io.emit('player:play', {
-                    title: currentSong.title,
-                    artist: currentSong.artist_name,
-                    videoUrl: videoUrl,
-                    currentTime: currentTimeInSeconds
-                });
-            }
+            if(io) io.emit('player:play');
             await logService.logAction(request, 'PLAYER_RESUMED');
-            enrichAndEmitQueue();
+            socketService.enrichAndEmitQueue();
             response.status(200).json({ message: 'Retomando a transmissão.' });
         }
     }
 
     static async skip(request, response) {
         try {
-            const result = await _playNextSongAndNotify(request);
+            console.log('[DJ Controller] Recebida requisição para pular música.');
+            const result = await socketService.playNextSong(request);
             if (result.success) {
+                if (!maestroInterval) {
+                    startMaestroLoop(request);
+                }
                 response.status(200).json({ message: 'Música pulada.', now_playing: result.song });
             } else {
                 response.status(404).json({ message: result.message || 'Não há próxima música.' });
@@ -213,8 +168,9 @@ class DjController {
     
     static async play(request, response) {
         try {
-            const result = await _playNextSongAndNotify(request);
+            const result = await socketService.playNextSong(request);
             if (result.success) {
+                startMaestroLoop(request);
                 response.status(200).json({ message: 'Comando de play enviado.', now_playing: result.song });
             } else {
                 response.status(404).json({ message: result.message });
@@ -240,7 +196,7 @@ class DjController {
         }
         try {
             queueService.reorderQueue(ordered_request_ids);
-            enrichAndEmitQueue();
+            socketService.enrichAndEmitQueue();
             response.status(200).json({ message: 'Fila reordenada.' });
         } catch (error) {
             response.status(500).json({ message: 'Erro ao reordenar a fila.', error: error.message });
@@ -268,7 +224,7 @@ class DjController {
             const result = queueService.validateAndAddDjRequest(requestData);
 
             if (result.success) {
-                enrichAndEmitQueue();
+                socketService.enrichAndEmitQueue();
                 await logService.logAction(request, 'DJ_SONG_ADDED', { songId: song.id, title: song.title });
                 return response.status(200).json({ message: 'Música adicionada à fila com prioridade.', request: result.request });
             } else {
@@ -287,12 +243,17 @@ class DjController {
                 return response.status(400).json({ message: 'ID da música e duração do banimento são obrigatórios.' });
             }
     
-            await queueService.banSong(song_id, duration);
+            await BannedModel.create({
+                song_id,
+                user_id: request.user.id,
+                ban_period: duration,
+            });
+            await queueService._refreshBans();
     
-            enrichAndEmitQueue();
+            socketService.enrichAndEmitQueue();
     
             const io = socketService.getIo();
-            io.emit('bans:updated');
+            if(io) io.emit('bans:updated');
     
             await logService.logAction(request, 'SONG_BANNED', { songId: song_id, duration });
     
@@ -318,7 +279,7 @@ class DjController {
             
             queueService.addCommercialToQueue(commercial);
             
-            enrichAndEmitQueue();
+            socketService.enrichAndEmitQueue();
             
             await logService.logAction(request, 'COMMERCIAL_PLAYED', { commercialId: commercial.id, title: commercial.title });
             
@@ -330,8 +291,38 @@ class DjController {
         }
     }
 
-    static async setVolume(request, response) {}
-    static async promoteRequest(request, response) {}
+    static async setVolume(request, response) {
+        try {
+            const { volume } = request.body;
+            if (typeof volume !== 'number' || volume < 0 || volume > 100) {
+                return response.status(400).json({ message: 'O volume deve ser um número entre 0 e 100.' });
+            }
+            queueService.setVolume(volume);
+            const io = socketService.getIo();
+            if(io) io.emit('player:volume_change', { volume });
+            response.status(200).json({ message: `Volume ajustado para ${volume}.` });
+        } catch(error) {
+            response.status(500).json({ message: 'Erro ao ajustar o volume.' });
+        }
+    }
+    
+    static async promoteRequest(request, response) {
+         try {
+            const { request_id } = request.body;
+            if (!request_id) {
+                return response.status(400).json({ message: 'O ID da requisição é obrigatório.' });
+            }
+            const success = queueService.promoteRequest(request_id);
+            if (success) {
+                socketService.enrichAndEmitQueue();
+                response.status(200).json({ message: 'Requisição promovida para o topo da fila.' });
+            } else {
+                response.status(404).json({ message: 'Requisição não encontrada na fila.' });
+            }
+        } catch (error) {
+            response.status(500).json({ message: 'Erro ao promover requisição.' });
+        }
+    }
 }
 
 module.exports = DjController;

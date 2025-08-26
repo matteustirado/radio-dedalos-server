@@ -2,7 +2,16 @@ const db = require('../../config/database');
 
 class SongModel {
     static async findAll(options = {}) {
-        const { includeCommercials = false } = options;
+        const { includeCommercials = false, excludeBanned = false } = options;
+
+        let bannedSongIds = [];
+        if (excludeBanned) {
+            const [bannedRows] = await db.execute(`
+                SELECT song_id FROM song_bans 
+                WHERE is_active = TRUE AND (expires_at > NOW() OR expires_at IS NULL)
+            `);
+            bannedSongIds = bannedRows.map(row => row.song_id);
+        }
 
         let songsSql = `
             SELECT s.*, a.name as artist_name, rl.name as record_label_name 
@@ -11,11 +20,24 @@ class SongModel {
             JOIN artists a ON s.artist_id = a.id
         `;
 
+        const whereClauses = [];
+        const params = [];
+
         if (!includeCommercials) {
-            songsSql += ` WHERE a.name <> 'Comercial'`;
+            whereClauses.push(`a.name <> ?`);
+            params.push('Comercial');
         }
 
-        const [songs] = await db.execute(songsSql);
+        if (excludeBanned && bannedSongIds.length > 0) {
+            whereClauses.push(`s.id NOT IN (?)`);
+            params.push(bannedSongIds);
+        }
+        
+        if (whereClauses.length > 0) {
+            songsSql += ` WHERE ${whereClauses.join(' AND ')}`;
+        }
+
+        const [songs] = await db.query(songsSql, params);
 
         if (songs.length === 0) {
             return [];
@@ -237,4 +259,3 @@ class SongModel {
 }
 
 module.exports = SongModel;
-

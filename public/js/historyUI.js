@@ -1,19 +1,29 @@
 document.addEventListener('DOMContentLoaded', function() {
     
-    if (!document.getElementById('history-btn')) {
+    // Encontra os elementos essenciais primeiro
+    const historyBtn = document.getElementById('history-btn');
+    const historySection = document.getElementById('consult-history-section');
+    const consultBansSection = document.getElementById('consult-bans-section');
+
+    // Se os elementos principais não existirem, o script não continua.
+    if (!historyBtn || !historySection || !consultBansSection) {
+        console.error('Um ou mais elementos essenciais para o Histórico de Pedidos não foram encontrados no HTML.');
         return;
     }
 
-    const historyBtn = document.getElementById('history-btn');
-    const historySection = document.getElementById('consult-history-section');
+    // Elementos secundários
     const closeHistoryBtn = historySection.querySelector('.close-section-btn');
     const historyListContainer = document.getElementById('history-list');
-
-    
     const filterBtn = document.getElementById('history-filter-btn');
     const filterPopup = document.getElementById('history-filter-popup');
     const monthFilter = document.getElementById('history-month-filter');
     const yearFilter = document.getElementById('history-year-filter');
+    
+    // Verifica se todos os elementos foram encontrados
+    if (!closeHistoryBtn || !historyListContainer || !filterBtn || !filterPopup || !monthFilter || !yearFilter) {
+        console.error('Um ou mais componentes da interface de histórico (filtros, lista, etc.) não foram encontrados.');
+        return;
+    }
 
     const renderHistory = (historyEntries) => {
         historyListContainer.innerHTML = '';
@@ -38,13 +48,13 @@ document.addEventListener('DOMContentLoaded', function() {
             item.className = 'suggestion-item no-actions';
             const date = new Date(entry.created_at).toLocaleString('pt-BR');
             const musicText = `${entry.song_title} - ${entry.artist_name}`;
-            const requesterType = entry.requester_type.toUpperCase();
+            const requesterType = entry.requester_type ? entry.requester_type.toUpperCase() : 'N/A';
             
             item.innerHTML = `
                 <div>${date}</div>
                 <div>${musicText}</div>
                 <div>${requesterType}</div>
-                <div>${entry.requester_identifier}</div>
+                <div>${entry.requester_identifier || '-'}</div>
             `;
             historyListContainer.appendChild(item);
         });
@@ -86,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     historyBtn.addEventListener('click', () => {
-        document.getElementById('consult-bans-section').classList.add('hidden');
+        consultBansSection.classList.add('hidden');
         historySection.classList.remove('hidden');
         fetchAndRenderHistory();
     });

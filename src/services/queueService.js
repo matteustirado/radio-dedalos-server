@@ -1,9 +1,10 @@
-const db = require('../config/database');
 const PlaylistModel = require('../api/models/playlistModel');
+const BannedModel = require('../api/models/bannedModel');
 
 let requestQueue = [];
 let playHistory = [];
 let currentSong = null;
+let activeBans = new Set();
 
 let queueState = {
     playlistId: null,
@@ -26,19 +27,44 @@ const ARTIST_COOLDOWN_SONG_LIMIT = 5;
 const USER_REQUEST_LIMIT = 5;
 
 const queueService = {
+    _refreshBans: async () => {
+        try {
+            const bannedSongs = await BannedModel.findAllActive();
+            const bannedSongIds = bannedSongs.map(ban => ban.song_id);
+            activeBans = new Set(bannedSongIds);
+            
+            const originalQueueLength = requestQueue.length;
+            requestQueue = requestQueue.filter(req => !activeBans.has(req.song_id));
+            if (requestQueue.length < originalQueueLength) {
+                console.log(`[QueueService] ${originalQueueLength - requestQueue.length} música(s) banida(s) removida(s) da fila.`);
+            }
+
+        } catch (error) {
+            console.error('[QueueService] Erro ao atualizar a lista de bans:', error);
+        }
+    },
+    
     activatePlaylist: async (playlistId, source = 'dj') => {
+        await queueService._refreshBans();
         const playlist = await PlaylistModel.findById(playlistId);
         if (!playlist || !playlist.items || playlist.items.length === 0) {
             console.error(`[QueueService] Tentativa de ativar playlist vazia ou inexistente: ID ${playlistId}`);
             return null;
         }
         
+        console.log(`[QueueService] Ativando playlist "${playlist.name}" com ${playlist.items.length} músicas.`);
         const pendingUserRequests = requestQueue.filter(req => req.requester_info !== 'Playlist' && req.requester_info !== 'Commercial');
         
-        const playlistItems = playlist.items.map(song => ({
-            ...song,
-            requester_info: 'Playlist',
-        }));
+        const playlistItems = playlist.items
+            .filter(song => !activeBans.has(song.song_id))
+            .map(song => ({
+                ...song,
+                requester_info: 'Playlist',
+            }));
+
+        if (playlistItems.length < playlist.items.length) {
+            console.log(`[QueueService] ${playlist.items.length - playlistItems.length} música(s) banida(s) foram puladas ao ativar a playlist "${playlist.name}".`);
+        }
 
         requestQueue = [...pendingUserRequests, ...playlistItems];
         
@@ -55,8 +81,10 @@ const queueService = {
 
     validateAndAddRequest: async (requestData) => {
         const { song_id, artist_id, requester_info } = requestData;
-        const [banned] = await db.execute('SELECT * FROM banned_songs WHERE song_id = ? AND (expires_at > NOW() OR expires_at IS NULL)', [song_id]);
-        if (banned.length > 0) return { success: false, message: 'Esta música foi temporariamente banida da programação.' };
+        
+        if (activeBans.has(song_id)) {
+            return { success: false, message: 'Esta música foi temporariamente banida da programação.' };
+        }
         
         const recentSongs = playHistory.slice(-SONG_COOLDOWN_COUNT);
         if (recentSongs.some(item => item.song_id === song_id)) return { success: false, message: 'Esta música tocou recentemente e precisa aguardar.' };
@@ -77,6 +105,10 @@ const queueService = {
     },
 
     validateAndAddDjRequest: (requestData) => {
+        if (activeBans.has(requestData.song_id)) {
+            return { success: false, message: 'Esta música está banida e não pode ser adicionada.' };
+        }
+
         const newRequest = { id: Date.now(), requestedAt: new Date(), ...requestData };
         queueState.lastManualActionTimestamp = Date.now();
         
@@ -114,18 +146,26 @@ const queueService = {
             }
         }
 
-        if (requestQueue.length === 0) {
-            currentSong = null;
-            playerState.isPlaying = false;
-            return null;
+        let nextSong = null;
+        while (requestQueue.length > 0) {
+            const potentialNextSong = requestQueue.shift();
+            if (!activeBans.has(potentialNextSong.song_id)) {
+                nextSong = potentialNextSong;
+                break;
+            }
+            console.log(`[QueueService] Pulando a música banida "${potentialNextSong.title}" da fila.`);
         }
 
-        currentSong = requestQueue.shift();
+        currentSong = nextSong;
         
-        playerState.isPlaying = true;
-        playerState.playbackStartTimestamp = Date.now();
-        playerState.accumulatedPausedDuration = 0;
-        playerState.lastPauseTimestamp = null;
+        if (currentSong) {
+            playerState.isPlaying = true;
+            playerState.playbackStartTimestamp = Date.now();
+            playerState.accumulatedPausedDuration = 0;
+            playerState.lastPauseTimestamp = null;
+        } else {
+            playerState.isPlaying = false;
+        }
 
         return currentSong;
     },
@@ -154,7 +194,10 @@ const queueService = {
 
     resume: () => {
         if (playerState.isPlaying || !currentSong) return;
-        if (!playerState.lastPauseTimestamp) return;
+        if (!playerState.lastPauseTimestamp) {
+             playerState.isPlaying = true;
+             return;
+        };
 
         const pauseDuration = Date.now() - playerState.lastPauseTimestamp;
         playerState.accumulatedPausedDuration += pauseDuration;
@@ -170,25 +213,7 @@ const queueService = {
     getPlayerState: () => ({ ...playerState }),
     getQueueState: () => queueState,
     isPlaying: () => playerState.isPlaying,
-    banSong: async (songId, duration) => {
-        let expires_at;
-        const now = new Date();
-        if (duration === 'today') {
-            expires_at = new Date();
-            expires_at.setHours(23, 59, 59, 999);
-        } else if (duration === 'week') {
-            expires_at = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-        } else {
-            expires_at = null;
-        }
-        await db.execute('INSERT INTO banned_songs (song_id, ban_type, expires_at) VALUES (?, ?, ?)', [songId, duration, expires_at]);
-        for (let i = requestQueue.length - 1; i >= 0; i--) {
-            if (requestQueue[i].song_id === parseInt(songId, 10)) {
-                requestQueue.splice(i, 1);
-            }
-        }
-        return true;
-    },
+    
     promoteRequest: (requestId) => {
         const requestIndex = requestQueue.findIndex(req => req.id === requestId);
         if (requestIndex > 0) {
@@ -212,5 +237,7 @@ const queueService = {
     getQueue: () => [...requestQueue],
     getHistory: () => [...playHistory]
 };
+
+queueService._refreshBans();
 
 module.exports = queueService;

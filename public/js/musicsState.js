@@ -9,18 +9,6 @@ const musicsState = (() => {
         commercials: []
     };
 
-    const findOrCreateArtist = async (name) => {
-        let artist = state.artists.find(a => a.name.toLowerCase() === name.toLowerCase());
-        if (!artist) {
-            artist = await apiFetch('/artists', {
-                method: 'POST',
-                body: JSON.stringify({ name })
-            });
-            await fetchArtists();
-        }
-        return artist;
-    };
-
     const fetchArtists = async () => {
         const artistsData = await apiFetch('/artists');
         if (Array.isArray(artistsData)) {
@@ -49,7 +37,7 @@ const musicsState = (() => {
         } else {
             state.songs = [];
         }
-        const uniqueLabels = [...new Set(state.songs.map(song => song.label).filter(Boolean))];
+        const uniqueLabels = [...new Set(state.songs.map(song => song.record_label_name).filter(Boolean))];
         state.labels = uniqueLabels.map(name => ({
             name
         }));
@@ -104,7 +92,8 @@ const musicsState = (() => {
     const _uploadWithProgress = (method, url, formData, onProgress) => {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
-            xhr.open(method, url, true);
+            const fullUrl = `${API_BASE_URL}${url}`;
+            xhr.open(method, fullUrl, true);
             xhr.setRequestHeader('Authorization', `Bearer ${getToken()}`);
 
             xhr.upload.onprogress = (event) => {
@@ -123,23 +112,44 @@ const musicsState = (() => {
                     if (xhr.status >= 200 && xhr.status < 300) {
                         resolve(response);
                     } else {
-                        reject(response);
+                        reject(new Error(response.message || 'Erro no servidor.'));
                     }
                 } catch (e) {
-                    reject({ message: 'Resposta inválida do servidor.' });
+                     reject(new Error(xhr.responseText || 'Resposta inválida do servidor.'));
                 }
             };
 
             xhr.onerror = () => {
-                reject({
-                    message: 'Erro de rede durante o upload.'
-                });
+                reject(new Error('Erro de rede durante o upload.'));
             };
 
             xhr.send(formData);
         });
     };
 
+    const _prepareSongData = async (songDetails) => {
+        const { artistName, label } = songDetails;
+        const artist = await ArtistModel.findOrCreate(artistName);
+        const labelObj = label ? await RecordLabelModel.findOrCreate(label) : null;
+
+        const formData = new FormData();
+        Object.entries(songDetails).forEach(([key, value]) => {
+            if (key !== 'artistName' && key !== 'label' && key !== 'tags' && key !== 'featuringArtists' && key !== 'weekdays' && value !== null) {
+                 formData.append(key, value);
+            }
+        });
+        
+        formData.append('artist_id', artist.id);
+        if (labelObj) {
+            formData.append('label_id', labelObj.id);
+        }
+        formData.append('tags', JSON.stringify(songDetails.tags || []));
+        formData.append('featuringArtists', JSON.stringify(songDetails.featuringArtists || []));
+        formData.append('weekdays', JSON.stringify(songDetails.weekdays || []));
+
+        return formData;
+    };
+    
     const addSong = async (songDetails, onProgress) => {
         const jobId = 'upload-' + Date.now();
         const socket = io();
@@ -152,34 +162,27 @@ const musicsState = (() => {
         socket.on(jobId, socketListener);
 
         try {
-            const { title, artistName, featuringArtists, album, releaseYear, director, label, tags, weekdays, duration, mediaFile } = songDetails;
-            
-            const artist = await findOrCreateArtist(artistName);
+            const { artistName } = songDetails;
+            const artist = await apiFetch('/artists', {
+                method: 'POST', body: JSON.stringify({ name: artistName })
+            });
 
             const formData = new FormData();
-            formData.append('jobId', jobId);
-            formData.append('title', title);
+            Object.keys(songDetails).forEach(key => {
+                 if (key !== 'artistName' && key !== 'weekdays' && key !== 'tags' && key !== 'featuringArtists') {
+                    formData.append(key, songDetails[key]);
+                }
+            });
             formData.append('artist_id', artist.id);
-            if (mediaFile) formData.append('mediaFile', mediaFile);
-            formData.append('album', album || '');
-            formData.append('releaseYear', releaseYear || '');
-            formData.append('director', director || '');
-            formData.append('label', label || '');
-            formData.append('duration', duration || '');
+            formData.append('weekdays', JSON.stringify(songDetails.weekdays || []));
+            formData.append('tags', JSON.stringify(songDetails.tags || []));
+            formData.append('featuringArtists', JSON.stringify(songDetails.featuringArtists || []));
+            formData.append('jobId', jobId);
             
             const newSong = await _uploadWithProgress('POST', '/api/songs', formData, onProgress);
             
-            if (weekdays && weekdays.length > 0) {
-                await apiFetch(`/songs/${newSong.id}/weekdays`, {
-                    method: 'POST',
-                    body: JSON.stringify({ weekdays })
-                });
-            }
-
-            await fetchSongs();
-            if (artistName.toLowerCase() === 'comercial') {
-                await fetchCommercials();
-            }
+            await initialize();
+            
             socket.off(jobId, socketListener);
             return newSong;
         } catch (error) {
@@ -200,32 +203,28 @@ const musicsState = (() => {
         socket.on(jobId, socketListener);
 
         try {
-            const { title, artistName, featuringArtists, album, releaseYear, director, label, tags, weekdays, duration, mediaFile } = songDetails;
-
-            const artist = await findOrCreateArtist(artistName);
-
-            const formData = new FormData();
-            if (mediaFile) {
-                formData.append('jobId', jobId);
-                formData.append('mediaFile', mediaFile);
-            }
-            formData.append('title', title);
-            formData.append('artist_id', artist.id);
-            formData.append('album', album || '');
-            formData.append('releaseYear', releaseYear || '');
-            formData.append('director', director || '');
-            formData.append('label', label || '');
-            formData.append('duration', duration || '');
-            
-            await _uploadWithProgress('PUT', `/api/songs/${id}`, formData, onProgress);
-            
-            await apiFetch(`/songs/${id}/weekdays`, {
-                method: 'POST',
-                body: JSON.stringify({ weekdays })
+            const { artistName } = songDetails;
+            const artist = await apiFetch('/artists', {
+                method: 'POST', body: JSON.stringify({ name: artistName })
             });
 
-            await fetchSongs();
-            await fetchCommercials();
+            const formData = new FormData();
+             Object.keys(songDetails).forEach(key => {
+                 if (key !== 'artistName' && key !== 'weekdays' && key !== 'tags' && key !== 'featuringArtists') {
+                    formData.append(key, songDetails[key]);
+                }
+            });
+            formData.append('artist_id', artist.id);
+            formData.append('weekdays', JSON.stringify(songDetails.weekdays || []));
+            formData.append('tags', JSON.stringify(songDetails.tags || []));
+            formData.append('featuringArtists', JSON.stringify(songDetails.featuringArtists || []));
+            if (songDetails.mediaFile) {
+                 formData.append('jobId', jobId);
+            }
+           
+            await _uploadWithProgress('PUT', `/api/songs/${id}`, formData, onProgress);
+
+            await initialize();
             socket.off(jobId, socketListener);
             return { id };
         } catch (error) {
@@ -275,7 +274,6 @@ const musicsState = (() => {
         updateSong,
         deleteDbItem,
         addDbItem,
-        updateArtist,
-        findOrCreateArtist
+        updateArtist
     };
 })();

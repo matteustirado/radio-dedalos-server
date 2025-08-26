@@ -38,11 +38,37 @@ document.addEventListener('DOMContentLoaded', function() {
     const durationInput = document.getElementById('duration');
     const mediaFileInput = document.getElementById('media-file-input');
     const fileNameDisplay = document.getElementById('file-name-display');
-    const consultSuggestionsBtn = document.getElementById('consult-suggestions-btn');
-    const suggestionTabButtons = document.querySelectorAll('#consult-suggestions-section .tab-btn');
+    const submitBtn = document.getElementById('form-submit-btn');
     
     let itemToDelete = {};
-    let activeSuggestionTab = 'pendente';
+
+    if (mediaFileInput && fileNameDisplay) {
+        mediaFileInput.addEventListener('change', () => {
+            if (mediaFileInput.files.length > 0) {
+                fileNameDisplay.textContent = mediaFileInput.files[0].name;
+            } else {
+                fileNameDisplay.textContent = 'Nenhum arquivo selecionado';
+            }
+        });
+    }
+
+    const validateYear = () => {
+        const year = parseInt(releaseYearInput.value, 10);
+        const currentYear = new Date().getFullYear();
+        if (releaseYearInput.value && (year < 1500 || year > currentYear)) {
+            releaseYearInput.classList.add('error');
+            submitBtn.disabled = true;
+            return false;
+        } else {
+            releaseYearInput.classList.remove('error');
+            submitBtn.disabled = false;
+            return true;
+        }
+    };
+
+    if (releaseYearInput) {
+        releaseYearInput.addEventListener('input', validateYear);
+    }
 
     const showMessage = (message, type = 'success') => {
         messageTextEl.textContent = message;
@@ -77,7 +103,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 addPill(inputEl.value);
             }
         });
-        setupAutocomplete(inputEl, listEl, sourceCallback);
+
+        const onSelect = (item) => {
+            addPill(typeof item === 'string' ? item : item.name);
+        };
+        
+        setupAutocomplete(inputEl, listEl, sourceCallback, onSelect);
     };
 
     const resetMusicForm = () => {
@@ -91,7 +122,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         document.querySelector('.day-option[data-all="true"]').classList.add('selected');
         formTitle.innerHTML = '<i class="fas fa-compact-disc icon"></i> Adicionar Nova Música';
-        document.getElementById('form-submit-btn').textContent = 'Salvar Música';
+        submitBtn.textContent = 'Salvar Música';
+        releaseYearInput.classList.remove('error');
+        submitBtn.disabled = false;
     };
 
     const formatSecondsToDuration = (totalSeconds) => {
@@ -140,11 +173,16 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         formTitle.innerHTML = '<i class="fas fa-compact-disc icon"></i> Editar Música';
-        document.getElementById('form-submit-btn').textContent = 'Atualizar Música';
+        submitBtn.textContent = 'Atualizar Música';
         openSection('add-music-form');
     };
 
-    const setupAutocomplete = (inputEl, listEl, sourceCallback) => {
+    const setupAutocomplete = (inputEl, listEl, sourceCallback, onSelect) => {
+        const defaultOnSelect = (item) => {
+            inputEl.value = typeof item === 'string' ? item : item.name;
+        };
+        const selectHandler = onSelect || defaultOnSelect;
+
         inputEl.addEventListener('input', () => {
             const value = inputEl.value.toLowerCase();
             const items = sourceCallback();
@@ -161,8 +199,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const itemEl = document.createElement('div');
                 itemEl.className = 'autocomplete-item';
                 itemEl.textContent = typeof item === 'string' ? item : item.name;
-                itemEl.addEventListener('click', () => {
-                    inputEl.value = typeof item === 'string' ? item : item.name;
+                itemEl.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    selectHandler(item);
                     listEl.classList.remove('show');
                 });
                 listEl.appendChild(itemEl);
@@ -235,6 +274,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     musicForm.addEventListener('submit', async function(e) {
         e.preventDefault();
+        if (!validateYear()) {
+            showMessage('O ano de lançamento é inválido.', 'danger');
+            return;
+        }
         const songId = musicIdInput.value;
         const artistName = artistInput.value.trim();
         const title = document.getElementById('music-name').value.trim();
@@ -291,144 +334,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    const renderSuggestions = (suggestions, container) => {
-        const listContent = container.querySelector('.list-content') || container;
-        listContent.innerHTML = '';
-        if (suggestions.length === 0) {
-            listContent.innerHTML = `<div class="placeholder-text">Nenhuma sugestão encontrada.</div>`;
-            return;
-        }
-        const header = document.createElement('div');
-        header.className = 'suggestion-header';
-        let columnsClass = 'with-actions';
-        if (activeSuggestionTab === 'pendente') {
-            header.innerHTML = `<div>Data</div><div>Sugestão</div><div>Cliente</div><div>Unidade</div><div>Ações</div>`;
-        } else {
-            header.innerHTML = `<div>Data</div><div>Sugestão</div><div>Cliente</div><div>Unidade</div>`;
-            columnsClass = 'no-actions';
-        }
-        listContent.appendChild(header);
-        suggestions.forEach(sug => {
-            const item = document.createElement('div');
-            item.className = `suggestion-item ${columnsClass}`;
-            item.dataset.id = sug.id;
-            const date = new Date(sug.created_at).toLocaleString('pt-BR');
-            const suggestionText = `${sug.song_title} - ${sug.artist_name}`;
-            if (activeSuggestionTab === 'pendente') {
-                item.innerHTML = `
-                    <div>${date}</div>
-                    <div>${suggestionText}</div>
-                    <div>${sug.requester_info || '-'}</div>
-                    <div>${sug.unit ? sug.unit.toUpperCase() : '-'}</div>
-                    <div><div class="action-buttons"><button class="button success-button small icon-only accept-suggestion-btn" title="Aceitar"><i class="fas fa-check"></i></button><button class="button danger-button small icon-only reject-suggestion-btn" title="Recusar"><i class="fas fa-times"></i></button></div></div>`;
-            } else {
-                item.innerHTML = `
-                    <div>${date}</div>
-                    <div>${suggestionText}</div>
-                    <div>${sug.requester_info || '-'}</div>
-                    <div>${sug.unit ? sug.unit.toUpperCase() : '-'}</div>`;
-            }
-            listContent.appendChild(item);
-        });
-    };
-
-    const fetchAndRenderSuggestions = async () => {
-        const listContainer = document.getElementById(`${activeSuggestionTab}-list`);
-        if (!listContainer) return;
-
-        let url = `/suggestions?status=${activeSuggestionTab}`;
-        const filterPopup = document.getElementById(`${activeSuggestionTab}-filter-popup`);
-
-        if (activeSuggestionTab !== 'pendente' && filterPopup) {
-            const month = filterPopup.querySelector('select[id$="-month-filter"]').value;
-            const year = filterPopup.querySelector('select[id$="-year-filter"]').value;
-            url += `&month=${month}&year=${year}`;
-        }
-        
-        const listContent = listContainer.querySelector('.list-content') || listContainer;
-        listContent.innerHTML = '<div class="spinner-container"><div class="spinner"></div></div>';
-        
-        try {
-            const suggestions = await apiFetch(url);
-            renderSuggestions(suggestions, listContainer);
-        } catch (error) {
-            listContent.innerHTML = `<div class="placeholder-text error">Erro ao carregar sugestões.</div>`;
-            showMessage(error.message, 'danger');
-        }
-    };
-
-    const handleUpdateSuggestionStatus = async (id, newStatus) => {
-        try {
-            await apiFetch(`/suggestions/${id}/status`, {
-                method: 'PUT',
-                body: JSON.stringify({ status: newStatus })
-            });
-            showMessage(`Sugestão marcada como '${newStatus}' com sucesso!`);
-            fetchAndRenderSuggestions();
-        } catch (error) {
-            showMessage(error.message, 'danger');
-        }
-    };
-
-    const initializeSuggestions = () => {
-        const setupFilter = (type) => {
-            const btn = document.getElementById(`${type}-filter-btn`);
-            const popup = document.getElementById(`${type}-filter-popup`);
-            if (!btn || !popup) return;
-            const monthFilter = document.getElementById(`${type}-month-filter`);
-            const yearFilter = document.getElementById(`${type}-year-filter`);
-            const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-            monthFilter.innerHTML = months.map((m, i) => `<option value="${i+1}">${m}</option>`).join('');
-            const currentYear = new Date().getFullYear();
-            yearFilter.innerHTML = '';
-            for (let i = 0; i < 5; i++) {
-                const year = currentYear - i;
-                yearFilter.add(new Option(year, year));
-            }
-            monthFilter.value = new Date().getMonth() + 1;
-            yearFilter.value = currentYear;
-            btn.addEventListener('click', () => popup.classList.toggle('hidden'));
-            monthFilter.addEventListener('change', fetchAndRenderSuggestions);
-            yearFilter.addEventListener('change', fetchAndRenderSuggestions);
-        };
-        
-        setupFilter('aceita');
-        setupFilter('recusada');
-
-        consultSuggestionsBtn.addEventListener('click', () => {
-            openSection('consult-suggestions-section');
-            activeSuggestionTab = 'pendente';
-            suggestionTabButtons.forEach(b => b.classList.toggle('active', b.dataset.tab === 'pendente'));
-            document.querySelectorAll('.suggestions-list').forEach(list => list.classList.add('hidden'));
-            document.getElementById('pendente-list').classList.remove('hidden');
-            fetchAndRenderSuggestions();
-        });
-
-        suggestionTabButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                suggestionTabButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                activeSuggestionTab = btn.dataset.tab;
-                document.querySelectorAll('.suggestions-list').forEach(list => list.classList.add('hidden'));
-                document.getElementById(`${activeSuggestionTab}-list`).classList.remove('hidden');
-                fetchAndRenderSuggestions();
-            });
-        });
-
-        document.getElementById('consult-suggestions-section').addEventListener('click', (e) => {
-            const acceptBtn = e.target.closest('.accept-suggestion-btn');
-            const rejectBtn = e.target.closest('.reject-suggestion-btn');
-            if (acceptBtn) {
-                const id = acceptBtn.closest('.suggestion-item').dataset.id;
-                handleUpdateSuggestionStatus(id, 'aceita');
-            }
-            if (rejectBtn) {
-                const id = rejectBtn.closest('.suggestion-item').dataset.id;
-                handleUpdateSuggestionStatus(id, 'recusada');
-            }
-        });
-    };
-    
     document.getElementById('add-music-btn').addEventListener('click', () => {
         resetMusicForm();
         openSection('add-music-form');
@@ -452,7 +357,11 @@ document.addEventListener('DOMContentLoaded', function() {
         e.target.value = e.target.value.replace(/[^0-9]/g, '');
     });
     durationInput.addEventListener('input', (e) => {
-        e.target.value = e.target.value.replace(/[^0-9:]/g, '');
+        let value = e.target.value.replace(/[^0-9]/g, '');
+        if (value.length > 2) {
+            value = value.slice(0, 2) + ':' + value.slice(2, 4);
+        }
+        e.target.value = value;
     });
     dayOptions.forEach(option => {
         option.addEventListener('click', function() {
@@ -617,7 +526,6 @@ document.addEventListener('DOMContentLoaded', function() {
             setupPillInput(tagInput, addTagBtn, tagsContainer, tagList, () => musicsState.getState().categories);
             setupPillInput(featuringArtistInput, addFeaturingArtistBtn, featuringArtistsContainer, featuringArtistList, () => musicsState.getState().artists);
             
-            initializeSuggestions();
         } catch (error) {
             console.error("Erro fatal na inicialização da UI:", error);
             alert("Ocorreu um erro crítico ao carregar a página de Admin. Verifique o console.");

@@ -1,5 +1,6 @@
-const { S3Client, DeleteObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client, DeleteObjectCommand, ListObjectsV2Command, DeleteObjectsCommand } = require("@aws-sdk/client-s3");
 const { Upload } = require("@aws-sdk/lib-storage");
+const path = require('path');
 
 const B2_KEY_ID = process.env.B2_KEY_ID;
 const B2_APPLICATION_KEY = process.env.B2_APPLICATION_KEY;
@@ -43,28 +44,44 @@ const getFileUrl = (fileName) => {
     }
     if (!CDN_HOSTNAME) {
         console.error("ERRO: Variavel CDN_HOSTNAME não definida no arquivo .env");
-        return `https://s3.${B2_BUCKET_REGION}.backblazeb2.com/${fileName}`;
+        return `https://s3.${B2_BUCKET_REGION}.backblazeb2.com/${B2_BUCKET_NAME}/${fileName}`;
     }
     return `https://${CDN_HOSTNAME}/${fileName}`;
 };
 
-const deleteFile = async (fileName) => {
-    if (!fileName) {
-        return;
-    }
+const deleteDirectory = async (directoryPrefix) => {
+    if (!directoryPrefix) return;
     try {
-        const command = new DeleteObjectCommand({
+        const listCommand = new ListObjectsV2Command({
             Bucket: B2_BUCKET_NAME,
-            Key: fileName,
+            Prefix: directoryPrefix,
         });
-        await s3.send(command);
+
+        const listedObjects = await s3.send(listCommand);
+
+        if (!listedObjects.Contents || listedObjects.Contents.length === 0) return;
+
+        const deleteParams = {
+            Bucket: B2_BUCKET_NAME,
+            Delete: { Objects: [] },
+        };
+
+        listedObjects.Contents.forEach(({ Key }) => {
+            deleteParams.Delete.Objects.push({ Key });
+        });
+
+        const deleteCommand = new DeleteObjectsCommand(deleteParams);
+        await s3.send(deleteCommand);
+        console.log(`[StorageService] Diretório ${directoryPrefix} e seus conteúdos foram deletados.`);
+
     } catch (error) {
-        console.error(`Falha ao deletar arquivo ${fileName} do B2:`, error);
+        console.error(`Falha ao deletar diretório ${directoryPrefix} do B2:`, error);
+        throw new Error(`Falha ao deletar diretório do B2: ${error.message}`);
     }
 };
 
 module.exports = {
     uploadFile,
     getFileUrl,
-    deleteFile
+    deleteDirectory
 };

@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
         listContent.innerHTML = '';
 
         if (!banRequests || banRequests.length === 0) {
-            listContent.innerHTML = `<div class="placeholder-text">Nenhuma solicitação encontrada.</div>`;
+            listContent.innerHTML = `<div class="placeholder-text">Nenhuma solicitação de banimento encontrada para esta categoria.</div>`;
             return;
         }
 
@@ -24,9 +24,11 @@ document.addEventListener('DOMContentLoaded', function() {
         let columnsClass = 'with-actions';
 
         if (activeBanTab === 'pendente') {
-            header.innerHTML = `<div>Data</div><div>Música</div><div>Solicitante</div><div>Período</div><div>Ações</div>`;
+            header.innerHTML = `<div>Data</div><div>Música</div><div>Solicitante</div><div>Período</div><div>Status</div><div>Ações</div>`;
+            header.style.gridTemplateColumns = '1.5fr 3fr 1.5fr 1fr 1fr 1fr';
         } else {
-            header.innerHTML = `<div>Data</div><div>Música</div><div>Solicitante</div><div>Período</div>`;
+            header.innerHTML = `<div>Data</div><div>Música</div><div>Solicitante</div><div>Período</div><div>Status</div>`;
+            header.style.gridTemplateColumns = '1.5fr 3fr 1.5fr 1fr 1fr';
             columnsClass = 'no-actions';
         }
         listContent.appendChild(header);
@@ -35,29 +37,32 @@ document.addEventListener('DOMContentLoaded', function() {
             const item = document.createElement('div');
             item.className = `suggestion-item ${columnsClass}`;
             item.dataset.id = req.id;
+            item.style.gridTemplateColumns = header.style.gridTemplateColumns;
 
-            const date = new Date(req.created_at).toLocaleString('pt-BR');
+
+            const date = new Date(req.banned_at).toLocaleString('pt-BR');
             const musicText = `${req.song_title} - ${req.artist_name}`;
+            const statusTag = req.is_active ? 
+                '<span class="status-tag active">Ativo</span>' : 
+                '<span class="status-tag draft">Inativo</span>';
+
+            let itemHTML = `
+                <div>${date}</div>
+                <div>${musicText}</div>
+                <div>${req.user_name || '-'}</div>
+                <div>${req.ban_period || '-'}</div>
+                <div>${statusTag}</div>`;
 
             if (activeBanTab === 'pendente') {
-                item.innerHTML = `
-                    <div>${date}</div>
-                    <div>${musicText}</div>
-                    <div>${req.user_name || '-'}</div>
-                    <div>${req.ban_period || '-'}</div>
+                itemHTML += `
                     <div>
                         <div class="action-buttons">
                             <button class="button success-button small icon-only accept-ban-btn" title="Aceitar"><i class="fas fa-check"></i></button>
                             <button class="button danger-button small icon-only reject-ban-btn" title="Recusar"><i class="fas fa-times"></i></button>
                         </div>
                     </div>`;
-            } else {
-                item.innerHTML = `
-                    <div>${date}</div>
-                    <div>${musicText}</div>
-                    <div>${req.user_name || '-'}</div>
-                    <div>${req.ban_period || '-'}</div>`;
             }
+            item.innerHTML = itemHTML;
             listContent.appendChild(item);
         });
     };
@@ -68,10 +73,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let url = `/bans?status=${activeBanTab}`;
         
-        if (activeBanTab !== 'pendente') {
-            const month = document.getElementById(`${activeBanTab}-bans-month-filter`).value;
-            const year = document.getElementById(`${activeBanTab}-bans-year-filter`).value;
-            url += `&month=${month}&year=${year}`;
+        const filterPopup = document.getElementById(`${activeBanTab}-bans-filter-popup`);
+        if (filterPopup) {
+            const month = filterPopup.querySelector('select[id$="-month-filter"]').value;
+            const year = filterPopup.querySelector('select[id$="-year-filter"]').value;
+            if (month && year) {
+                url += `&month=${month}&year=${year}`;
+            }
         }
         
         const listContent = listContainer.querySelector('.list-content') || listContainer;

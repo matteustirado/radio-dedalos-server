@@ -1,4 +1,7 @@
 const SongModel = require('../models/songModel');
+const ArtistModel = require('../models/artistModel');
+const CategoryModel = require('../models/categoryModel');
+const RecordLabelModel = require('../models/recordLabelModel'); // Certifique-se de que este modelo exista
 const logService = require('../../services/logService');
 const storageService = require('../../services/storageService');
 const socketService = require('../../services/socketService');
@@ -39,9 +42,10 @@ const parseDurationToSeconds = (durationStr) => {
 class SongController {
     static async getAllSongs(request, response) {
         try {
-            const { include_commercials } = request.query;
+            const { include_commercials, excludeBanned } = request.query;
             const options = {
-                includeCommercials: include_commercials === 'true'
+                includeCommercials: include_commercials === 'true',
+                excludeBanned: excludeBanned === 'true'
             };
             const songs = await SongModel.findAll(options);
             response.status(200).json(songs);
@@ -113,6 +117,12 @@ class SongController {
             }
 
             const filename = `${baseName}/playlist.m3u8`;
+            
+            let record_label_id = null;
+            if (songData.label) {
+                const label = await RecordLabelModel.findOrCreate(songData.label);
+                record_label_id = label.id;
+            }
 
             emitStatus('Salvando informações...');
             
@@ -122,16 +132,23 @@ class SongController {
                 album: songData.album,
                 release_year: songData.releaseYear,
                 director: songData.director,
-                record_label_id: songData.label_id || null,
+                record_label_id: record_label_id,
                 duration_seconds: parseDurationToSeconds(songData.duration),
                 filename: filename
             };
             
             const newSong = await SongModel.create(dataToSave);
             
+            if (songData.tags && songData.tags.length > 0) {
+                const categoryIds = await Promise.all(songData.tags.map(tagName => CategoryModel.findOrCreate(tagName).then(cat => cat.id)));
+                await SongModel.manageCategories(newSong.id, categoryIds);
+            }
+            if (songData.featuringArtists && songData.featuringArtists.length > 0) {
+                const artistIds = await Promise.all(songData.featuringArtists.map(artistName => ArtistModel.findOrCreate(artistName).then(art => art.id)));
+                await SongModel.manageFeaturingArtists(newSong.id, artistIds);
+            }
+            
             if (songData.weekdays) await SongModel.manageWeekdays(newSong.id, songData.weekdays);
-            if (songData.tags) await SongModel.manageCategories(newSong.id, songData.tags);
-            if (songData.featuringArtists) await SongModel.manageFeaturingArtists(newSong.id, songData.featuringArtists);
 
             await logService.logAction(request, 'SONG_CREATED', { songId: newSong.id, title: newSong.title });
             response.status(201).json(newSong);
@@ -170,10 +187,16 @@ class SongController {
             if (songData.tags && typeof songData.tags === 'string') songData.tags = JSON.parse(songData.tags);
             if (songData.featuringArtists && typeof songData.featuringArtists === 'string') songData.featuringArtists = JSON.parse(songData.featuringArtists);
 
+            let record_label_id = null;
+            if (songData.label) {
+                const label = await RecordLabelModel.findOrCreate(songData.label);
+                record_label_id = label.id;
+            }
+
             const dataToUpdate = {
                 title: songData.title,
                 artist_id: songData.artist_id,
-                record_label_id: songData.label_id || null,
+                record_label_id: record_label_id,
                 album: songData.album,
                 release_year: songData.releaseYear,
                 director: songData.director,
@@ -212,9 +235,15 @@ class SongController {
             emitStatus('Atualizando informações...');
             const affectedRows = await SongModel.update(songId, dataToUpdate);
 
+            if (songData.tags) {
+                const categoryIds = await Promise.all(songData.tags.map(tagName => CategoryModel.findOrCreate(tagName).then(cat => cat.id)));
+                await SongModel.manageCategories(songId, categoryIds);
+            }
+            if (songData.featuringArtists) {
+                const artistIds = await Promise.all(songData.featuringArtists.map(artistName => ArtistModel.findOrCreate(artistName).then(art => art.id)));
+                await SongModel.manageFeaturingArtists(songId, artistIds);
+            }
             if (songData.weekdays) await SongModel.manageWeekdays(songId, songData.weekdays);
-            if (songData.tags) await SongModel.manageCategories(songId, songData.tags);
-            if (songData.featuringArtists) await SongModel.manageFeaturingArtists(songId, songData.featuringArtists);
 
 
             if (affectedRows > 0) {
@@ -239,15 +268,28 @@ class SongController {
 
     static async deleteSong(request, response) {
         try {
-            const affectedRows = await SongModel.delete(request.params.id);
+            const songId = request.params.id;
+            const song = await SongModel.findById(songId);
+
+            if (!song) {
+                return response.status(404).json({ message: 'Música não encontrada.' });
+            }
+
+            if (song.filename) {
+                const directoryPrefix = path.dirname(song.filename);
+                await storageService.deleteDirectory(directoryPrefix);
+            }
+
+            const affectedRows = await SongModel.delete(songId);
             if (affectedRows > 0) {
-                await logService.logAction(request, 'SONG_DELETED', { songId: request.params.id });
-                response.status(200).json({ message: 'Música deletada com sucesso.' });
+                await logService.logAction(request, 'SONG_DELETED', { songId: songId });
+                response.status(200).json({ message: 'Música e arquivos associados deletados com sucesso.' });
             } else {
-                response.status(404).json({ message: 'Música não encontrada.' });
+                response.status(404).json({ message: 'Música não encontrada no banco de dados, mas a tentativa de limpeza de arquivos foi feita.' });
             }
         } catch (error) {
-            response.status(500).json({ message: 'Erro ao deletar música.' });
+            console.error("ERRO AO DELETAR MÚSICA:", error);
+            response.status(500).json({ message: 'Erro ao deletar música.', error: error.message });
         }
     }
 

@@ -1,16 +1,20 @@
 const cron = require('node-cron');
 const PlaylistModel = require('../api/models/playlistModel');
 const queueService = require('./queueService');
+const socketService = require('./socketService'); // Importar o socketService
 
 const TIMEZONE = 'America/Sao_Paulo';
 
 const getCurrentTimeInfo = () => {
     const now = new Date();
-    const weekday = now.toLocaleString('en-US', { weekday: 'long', timeZone: TIMEZONE }).toLowerCase();
-    const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: TIMEZONE, hour12: false });
-    const date = new Date(now.toLocaleString('en-US', { timeZone: TIMEZONE })).toISOString().split('T')[0];
-    const hour = parseInt(time.substring(0, 2), 10);
-    return { now, weekday, time, date, hour };
+    const nowInSaoPaulo = new Date(now.toLocaleString('en-US', { timeZone: TIMEZONE }));
+    
+    const weekday = nowInSaoPaulo.toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
+    const time = nowInSaoPaulo.toTimeString().split(' ')[0]; // HH:MM:SS
+    const date = nowInSaoPaulo.toISOString().split('T')[0];
+    const hour = nowInSaoPaulo.getHours();
+
+    return { now: nowInSaoPaulo, weekday, time, date, hour };
 };
 
 const checkSchedule = async () => {
@@ -27,7 +31,7 @@ const checkSchedule = async () => {
     if (specificPlaylist) {
         const scheduledStartTime = new Date(`${specificPlaylist.scheduled_date || date}T${specificPlaylist.scheduled_time}`);
         
-        if (currentQueueState.lastManualActionTimestamp && currentQueueState.lastManualActionTimestamp > scheduledStartTime) {
+        if (currentQueueState.lastManualActionTimestamp && currentQueueState.lastManualActionTimestamp > scheduledStartTime.getTime()) {
             console.log(`[Scheduler] DJ assumiu o controle. Agendamento para "${specificPlaylist.name}" ignorado.`);
             return;
         }
@@ -38,6 +42,7 @@ const checkSchedule = async () => {
         
         console.log(`[Scheduler] Iniciando playlist agendada: "${specificPlaylist.name}"`);
         await queueService.activatePlaylist(specificPlaylist.id, 'scheduler');
+        await socketService.playNextSong(); // Adicionado para tocar a primeira música
         return;
     }
     
@@ -48,18 +53,23 @@ const checkSchedule = async () => {
             }
             console.log(`[Scheduler] Preenchendo o silêncio com a playlist padrão: "${fallbackPlaylist.name}"`);
             await queueService.activatePlaylist(fallbackPlaylist.id, 'scheduler');
+            await socketService.playNextSong(); // Adicionado para tocar a primeira música
         }
     }
 };
 
 const initialize = () => {
     cron.schedule('* * * * *', () => {
-        console.log(`[Scheduler] Verificando agendamento... [${new Date().toLocaleString()}]`);
+        const nowInSaoPaulo = new Date().toLocaleString('pt-BR', { timeZone: TIMEZONE });
+        console.log(`[Scheduler] Verificando agendamento... [${nowInSaoPaulo}]`);
         checkSchedule().catch(error => {
             console.error('[Scheduler] Erro durante a verificação:', error);
         });
+    }, {
+        scheduled: true,
+        timezone: TIMEZONE
     });
-    console.log('[Scheduler] O DJ Robô foi ativado e está verificando a programação a cada minuto.');
+    console.log(`[Scheduler] O DJ Robô foi ativado e está verificando a programação a cada minuto no fuso horário: ${TIMEZONE}.`);
 };
 
 module.exports = {

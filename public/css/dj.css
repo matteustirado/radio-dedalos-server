@@ -196,11 +196,15 @@ section {
 }
 
 .playlist-body {
-    padding: 0 1rem;
+    padding: 0;
     max-height: 20rem;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+}
+
+.playlist-body.is-empty {
+    padding: 0 1rem;
 }
 
 .playlist-row {
