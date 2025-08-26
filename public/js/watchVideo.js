@@ -89,6 +89,13 @@ document.addEventListener('DOMContentLoaded', () => {
         video.muted = false;
         video.play().catch(() => {});
         syncUI();
+        
+        // Adiciona a funcionalidade de tela cheia
+        if (!document.fullscreenElement) {
+            videoContainer.requestFullscreen().catch(err => {
+                console.error(`Erro ao tentar entrar em tela cheia: ${err.message}`);
+            });
+        }
     });
 
     muteToggleButton.addEventListener('click', (event) => {
