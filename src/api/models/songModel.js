@@ -61,6 +61,13 @@ class SongModel {
         `;
         const [categories] = await db.query(categoriesSql, [songIds]);
 
+        const weekdaysSql = `
+            SELECT song_id, weekday 
+            FROM song_weekdays 
+            WHERE song_id IN (?)
+        `;
+        const [weekdays] = await db.query(weekdaysSql, [songIds]);
+
         const featuringMap = new Map();
         featuring.forEach(feat => {
             if (!featuringMap.has(feat.song_id)) {
@@ -83,9 +90,18 @@ class SongModel {
             });
         });
 
+        const weekdayMap = new Map();
+        weekdays.forEach(day => {
+            if (!weekdayMap.has(day.song_id)) {
+                weekdayMap.set(day.song_id, []);
+            }
+            weekdayMap.get(day.song_id).push(day.weekday);
+        });
+
         songs.forEach(song => {
             song.featuring_artists = featuringMap.get(song.id) || [];
             song.categories = categoryMap.get(song.id) || [];
+            song.weekdays = weekdayMap.get(song.id) || [];
         });
 
         return songs;
