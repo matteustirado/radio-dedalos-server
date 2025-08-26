@@ -39,12 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentTimeEl = document.getElementById('current-time');
     const totalTimeEl = document.getElementById('total-time');
     const progressBarFill = document.getElementById('progress-bar-fill');
-    const volumeSlider = document.getElementById('volume-slider');
-    const volumeIcon = document.getElementById('volume-icon');
+    const liveIndicator = document.getElementById('live-indicator'); // Nova variável
 
     let selectedSongForBan = null;
     let playbackTimer = null;
-    let volumeDebounceTimer = null;
 
     const showMessage = (message, type = 'success') => {
         messageTextEl.textContent = message;
@@ -78,13 +76,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updatePlayerUI = (nowPlaying, playerState) => {
         clearInterval(playbackTimer);
+        liveIndicator.classList.toggle('active', playerState.isPlaying); // Lógica do indicador
+
         if (nowPlaying && playerState && playerState.playbackStartTimestamp) {
             nowPlayingTitle.textContent = nowPlaying.title;
             nowPlayingArtist.textContent = nowPlaying.artist_name;
             totalTimeEl.textContent = radioPlayer.formatDuration(nowPlaying.duration_seconds);
             playPauseIcon.classList.toggle('fa-pause', playerState.isPlaying);
             playPauseIcon.classList.toggle('fa-play', !playerState.isPlaying);
-            if (typeof playerState.volume !== 'undefined') volumeSlider.value = playerState.volume;
 
             const totalDuration = nowPlaying.duration_seconds;
             const startTime = playerState.playbackStartTimestamp;
