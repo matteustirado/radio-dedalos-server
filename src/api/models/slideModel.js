@@ -3,24 +3,27 @@ const db = require('../../config/database');
 class SlideModel {
     static async findAllByLocationSlugGrouped(locationSlug) {
         const [locations] = await db.execute('SELECT id FROM locations WHERE slug = ?', [locationSlug]);
-        if (locations.length === 0) return {};
+        if (locations.length === 0) return [];
         const locationId = locations[0].id;
 
         const [slides] = await db.execute(
-            'SELECT * FROM slides WHERE location_id = ? AND is_active = TRUE ORDER BY day_of_week, display_order ASC',
+            `SELECT 
+                image_filename, 
+                GROUP_CONCAT(DISTINCT day_of_week ORDER BY FIELD(day_of_week, 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo', 'feriados')) as days,
+                MIN(id) as representative_id 
+             FROM slides 
+             WHERE location_id = ? AND is_active = TRUE 
+             GROUP BY image_filename
+             ORDER BY MIN(uploaded_at) DESC`,
             [locationId]
         );
 
-        const groupedSlides = slides.reduce((acc, slide) => {
-            const day = slide.day_of_week;
-            if (!acc[day]) {
-                acc[day] = [];
-            }
-            acc[day].push(slide);
-            return acc;
-        }, {});
+        const result = slides.map(slide => ({
+            ...slide,
+            days: slide.days ? slide.days.split(',') : []
+        }));
 
-        return groupedSlides;
+        return result;
     }
 
     static async findByLocationAndDay(locationSlug, dayOfWeek) {
