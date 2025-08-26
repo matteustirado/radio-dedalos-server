@@ -10,11 +10,15 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-        const dir = path.join('public/assets/uploads/', req.params.locationSlug);
-        fs.mkdirSync(dir, {
-            recursive: true
-        });
-        cb(null, dir);
+        try {
+            const dir = path.join('public/assets/uploads/', req.params.locationSlug);
+            fs.mkdirSync(dir, {
+                recursive: true
+            });
+            cb(null, dir);
+        } catch (error) {
+            cb(error);
+        }
     },
     filename: function(req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
