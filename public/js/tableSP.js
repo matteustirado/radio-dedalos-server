@@ -4,46 +4,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const serverUrl = 'http://159.65.161.7:3000/';
     const weekDays = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
 
-    async function fetchAndRenderPrices() {
-        try {
-            pricingData = await apiFetch(`/prices/${locationSlug}`);
-            updateInterface();
-        } catch (error) {
-            console.error("Erro ao buscar preços:", error);
-            document.querySelector('.pricing-container').innerHTML = `<p style="color: white; text-align: center;">Não foi possível carregar os preços.</p>`;
-        }
+    function isHoliday(date) {
+        if (!pricingData.feriados) return false;
+        const d = String(date.getDate()).padStart(2, '0');
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const y = date.getFullYear();
+        return pricingData.feriados.includes(`${d}-${m}-${y}`);
     }
 
-    async function fetchAndRenderSlides(day) {
-        try {
-            const dayToFetch = day || getCurrentDay();
-            const slides = await apiFetch(`/slides/${locationSlug}/${dayToFetch}`);
-            const sliderContainer = document.getElementById('slider');
-            if (!sliderContainer) return;
-
-            sliderContainer.innerHTML = '';
-            if (slides && slides.length > 0) {
-                slides.forEach(slide => {
-                    const img = document.createElement('img');
-                    img.src = `/assets/uploads/${locationSlug}/${slide.image_filename}`;
-                    img.alt = slide.image_filename.split('-').slice(2).join(' ').replace(/\.[^/.]+$/, "") || 'Promoção';
-                    sliderContainer.appendChild(img);
-                });
-            }
-
-            document.dispatchEvent(new Event('slidesRendered'));
-        } catch (error) {
-            console.error(`Erro ao carregar os slides para ${day}:`, error);
-        }
+    function getCurrentDay() {
+        const now = new Date();
+        return isHoliday(now) ? 'feriados' : weekDays[now.getDay()];
     }
 
-    function updateInterface() {
-        if (!pricingData || !pricingData.dias) return;
-        const currentDay = getCurrentDay();
-        const currentPeriod = getCurrentPeriod();
-        document.querySelectorAll('.tab-button').forEach(b => b.classList.toggle('active', b.dataset.tab === currentDay));
-        document.querySelectorAll('.period-option').forEach(o => o.classList.toggle('active', o.dataset.period === currentPeriod));
-        updatePrices(currentDay, currentPeriod);
+    function getCurrentPeriod() {
+        const h = new Date().getHours();
+        return (h >= 6 && h < 14) ? 'manha' : (h >= 14 && h < 20) ? 'tarde' : 'noite';
     }
 
     function updatePrices(day, period) {
@@ -75,22 +51,67 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function isHoliday(date) {
-        if (!pricingData.feriados) return false;
-        const d = String(date.getDate()).padStart(2, '0'),
-            m = String(date.getMonth() + 1).padStart(2, '0'),
-            y = date.getFullYear();
-        return pricingData.feriados.includes(`${d}-${m}-${y}`);
+    function updateInterface() {
+        if (!pricingData || !pricingData.dias) return;
+        const currentDay = getCurrentDay();
+        const currentPeriod = getCurrentPeriod();
+        document.querySelectorAll('.tab-button').forEach(b => b.classList.toggle('active', b.dataset.tab === currentDay));
+        document.querySelectorAll('.period-option').forEach(o => o.classList.toggle('active', o.dataset.period === currentPeriod));
+        updatePrices(currentDay, currentPeriod);
     }
 
-    function getCurrentPeriod() {
-        const h = new Date().getHours();
-        return (h >= 6 && h < 14) ? 'manha' : (h >= 14 && h < 20) ? 'tarde' : 'noite';
+    async function fetchAndRenderSlides(day) {
+        try {
+            const dayToFetch = day || getCurrentDay();
+            const slides = await apiFetch(`/slides/${locationSlug}/${dayToFetch}`);
+            const sliderContainer = document.getElementById('slider');
+            if (!sliderContainer) return;
+
+            sliderContainer.innerHTML = '';
+            if (slides && slides.length > 0) {
+                slides.forEach(slide => {
+                    const img = document.createElement('img');
+                    img.src = `/assets/uploads/${locationSlug}/${slide.image_filename}`;
+                    img.alt = slide.image_filename.split('-').slice(2).join(' ').replace(/\.[^/.]+$/, "") || 'Promoção';
+                    sliderContainer.appendChild(img);
+                });
+            }
+
+            document.dispatchEvent(new Event('slidesRendered'));
+        } catch (error) {
+            console.error(`Erro ao carregar os slides para ${day}:`, error);
+        }
     }
 
-    function getCurrentDay() {
-        const now = new Date();
-        return isHoliday(now) ? 'feriados' : weekDays[now.getDay()];
+    async function fetchAndRenderPrices() {
+        try {
+            pricingData = await apiFetch(`/prices/${locationSlug}`);
+            updateInterface();
+        } catch (error) {
+            console.error("Erro ao buscar preços:", error);
+            document.querySelector('.pricing-container').innerHTML = `<p style="color: white; text-align: center;">Não foi possível carregar os preços.</p>`;
+        }
+    }
+    
+    function autoRefreshPeriod() {
+        const correctPeriod = getCurrentPeriod();
+        const activePeriodElement = document.querySelector('.period-option.active');
+        const activePeriod = activePeriodElement ? activePeriodElement.dataset.period : null;
+
+        if (correctPeriod !== activePeriod) {
+            const day = document.querySelector('.tab-button.active')?.dataset.tab || getCurrentDay();
+            
+            if(activePeriodElement) {
+                activePeriodElement.classList.remove('active');
+            }
+
+            const newActivePeriodElement = document.querySelector(`.period-option[data-period="${correctPeriod}"]`);
+            if (newActivePeriodElement) {
+                newActivePeriodElement.classList.add('active');
+            }
+            
+            updatePrices(day, correctPeriod);
+        }
     }
 
     document.querySelectorAll('.tab-button').forEach(button => button.addEventListener('click', (e) => {
@@ -112,6 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetchAndRenderPrices();
     fetchAndRenderSlides(getCurrentDay());
+    
+    setInterval(autoRefreshPeriod, 60000);
 
     const socket = io(serverUrl);
     socket.on('connect', () => console.log('Conectado ao servidor de atualizações em tempo real.'));

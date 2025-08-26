@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const locationSlug = 'sp';
     let currentData = {};
     let selectedFiles = [];
+    let holidays = new Set();
 
     const dayOptions = document.querySelectorAll('.day-option');
     const saveBtn = document.getElementById('saveBtn');
@@ -19,7 +20,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadSlideBtn = document.getElementById('uploadSlideBtn');
     const slidePreviewContainer = document.getElementById('slidePreviewContainer');
     const currentSlidesContainer = document.getElementById('currentSlidesContainer');
+    const holidaySection = document.getElementById('holiday-management-section');
+    const holidayDateInput = document.getElementById('holiday-date-input');
+    const addHolidayBtn = document.getElementById('add-holiday-btn');
+    const holidayListContainer = document.getElementById('holiday-list');
+
     const weekDays = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo', 'feriados'];
+    const weekDayInitials = {
+        segunda: 'S', terca: 'T', quarta: 'Q', quinta: 'Q', sexta: 'S', sabado: 'S', domingo: 'D', feriados: 'F'
+    };
+    
+    const renderHolidays = () => {
+        holidayListContainer.innerHTML = '';
+        const sortedHolidays = Array.from(holidays).sort();
+        sortedHolidays.forEach(dateStr => {
+            const [year, month, day] = dateStr.split('-');
+            const formattedDate = `${day}/${month}/${year}`;
+            const item = document.createElement('div');
+            item.className = 'holiday-item';
+            item.innerHTML = `<span>${formattedDate}</span><button data-date="${dateStr}" class="delete-holiday-btn"><i class="fas fa-trash"></i></button>`;
+            holidayListContainer.appendChild(item);
+        });
+    };
 
     const loadPriceData = async () => {
         try {
@@ -27,6 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentData) {
                 renderCurrentPrices();
                 populatePriceInputs();
+                holidays = new Set(currentData.feriados.map(d => {
+                    const [day, month, year] = d.split('-');
+                    return `${year}-${month}-${day}`;
+                }));
+                renderHolidays();
             }
         } catch (error) {
             alert(`Falha ao carregar dados dos preços: ${error.message}`);
@@ -92,42 +119,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loadSlides = async () => {
         try {
-            const groupedSlides = await apiFetch(`/slides/${locationSlug}`);
+            const uniqueSlides = await apiFetch(`/slides/${locationSlug}`);
             currentSlidesContainer.innerHTML = '';
 
-            if (Object.keys(groupedSlides).length === 0) {
+            if (!uniqueSlides || uniqueSlides.length === 0) {
                 currentSlidesContainer.innerHTML = '<p style="color: var(--color-text-muted);">Nenhum slide cadastrado.</p>';
                 return;
             }
 
-            weekDays.forEach(day => {
-                if (groupedSlides[day] && groupedSlides[day].length > 0) {
-                    const dayGroup = document.createElement('div');
-                    dayGroup.className = 'day-group';
-                    const displayName = day.charAt(0).toUpperCase() + day.slice(1);
-                    dayGroup.innerHTML = `<h4 class="day-group-title">${displayName}</h4>`;
-                    const grid = document.createElement('div');
-                    grid.className = 'slides-display-grid';
+            const slidesGrid = document.createElement('div');
+            slidesGrid.className = 'slides-display-grid';
 
-                    groupedSlides[day].forEach(slide => {
-                        const slideCard = document.createElement('div');
-                        slideCard.className = 'slide-card';
-                        slideCard.innerHTML = `
-                            <img src="/assets/uploads/${locationSlug}/${slide.image_filename}" alt="Slide para ${day}">
-                            <button class="button danger-button delete-slide-btn" data-slide-id="${slide.id}">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        `;
-                        grid.appendChild(slideCard);
-                    });
+            uniqueSlides.forEach(slide => {
+                const slideCard = document.createElement('div');
+                slideCard.className = 'slide-card';
 
-                    dayGroup.appendChild(grid);
-                    currentSlidesContainer.appendChild(dayGroup);
-                }
+                const dayIndicators = weekDays.map(day => {
+                    const isSelected = slide.days.includes(day);
+                    return `<div class="day-indicator ${isSelected ? 'selected' : ''}">${weekDayInitials[day]}</div>`;
+                }).join('');
+
+                slideCard.innerHTML = `
+                    <img src="/assets/uploads/${locationSlug}/${slide.image_filename}" alt="Slide">
+                    <button class="button danger-button delete-slide-btn" data-slide-id="${slide.representative_id}">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                    <div class="slide-day-indicators">${dayIndicators}</div>
+                `;
+                slidesGrid.appendChild(slideCard);
             });
+            
+            currentSlidesContainer.appendChild(slidesGrid);
 
         } catch (error) {
             currentSlidesContainer.innerHTML = '<p>Erro ao carregar os slides.</p>';
+            console.error(error);
         }
     };
 
@@ -143,11 +169,15 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedFiles.forEach(file => {
             const previewCard = document.createElement('div');
             previewCard.className = 'slide-preview-card';
-            const options = weekDays.map(day => `<option value="${day}">${day.charAt(0).toUpperCase() + day.slice(1)}</option>`).join('');
+            
+            const daySelectors = weekDays.map(day => 
+                `<button type="button" class="day-selector-btn" data-day="${day}">${weekDayInitials[day]}</button>`
+            ).join('');
+
             previewCard.innerHTML = `
                 <img src="${URL.createObjectURL(file)}" alt="Preview de ${file.name}">
                 <p class="file-info">${file.name}</p>
-                <select class="day-selector form-input">${options}</select>
+                <div class="day-selector-container">${daySelectors}</div>
             `;
             slidePreviewContainer.appendChild(previewCard);
         });
@@ -164,12 +194,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const formData = new FormData();
         const daysArray = [];
+        let hasAtLeastOneDaySelected = false;
 
         previewCards.forEach((card, index) => {
-            const selectedDay = card.querySelector('.day-selector').value;
-            daysArray.push(selectedDay);
+            const selectedDays = Array.from(card.querySelectorAll('.day-selector-btn.selected')).map(btn => btn.dataset.day);
+            daysArray.push(selectedDays);
             formData.append('slideImages', selectedFiles[index]);
+            if (selectedDays.length > 0) {
+                hasAtLeastOneDaySelected = true;
+            }
         });
+
+        if (!hasAtLeastOneDaySelected) {
+            alert('Por favor, selecione pelo menos um dia para uma das imagens.');
+            uploadSlideBtn.disabled = false;
+            uploadSlideBtn.innerHTML = '<i class="fas fa-upload"></i> Enviar Slides Selecionados';
+            return;
+        }
+
         formData.append('daysOfWeek', JSON.stringify(daysArray));
 
         try {
@@ -195,6 +237,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selectedDays.length === 0) return alert('Selecione pelo menos um dia da semana para os preços.');
 
         const dataToSave = JSON.parse(JSON.stringify(currentData));
+        dataToSave.feriados = Array.from(holidays).map(d => {
+            const [year, month, day] = d.split('-');
+            return `${day}-${month}-${year}`;
+        });
+        
         selectedDays.forEach(day => {
             if (!dataToSave.dias[day]) dataToSave.dias[day] = {
                 prices: {},
@@ -224,6 +271,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             alert('Tabela de preços atualizada com sucesso!');
             dayOptions.forEach(button => button.classList.remove('active'));
+            holidaySection.classList.add('hidden');
+            loadPriceData();
         } catch (error) {
             alert(`Erro ao salvar preços: ${error.message}`);
         }
@@ -231,6 +280,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     slideImageInput.addEventListener('change', handleFileSelection);
     uploadSlideBtn.addEventListener('click', handleUpload);
+    
+    slidePreviewContainer.addEventListener('click', (event) => {
+        const dayBtn = event.target.closest('.day-selector-btn');
+        if (dayBtn) {
+            dayBtn.classList.toggle('selected');
+        }
+    });
+
     currentSlidesContainer.addEventListener('click', async (event) => {
         const deleteBtn = event.target.closest('.delete-slide-btn');
         if (!deleteBtn) return;
@@ -247,8 +304,30 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+    
+    dayOptions.forEach(button => button.addEventListener('click', () => {
+        button.classList.toggle('active');
+        const isFeriadosActive = document.querySelector('.day-option[data-day="feriados"]').classList.contains('active');
+        holidaySection.classList.toggle('hidden', !isFeriadosActive);
+    }));
 
-    dayOptions.forEach(button => button.addEventListener('click', () => button.classList.toggle('active')));
+    addHolidayBtn.addEventListener('click', () => {
+        const dateValue = holidayDateInput.value;
+        if (dateValue) {
+            holidays.add(dateValue);
+            renderHolidays();
+            holidayDateInput.value = '';
+        }
+    });
+
+    holidayListContainer.addEventListener('click', (e) => {
+        const deleteBtn = e.target.closest('.delete-holiday-btn');
+        if (deleteBtn) {
+            holidays.delete(deleteBtn.dataset.date);
+            renderHolidays();
+        }
+    });
+
     if (logoutBtn) logoutBtn.addEventListener('click', logout);
 
     loadPriceData();

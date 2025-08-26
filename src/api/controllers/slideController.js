@@ -45,7 +45,7 @@ class SlideController {
             if (files.length !== parsedDays.length) {
                 cleanupFiles(files, locationSlug);
                 return response.status(400).json({
-                    message: 'A quantidade de imagens não corresponde à quantidade de dias da semana informados.'
+                    message: 'A quantidade de imagens não corresponde à quantidade de dados de dias da semana.'
                 });
             }
 
@@ -58,10 +58,20 @@ class SlideController {
             }
             const locationId = locations[0].id;
 
-            const promises = files.map((file, index) => {
-                const day = parsedDays[index];
-                return SlideModel.create(locationId, file.filename, day);
+            const promises = [];
+            files.forEach((file, index) => {
+                const daysForThisFile = parsedDays[index];
+                if (daysForThisFile && daysForThisFile.length > 0) {
+                    daysForThisFile.forEach(day => {
+                        promises.push(SlideModel.create(locationId, file.filename, day));
+                    });
+                }
             });
+
+            if (promises.length === 0) {
+                cleanupFiles(files, locationSlug);
+                return response.status(400).json({ message: 'Nenhum dia foi selecionado para as imagens enviadas.' });
+            }
 
             const newSlides = await Promise.all(promises);
 
@@ -78,7 +88,7 @@ class SlideController {
             }
 
             response.status(201).json({
-                message: `${newSlides.length} slide(s) enviados com sucesso!`,
+                message: `${files.length} slide(s) enviados com sucesso!`,
                 slides: newSlides
             });
 
