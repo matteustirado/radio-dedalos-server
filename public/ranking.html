@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking de Artistas</title>
+    <link rel="icon" href="assets/img/logo.png" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/ranking.css">
+</head>
+<body>
+    <main id="app-container" class="gradient-border">
+        <header id="panel-header">
+            <div class="header-content" style="width: 100%;">
+                <h1 class="header-title gradient-text">Top Artistas da Semana</h1>
+                <p class="header-subtitle">Ajude seu ídolo a chegar no topo! Quem manda na pista essa semana?</p>
+            </div>
+        </header>
+
+        <section class="card-style">
+            <div class="ranking-grid">
+                <div class="podium-section">
+                    <h2 class="section-title">🏆 Pódio da Semana Passada 🏆</h2>
+                    <div id="podium-container" class="podium-container">
+                        <div class="placeholder-text" style="width: 100%;">Carregando pódio...</div>
+                    </div>
+                </div>
+
+                <div id="vote-section" class="vote-section">
+                    <div id="vote-form-wrapper">
+                        <h2 class="section-title">Vote no seu artista!</h2>
+                        <div class="form-group autocomplete-container">
+                            <label for="artist-name">Artista ou banda:</label>
+                            <input type="text" id="artist-name" class="form-input" placeholder="Digite o nome aqui...">
+                            <div id="artist-autocomplete-list" class="autocomplete-list"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="wristband-code">Número da Pulseira</label>
+                            <input type="text" id="wristband-code" class="form-input" placeholder="Ex: 123456">
+                        </div>
+                        <div class="form-actions">
+                            <button id="cancel-vote-btn" class="button secondary-button">Voltar</button>
+                            <button id="submit-vote-btn" class="button primary-button">
+                                <span id="submit-btn-text">Enviar Voto</span>
+                                <i id="submit-spinner" class="fas fa-spinner fa-spin hidden"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="thank-you-message" class="thank-you-message hidden">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Obrigado pelo seu voto!</h3>
+                        <p id="vote-confirmation-text"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ranking-view" class="card-style hidden">
+            <h2 class="section-title" style="justify-content: center;">Ranking Parcial desta Semana</h2>
+            <ul id="ranking-list"></ul>
+        </section>
+    </main>
+
+    <script src="js/validationCode.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/ranking.js"></script>
+</body>
+</html>

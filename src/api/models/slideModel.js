@@ -76,4 +76,4 @@ class SlideModel {
     }
 }
 
-module.exports = SlideModel;
+module.exports = SlideModel;   

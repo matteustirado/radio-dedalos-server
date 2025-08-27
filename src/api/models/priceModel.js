@@ -82,6 +82,12 @@ class PriceModel {
             connection.release();
         }
     }
+
+    static async cleanupPastHolidays() {
+        const today = new Date().toISOString().split('T')[0];
+        const [result] = await db.execute('DELETE FROM holidays WHERE holiday_date < ?', [today]);
+        return result.affectedRows;
+    }
 }
 
 module.exports = PriceModel;

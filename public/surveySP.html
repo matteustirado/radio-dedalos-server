@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisa de Clima - SP</title>
+    <link rel="icon" href="assets/img/logo.png" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/survey.css">
+</head>
+<body>
+    <main id="app-container" class="gradient-border">
+        <header id="panel-header">
+            <div class="header-content">
+                <h1 class="header-title">
+                    <span class="gradient-text">Sua Opinião Vale Desconto!</span> 🤑
+                </h1>
+                <p id="survey-subtitle" class="header-subtitle"></p>
+            </div>
+        </header>
+
+        <section class="card-style survey-container">
+            <div id="start-view" class="survey-step">
+                <p class="text-center" style="margin-bottom: 1.5rem; font-size: 1.1rem;">Quer ganhar um voucher de <strong>10% de desconto</strong> na sua próxima visita? Entre no game! Responda 6 perguntinhas rápidas e garanta seu prêmio.</p>
+                <div class="form-group" style="max-width: 300px; margin: 0 auto;">
+                    <label for="wristband-code">Primeiro, digite o código da sua pulseira:</label>
+                    <input type="text" id="wristband-code" class="form-input" placeholder="Ex: 123456">
+                    <div class="form-actions" style="margin-top: 1rem;">
+                        <button id="start-survey-btn" class="button primary-button">Começar!</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step1-view" class="survey-step hidden"></div>
+
+            <div id="step2-view" class="survey-step hidden"></div>
+
+            <div id="qr-code-view" class="survey-step hidden">
+                <p class="countdown-timer">Você será redirecionado em <span id="countdown">30</span> segundos...</p>
+                <div class="qr-code-placeholder">
+                    <span>QR Code em breve</span>
+                </div>
+                <p class="qr-code-link">...ou acesse: <span>link.dedalos.com/cupom</span></p>
+                <div id="final-comment-group" class="form-group">
+                    <label for="final-comment">Dúvidas, sugestões ou elogios? Manda pra gente!</label>
+                    <textarea id="final-comment" rows="3" class="form-input"></textarea>
+                    <div class="form-actions">
+                        <button id="send-comment-btn" class="button secondary-button hidden">Enviar Comentário</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/validationCode.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/surveyUI.js"></script>
+</body>
+</html>

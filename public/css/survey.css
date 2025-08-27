@@ -1,0 +1,145 @@
+.survey-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.header-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.survey-step {
+    width: 100%;
+    max-width: 600px;
+}
+
+.survey-question {
+    background-color: var(--bg-dark-secondary);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.survey-question:last-child {
+    margin-bottom: 1.5rem;
+}
+
+.survey-question h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--color-text);
+    line-height: 1.5;
+}
+
+.rating-options, .boolean-options {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.rating-options button, .boolean-options button {
+    font-size: 2.5rem;
+    transition: all 0.2s ease-in-out;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.rating-options button:hover, .boolean-options button:hover {
+    transform: scale(1.2);
+}
+
+.rating-options button.selected, .boolean-options button.selected {
+    transform: scale(1.25);
+    filter: drop-shadow(0 0 8px var(--color-primary));
+}
+
+.boolean-options button {
+    font-size: 2rem;
+}
+
+#qr-code-view {
+    text-align: center;
+}
+
+.countdown-timer {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.qr-code-placeholder {
+    width: 250px;
+    height: 250px;
+    background-color: #374151;
+    border: 2px dashed var(--border-color);
+    border-radius: 0.5rem;
+    margin: 0 auto 1.5rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-muted);
+}
+
+.qr-code-link {
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.qr-code-link span {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+#final-comment-group {
+    margin-top: 2rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#final-comment {
+    resize: none;
+}
+
+/* Otimização para Tablet Paisagem */
+@media (max-width: 1280px) and (max-height: 800px) and (orientation: landscape) {
+    body {
+        justify-content: center;
+    }
+
+    #app-container {
+        padding: 1.5rem;
+        margin: 1rem 0;
+    }
+
+    .header-title {
+        font-size: 2rem;
+    }
+    
+    .survey-question {
+        margin-bottom: 1rem;
+        padding: 1rem;
+    }
+
+    .survey-question h3 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    #qr-code-placeholder {
+        width: 200px;
+        height: 200px;
+    }
+    
+    #final-comment-group {
+        margin-top: 1rem;
+    }
+}

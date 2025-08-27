@@ -60,6 +60,12 @@ button {
     }
 }
 
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
 body {
     background: radial-gradient(circle at center, var(--bg-dark-secondary) 0%, var(--bg-dark-primary) 45%, #28241e 100%);
     color: var(--color-text);
@@ -175,11 +181,14 @@ body::after {
     background-color: #4b5563;
 }
 
-.danger-button {
+.danger-button,
+.button.error {
     background-color: var(--color-danger);
+    animation: shake 0.5s;
 }
 
-.danger-button:hover:not(:disabled) {
+.danger-button:hover:not(:disabled),
+.button.error:hover:not(:disabled) {
     background-color: #c43333;
 }
 
