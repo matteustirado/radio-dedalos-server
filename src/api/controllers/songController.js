@@ -151,6 +151,9 @@ class SongController {
             if (songData.weekdays) await SongModel.manageWeekdays(newSong.id, songData.weekdays);
 
             await logService.logAction(request, 'SONG_CREATED', { songId: newSong.id, title: newSong.title });
+            
+            socketService.getIo().emit('songs:updated');
+
             response.status(201).json(newSong);
 
         } catch (error) {
@@ -248,6 +251,7 @@ class SongController {
 
             if (affectedRows > 0) {
                 await logService.logAction(request, 'SONG_UPDATED', { songId: songId });
+                socketService.getIo().emit('songs:updated');
                 response.status(200).json({ message: 'Música atualizada com sucesso.' });
             } else {
                 response.status(404).json({ message: 'Música não encontrada.' });
@@ -283,6 +287,7 @@ class SongController {
             const affectedRows = await SongModel.delete(songId);
             if (affectedRows > 0) {
                 await logService.logAction(request, 'SONG_DELETED', { songId: songId });
+                socketService.getIo().emit('songs:updated');
                 response.status(200).json({ message: 'Música e arquivos associados deletados com sucesso.' });
             } else {
                 response.status(404).json({ message: 'Música não encontrada no banco de dados, mas a tentativa de limpeza de arquivos foi feita.' });

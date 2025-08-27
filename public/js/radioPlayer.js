@@ -91,6 +91,42 @@ const radioPlayer = (() => {
             }
             notify();
         });
+
+        socket.on('songs:updated', async () => {
+            console.log('[RadioPlayer] Evento de atualização de músicas recebido. Buscando nova lista.');
+            try {
+                const isJukeboxPage = window.location.pathname.toLowerCase().includes('jukebox');
+                const allSongs = await apiFetch('/songs');
+                state.allSongs = allSongs || [];
+        
+                if (isJukeboxPage) {
+                    const jukeboxSongs = await apiFetch('/jukebox/songs');
+                    state.availableJukeboxSongs = jukeboxSongs || [];
+                }
+        
+                const artistMap = new Map(state.allArtists.map(a => [String(a.id), a.name]));
+                const enrichArtistNames = (songList) => {
+                    songList.forEach(s => {
+                        let mainArtistName = artistMap.get(String(s.artist_id)) || 'Desconhecido';
+                        let fullArtistString = mainArtistName;
+                        if (s.featuring_artists && s.featuring_artists.length > 0) {
+                            const featuringArtistsNames = s.featuring_artists.map(f => f.name).join(', ');
+                            fullArtistString += `, ${featuringArtistsNames}`;
+                        }
+                        s.artist_name = fullArtistString;
+                    });
+                };
+        
+                enrichArtistNames(state.allSongs);
+                if (isJukeboxPage) {
+                    enrichArtistNames(state.availableJukeboxSongs);
+                }
+        
+                notify();
+            } catch (e) {
+                console.error('Falha ao atualizar a lista de músicas via socket.', e);
+            }
+        });
     };
 
     const initialize = async () => {
