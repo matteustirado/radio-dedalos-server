@@ -21,7 +21,7 @@
         </header>
 
         <section class="card-style">
-            <p id="emoji-info-text" class="emoji-info-text">O que está achando do nosso bar hoje? Escolhe uma opção aqui, a gente quer saber!</p>
+            <p id="emoji-info-text" class="emoji-info-text">Qual a vibe da sua noite? Clica na reação que mais combina com o rolê!</p>
             <div class="emoji-rating">
                 <button class="emoji-btn" data-rating="1" title="Clima Frio"><img src="assets/img/cold.png" data-static-src="assets/img/cold.png" data-animated-src="assets/img/cold.gif" alt="Clima Frio"></button>
                 <button class="emoji-btn" data-rating="2" title="Péssimo"><img src="assets/img/angry.png" data-static-src="assets/img/angry.png" data-animated-src="assets/img/angry.gif" alt="Péssimo"></button>
@@ -39,7 +39,7 @@
                 </div>
                 <div class="form-group">
                     <label for="wristband-code">Seu código de pulseira</label>
-                    <input type="text" id="wristband-code" class="form-input" placeholder="Ex: 123456">
+                    <input type="text" id="wristband-code" class="form-input" placeholder="Digite o código aqui para validar">
                 </div>
                 <div class="form-actions">
                     <button id="cancel-feedback-btn" class="button secondary-button">Cancelar</button>
@@ -68,10 +68,13 @@
                     </span>
                     <p class="card-description">Vire o DJ! Peça sua música favorita e agite a pista.</p>
                 </a>
-                <a href="surveySP.html" class="access-card-btn">
+                <a href="#" class="access-card-btn disabled">
                     <i class="fas fa-chart-line"></i>
                     <span class="card-title">Pesquisa de Clima</span>
                     <p class="card-description">Sua opinião vale ouro! E descontos também.</p>
+                    <div class="disabled-overlay">
+                        <span>Indisponível no momento</span>
+                    </div>
                 </a>
                 <a href="ranking.html" class="access-card-btn">
                     <i class="fas fa-trophy"></i>
