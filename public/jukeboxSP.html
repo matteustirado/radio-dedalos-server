@@ -1,95 +1,118 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hub de Interação - SP</title>
+    <title>Painel de Solicitações SP</title>
     <link rel="icon" href="assets/img/logo.png" type="image/x-icon" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/hubTab.css">
+    <link rel="stylesheet" href="css/jukebox.css">
 </head>
+
 <body>
     <main id="app-container" class="gradient-border">
         <header id="panel-header">
-            <div class="header-content">
-                <h1 class="header-title gradient-text">E aí, como está o clima hoje?</h1>
+            <div>
+                <h1 class="header-title gradient-text">Solicitação de Músicas</h1>
+                <p class="header-subtitle">Peça sua música favorita agora mesmo!</p>
             </div>
+            <div id="fullscreen-trigger" class="fullscreen-trigger-area" title="Ativar/Desativar modo tela cheia"></div>
         </header>
 
-        <section class="card-style">
-            <p id="emoji-info-text" class="emoji-info-text">Qual a vibe da sua noite? Clica na reação que mais combina com o rolê!</p>
-            <div class="emoji-rating">
-                <button class="emoji-btn" data-rating="1" title="Clima Frio"><img src="assets/img/cold.png" data-static-src="assets/img/cold.png" data-animated-src="assets/img/cold.gif" alt="Clima Frio"></button>
-                <button class="emoji-btn" data-rating="2" title="Péssimo"><img src="assets/img/angry.png" data-static-src="assets/img/angry.png" data-animated-src="assets/img/angry.gif" alt="Péssimo"></button>
-                <button class="emoji-btn" data-rating="3" title="Ruim"><img src="assets/img/sad.png" data-static-src="assets/img/sad.png" data-animated-src="assets/img/sad.gif" alt="Ruim"></button>
-                <button class="emoji-btn" data-rating="4" title="Neutro"><img src="assets/img/confuse.png" data-static-src="assets/img/confuse.png" data-animated-src="assets/img/confuse.gif" alt="Neutro"></button>
-                <button class="emoji-btn" data-rating="5" title="Bom"><img src="assets/img/happy.png" data-static-src="assets/img/happy.png" data-animated-src="assets/img/happy.gif" alt="Bom"></button>
-                <button class="emoji-btn" data-rating="6" title="Incrível"><img src="assets/img/love.png" data-static-src="assets/img/love.png" data-animated-src="assets/img/love.gif" alt="Incrível"></button>
-                <button class="emoji-btn" data-rating="7" title="Clima Quente"><img src="assets/img/hot.png" data-static-src="assets/img/hot.png" data-animated-src="assets/img/hot.gif" alt="Clima Quente"></button>
+        <div id="success-message" class="alert success-alert hidden">
+            <i class="fa-solid fa-circle-check"></i>
+            <span id="success-text"></span>
+        </div>
+
+        <section class="main-content-grid">
+            <div class="card-style">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-magnifying-glass icon"></i> Buscar Música
+                </h2>
+
+                <div class="form-group">
+                    <label for="search-input">Nome da Música ou Artista</label>
+                    <div class="dropdown">
+                        <input type="text" id="search-input" class="form-input" placeholder="Digite para buscar...">
+                        <div id="dropdown-content" class="dropdown-content"></div>
+                    </div>
+                </div>
+
+                <div class="form-row-combined">
+                    <div class="form-group">
+                        <label for="client-code">Numero da Pulseira</label>
+                        <input type="text" id="client-code" class="form-input" placeholder="Ex: 123456">
+                    </div>
+                    <div class="form-actions">
+                        <button id="request-btn" class="button success-button">
+                            <i class="fa-solid fa-music"></i> Pedir Música
+                        </button>
+                        <button id="suggest-btn" class="button primary-button hidden">
+                            <i class="fa-solid fa-lightbulb"></i> Sugerir Adição
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <div id="feedback-form" class="hidden fade-in">
-                <div class="form-group">
-                    <label id="feedback-label" for="feedback-text">Nos conte mais:</label>
-                    <textarea id="feedback-text" rows="3" class="form-input" placeholder="Sua opinião é muito importante..."></textarea>
+            <div class="card-style now-playing-card">
+                <h2 class="section-title">
+                    <i class="fa-solid fa-volume-high icon"></i> Tocando Agora
+                </h2>
+                <div class="now-playing-content">
+                    <div class="track-info">
+                        <h3 id="now-playing-title" class="track-title">A Rádio está no Ar</h3>
+                        <p id="now-playing-artist" class="track-artist">Faça seu pedido!</p>
+                    </div>
+                    <div class="progress-bar-container">
+                        <span id="current-time">0:00</span>
+                        <div class="progress-bar">
+                            <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
+                        </div>
+                        <span id="total-time">0:00</span>
+                    </div>
+                    <div id="next-up-grid" class="next-up-grid">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="wristband-code">Seu código de pulseira</label>
-                    <input type="text" id="wristband-code" class="form-input" placeholder="Digite o código aqui para validar">
-                </div>
-                <div class="form-actions">
-                    <button id="cancel-feedback-btn" class="button secondary-button">Cancelar</button>
-                    <button id="submit-feedback-btn" class="button primary-button">
-                        <span id="submit-btn-text">
-                            <i class="fas fa-paper-plane"></i> Enviar Avaliação
-                        </span>
-                        <i id="submit-spinner" class="fas fa-spinner fa-spin hidden"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div id="success-message" class="alert success-alert hidden">
-                <i class="fas fa-check-circle"></i>
-                <span id="success-text">Obrigado pelo seu feedback!</span>
             </div>
         </section>
 
-        <section id="access-section" class="card-style">
-            <div class="access-grid">
-                <a href="jukeboxSP.html" class="access-card-btn">
-                    <i class="fas fa-broadcast-tower"></i>
-                    <span class="card-title">
-                        <span class="status-dot"></span>
-                        Rádio Dedalos
-                    </span>
-                    <p class="card-description">Vire o DJ! Peça sua música favorita e agite a pista.</p>
-                </a>
-                <a href="#" class="access-card-btn disabled">
-                    <i class="fas fa-chart-line"></i>
-                    <span class="card-title">Pesquisa de Clima</span>
-                    <p class="card-description">Sua opinião vale ouro! E descontos também.</p>
-                    <div class="disabled-overlay">
-                        <span>Indisponível no momento</span>
-                    </div>
-                </a>
-                <a href="ranking.html" class="access-card-btn">
-                    <i class="fas fa-trophy"></i>
-                    <span class="card-title">Ranking de Artistas</span>
-                    <p class="card-description">Vote no seu ídolo e ajude a coroar o melhor da semana.</p>
-                </a>
+        <section class="card-style">
+            <h2 id="daily-theme-title" class="section-title">
+                <i class="fa-solid fa-circle-info icon"></i> Playlist de Hoje
+            </h2>
+            <div class="playlist-info-content">
+                <div id="daily-theme-artists" class="artist-tags-grid"></div>
+                <p id="playlist-description" class="playlist-description"></p>
             </div>
         </section>
     </main>
-    
-    <script src="/socket.io/socket.io.js"></script>
+
+    <div id="password-popup" class="password-popup hidden">
+        <div class="form-group">
+            <label for="exit-password">Senha para Sair</label>
+            <div class="password-input-wrapper">
+                <input type="password" id="exit-password" class="form-input small">
+                <button id="submit-password-btn" class="button primary-button small icon-only">
+                    <i class="fa-solid fa-unlock"></i>
+                </button>
+            </div>
+            <p id="password-error" class="password-error hidden">Senha incorreta.</p>
+        </div>
+    </div>
+
+    <div id="reenter-fullscreen-overlay" class="reenter-overlay hidden"></div>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/api.js"></script>
     <script src="js/radioPlayer.js"></script>
     <script src="js/validationCode.js"></script>
-    <script src="js/hubTab.js"></script>
+    <script src="js/jukeboxUI.js"></script>
 </body>
+
 </html>
