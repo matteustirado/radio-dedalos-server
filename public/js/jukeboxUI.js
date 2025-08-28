@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const config = JukeboxConfig;
+    const config = ValidationConfig;
     const isClientCodeValid = config.getValidationFunction();
 
     const searchInput = document.getElementById('search-input');
@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const clientCodeInput = document.getElementById('client-code');
     const nowPlayingTitle = document.getElementById('now-playing-title');
     const nowPlayingArtist = document.getElementById('now-playing-artist');
+    const nowPlayingCard = document.querySelector('.now-playing-card');
     const nextUpGrid = document.getElementById('next-up-grid');
     const dailyThemeTitle = document.getElementById('daily-theme-title');
     const dailyThemeArtists = document.getElementById('daily-theme-artists');
@@ -29,6 +30,38 @@ document.addEventListener('DOMContentLoaded', () => {
     let isFullscreenLocked = false;
     let selectedSongId = null;
     let playbackTimer = null;
+    let inactivityTimer = null;
+
+    const resetRequestButton = () => {
+        requestBtn.disabled = false;
+        requestBtn.classList.remove('error');
+        requestBtn.innerHTML = '<i class="fas fa-music"></i> Pedir Música';
+    };
+
+    const resetSuggestButton = () => {
+        suggestBtn.disabled = false;
+        suggestBtn.classList.remove('error');
+        suggestBtn.innerHTML = '<i class="fas fa-lightbulb"></i> Sugerir Adição';
+    };
+
+    const setupInactivityRedirect = () => {
+        const resetTimer = () => {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                const pathname = window.location.pathname.toLowerCase();
+                if (pathname.includes('bh')) {
+                    window.location.href = '/hubTabBH.html';
+                } else {
+                    window.location.href = '/hubTabSP.html';
+                }
+            }, 20000);
+        };
+
+        window.onload = resetTimer;
+        document.onmousemove = resetTimer;
+        document.onmousedown = resetTimer;
+        document.onkeypress = resetTimer;
+    };
 
     const showMessage = (message, type = 'success') => {
         messageTextEl.textContent = message;
@@ -47,7 +80,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updatePlayerUI = (nowPlaying, playerState) => {
         clearInterval(playbackTimer);
-        if (nowPlaying && playerState && playerState.playbackStartTimestamp) {
+
+        const now = new Date();
+        const currentHour = now.getHours();
+        const isRadioTime = currentHour >= 16 || currentHour < 6;
+        const isPlaying = playerState && playerState.isPlaying;
+
+        const titleElement = nowPlayingCard.querySelector('.section-title');
+        
+        let statusDotHTML = `<span class="status-dot ${isPlaying ? 'online' : 'offline'}"></span>`;
+
+        if (nowPlaying && isPlaying) {
+            titleElement.innerHTML = `<i class="fas fa-volume-up icon"></i> ${statusDotHTML} Tocando Agora`;
             nowPlayingTitle.textContent = nowPlaying.title;
             nowPlayingArtist.textContent = nowPlaying.artist_name;
             totalTimeEl.textContent = radioPlayer.formatDuration(nowPlaying.duration_seconds);
@@ -77,8 +121,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 playbackTimer = setInterval(calculateProgress, 1000);
             }
         } else {
-            nowPlayingTitle.textContent = 'A Rádio está no Ar';
-            nowPlayingArtist.textContent = 'Faça seu pedido!';
+            if (isRadioTime) {
+                titleElement.innerHTML = `<i class="fas fa-volume-up icon"></i> ${statusDotHTML} A Rádio está no Ar`;
+                nowPlayingTitle.textContent = 'Vire o DJ!';
+                nowPlayingArtist.textContent = 'Faça seu pedido!';
+            } else {
+                titleElement.innerHTML = `<i class="fas fa-volume-up icon"></i> ${statusDotHTML} Fora do Ar`;
+                nowPlayingTitle.textContent = 'Estamos em silêncio...';
+                nowPlayingArtist.textContent = 'Voltamos às 16h com a melhor programação!';
+            }
             totalTimeEl.textContent = '0:00';
             currentTimeEl.textContent = '0:00';
             progressBarFill.style.width = '0%';
@@ -183,8 +234,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!isValid) {
             clientCodeInput.classList.add('error');
+            requestBtn.classList.add('error');
+            requestBtn.innerHTML = 'Tentar Novamente';
             requestBtn.disabled = false;
-            requestBtn.innerHTML = '<i class="fas fa-music"></i> Pedir Música';
             return;
         }
 
@@ -198,8 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             showMessage(`Erro: ${error.message}`, 'danger');
         } finally {
-            requestBtn.disabled = false;
-            requestBtn.innerHTML = '<i class="fas fa-music"></i> Pedir Música';
+            resetRequestButton();
         }
     });
 
@@ -223,8 +274,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!isValid) {
             clientCodeInput.classList.add('error');
+            suggestBtn.classList.add('error');
+            suggestBtn.innerHTML = 'Tentar Novamente';
             suggestBtn.disabled = false;
-            suggestBtn.innerHTML = '<i class="fas fa-lightbulb"></i> Sugerir Adição';
             return;
         }
 
@@ -239,13 +291,16 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             showMessage(`Erro: ${error.message}`, 'danger');
         } finally {
-            suggestBtn.disabled = false;
-            suggestBtn.innerHTML = '<i class="fas fa-lightbulb"></i> Sugerir Adição';
+            resetSuggestButton();
         }
     });
     
     clientCodeInput.addEventListener('input', () => {
-        clientCodeInput.classList.remove('error');
+        if (clientCodeInput.classList.contains('error')) {
+            clientCodeInput.classList.remove('error');
+            resetRequestButton();
+            resetSuggestButton();
+        }
         clientCodeInput.value = clientCodeInput.value.replace(/[^0-9]/g, '');
     });
 
@@ -259,5 +314,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     radioPlayer.subscribe(render);
     setupAutocomplete();
+    setupInactivityRedirect();
     radioPlayer.initialize();
 });
