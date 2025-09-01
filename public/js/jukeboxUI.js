@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let isFullscreenLocked = false;
     let selectedSongId = null;
     let playbackTimer = null;
-    let inactivityTimer = null;
 
     const resetRequestButton = () => {
         requestBtn.disabled = false;
@@ -42,25 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
         suggestBtn.disabled = false;
         suggestBtn.classList.remove('error');
         suggestBtn.innerHTML = '<i class="fas fa-lightbulb"></i> Sugerir Adição';
-    };
-
-    const setupInactivityRedirect = () => {
-        const resetTimer = () => {
-            clearTimeout(inactivityTimer);
-            inactivityTimer = setTimeout(() => {
-                const pathname = window.location.pathname.toLowerCase();
-                if (pathname.includes('bh')) {
-                    window.location.href = '/hubTabBH.html';
-                } else {
-                    window.location.href = '/hubTabSP.html';
-                }
-            }, 20000);
-        };
-
-        window.onload = resetTimer;
-        document.onmousemove = resetTimer;
-        document.onmousedown = resetTimer;
-        document.onkeypress = resetTimer;
     };
 
     const showMessage = (message, type = 'success') => {
@@ -314,6 +294,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     radioPlayer.subscribe(render);
     setupAutocomplete();
-    setupInactivityRedirect();
+    ValidationConfig.setupInactivityRedirect();
     radioPlayer.initialize();
 });

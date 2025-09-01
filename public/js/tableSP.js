@@ -114,6 +114,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function autoRefreshDay() {
+        const correctDay = getCurrentDay();
+        const activeDayElement = document.querySelector('.tab-button.active');
+        const activeDay = activeDayElement ? activeDayElement.dataset.tab : null;
+        if (correctDay !== activeDay) {
+            updateInterface();
+            fetchAndRenderSlides(correctDay);
+        }
+    }
+
     document.querySelectorAll('.tab-button').forEach(button => button.addEventListener('click', (e) => {
         const day = e.target.dataset.tab;
         const period = document.querySelector('.period-option.active')?.dataset.period || 'manha';
@@ -135,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchAndRenderSlides(getCurrentDay());
     
     setInterval(autoRefreshPeriod, 60000);
+    setInterval(autoRefreshDay, 60000);
 
     const socket = io(serverUrl);
     socket.on('connect', () => console.log('Conectado ao servidor de atualizações em tempo real.'));

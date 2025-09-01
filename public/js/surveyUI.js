@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const finalCommentInput = document.getElementById('final-comment');
     const sendCommentBtn = document.getElementById('send-comment-btn');
 
-    let inactivityTimer = null;
     let qrRedirectTimer = null;
     const isClientCodeValid = ValidationConfig.getValidationFunction();
     const unit = ValidationConfig.unit;
@@ -33,17 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
         startSurveyBtn.classList.remove('error');
         wristbandCodeInput.classList.remove('error');
         startSurveyBtn.textContent = 'Começar!';
-    };
-
-    const setupInactivityRedirect = () => {
-        const resetTimer = () => {
-            clearTimeout(inactivityTimer);
-            inactivityTimer = setTimeout(() => {
-                const hubPage = unit === 'bh' ? '/hubTabBH.html' : '/hubTabSP.html';
-                window.location.href = hubPage;
-            }, 30000);
-        };
-        ['load', 'mousemove', 'mousedown', 'keypress'].forEach(evt => window.addEventListener(evt, resetTimer));
     };
 
     const showView = (viewToShow) => {
@@ -197,5 +185,5 @@ document.addEventListener('DOMContentLoaded', () => {
     renderQuestions('step2', step2View);
     step1View.addEventListener('click', handleAnswerClick);
     step2View.addEventListener('click', handleAnswerClick);
-    setupInactivityRedirect();
+    ValidationConfig.setupInactivityRedirect(30000);
 });

@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const thankYouMessage = document.getElementById('thank-you-message');
     const voteConfirmationText = document.getElementById('vote-confirmation-text');
 
-    let inactivityTimer = null;
     let allArtists = [];
     const isClientCodeValid = ValidationConfig.getValidationFunction();
     const unit = ValidationConfig.unit;
@@ -26,17 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtnText.textContent = 'Enviar Voto';
         submitBtnText.classList.remove('hidden');
         submitSpinner.classList.add('hidden');
-    };
-
-    const setupInactivityRedirect = () => {
-        const resetTimer = () => {
-            clearTimeout(inactivityTimer);
-            inactivityTimer = setTimeout(() => {
-                const hubPage = unit === 'bh' ? '/hubTabBH.html' : '/hubTabSP.html';
-                window.location.href = hubPage;
-            }, 20000);
-        };
-        ['load', 'mousemove', 'mousedown', 'keypress'].forEach(evt => window.addEventListener(evt, resetTimer));
     };
 
     const renderPodium = (podiumData) => {
@@ -197,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
             allArtists = artists;
             renderPodium(podium);
             setupAutocomplete();
-            setupInactivityRedirect();
+            ValidationConfig.setupInactivityRedirect();
         } catch (error) {
             console.error(error);
             podiumContainer.innerHTML = '<p class="placeholder-text">Não foi possível carregar o ranking.</p>';
