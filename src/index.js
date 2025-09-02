@@ -22,10 +22,12 @@ const commercialRoutes = require('./api/routes/commercialRoutes');
 const settingRoutes = require('./api/routes/settingRoutes');
 const priceRoutes = require('./api/routes/priceRoutes');
 const slideRoutes = require('./api/routes/slideRoutes');
-const requestHistoryRoutes = require('./api/routes/requestHistoryRoutes'); 
+const requestHistoryRoutes = require('./api/routes/requestHistoryRoutes');
 const moodVoteRoutes = require('./api/routes/moodVoteRoutes');
 const surveyRoutes = require('./api/routes/surveyRoutes');
 const rankingRoutes = require('./api/routes/rankingRoutes');
+const webRatingRoutes = require('./api/routes/webRatingRoutes');
+const twitterRepostRoutes = require('./api/routes/twitterRepostRoutes');
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -62,10 +64,12 @@ app.use('/api/commercials', commercialRoutes);
 app.use('/api/settings', settingRoutes);
 app.use('/api/prices', priceRoutes);
 app.use('/api/slides', slideRoutes);
-app.use('/api/request-history', requestHistoryRoutes); 
+app.use('/api/request-history', requestHistoryRoutes);
 app.use('/api/mood-votes', moodVoteRoutes);
 app.use('/api/surveys', surveyRoutes);
 app.use('/api/ranking', rankingRoutes);
+app.use('/api/webrating', webRatingRoutes);
+app.use('/api/tweets', twitterRepostRoutes);
 
 httpServer.listen(PORT, () => {
     console.log(`Servidor da Rádio Dédalos rodando na porta ${PORT}`);

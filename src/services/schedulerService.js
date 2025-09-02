@@ -1,8 +1,10 @@
 const cron = require('node-cron');
 const PlaylistModel = require('../api/models/playlistModel');
 const PriceModel = require('../api/models/priceModel');
+const TwitterRepostModel = require('../api/models/twitterRepostModel');
 const queueService = require('./queueService');
 const socketService = require('./socketService');
+const webRatingService = require('./webRatingService');
 
 const TIMEZONE = 'America/Sao_Paulo';
 
@@ -61,14 +63,21 @@ const checkSchedule = async () => {
 
 const cleanupTasks = async () => {
     try {
-        const deletedRows = await PriceModel.cleanupPastHolidays();
-        if (deletedRows > 0) {
-            console.log(`[Scheduler] Limpeza concluída. ${deletedRows} feriado(s) passado(s) foram removidos.`);
+        const deletedHolidays = await PriceModel.cleanupPastHolidays();
+        if (deletedHolidays > 0) {
+            console.log(`[Scheduler] Limpeza concluída. ${deletedHolidays} feriado(s) passado(s) foram removidos.`);
         } else {
             console.log(`[Scheduler] Nenhuma data de feriado passada para limpar.`);
         }
+
+        const deletedTweets = await TwitterRepostModel.deleteOldReposts();
+        if (deletedTweets > 0) {
+            console.log(`[Scheduler] Limpeza concluída. ${deletedTweets} repost(s) do Twitter expirado(s) foram removidos.`);
+        } else {
+            console.log(`[Scheduler] Nenhum repost do Twitter para expirar.`);
+        }
     } catch (error) {
-        console.error('[Scheduler] Erro durante a limpeza de feriados:', error);
+        console.error('[Scheduler] Erro durante as tarefas de limpeza:', error);
     }
 };
 
@@ -86,13 +95,14 @@ const initialize = () => {
     console.log(`[Scheduler] O DJ Robô foi ativado e está verificando a programação a cada minuto no fuso horário: ${TIMEZONE}.`);
     
     cron.schedule('0 5 * * *', () => {
-        console.log(`[Scheduler] Executando tarefas de limpeza diária...`);
+        console.log(`[Scheduler] Executando tarefas diárias de limpeza e atualização de reviews...`);
         cleanupTasks();
+        webRatingService.updateAllReviews();
     }, {
         scheduled: true,
         timezone: TIMEZONE
     });
-    console.log('[Scheduler] Tarefa de limpeza de feriados agendada para executar diariamente às 05:00.');
+    console.log('[Scheduler] Tarefas diárias (limpeza e atualização de reviews) agendadas para 05:00.');
 };
 
 module.exports = {

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nossas Estrelas - SP</title>
+    <link rel="icon" href="assets/img/logo.png" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/webRating.css">
+</head>
+<body>
+    <div class="multi">
+        <div class="multichrome-background">
+            <div class="multichrome-light"></div>
+            <div class="multichrome-ambient-1 float-effect-1"></div>
+            <div class="multichrome-ambient-2 float-effect-2"></div>
+            <div class="multichrome-ambient-3 float-effect-3"></div>
+        </div>
+    </div>
+    <main id="app-container" class="gradient-border">
+        <header id="panel-header">
+            <h1 class="header-title gradient-text">Nossas Estrelas</h1>
+            <p class="header-subtitle">Veja quem está brilhando com a gente!</p>
+        </header>
+
+        <section id="content-display" class="content-display-section">
+            </section>
+    </main>
+
+    <template id="google-review-template">
+        <div class="rating-card google-review-card">
+            <div class="card-header">
+                <img src="assets/img/google-icon.png" alt="Google Icon" class="source-icon">
+                <h2>Avaliação 5 Estrelas</h2>
+            </div>
+            <div class="card-content">
+                <div class="user-info">
+                    <img class="user-photo" src="" alt="Foto do usuário">
+                    <div class="user-details">
+                        <p class="user-name"></p>
+                        <div class="rating-info">
+                            <div class="stars"></div>
+                            <p class="review-date"></p>
+                        </div>
+                    </div>
+                </div>
+                <p class="review-text"></p>
+            </div>
+            <div class="card-footer">
+                <div class="qr-code-container">
+                    <div>
+                        <p>Deixe sua avaliação no Google e apareça aqui também!</p>
+                        <small>É super rápido e a gente adora ver o carinho de vocês!</small>
+                    </div>
+                    <img src="assets/img/qr-code-sp.png" alt="QR Code para avaliar">
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="twitter-repost-template">
+        <div class="rating-card twitter-repost-card">
+            <div class="card-header">
+                <img src="assets/img/x-icon.png" alt="X Icon" class="source-icon">
+                <h2>Repostado por @dedalosbar</h2>
+            </div>
+            <div class="card-content">
+                <div class="user-info">
+                    <img class="user-photo" src="" alt="Foto do usuário">
+                    <div class="user-details">
+                        <p class="user-name"></p>
+                        <p class="tweet-date"></p>
+                    </div>
+                </div>
+                <p class="tweet-text"></p>
+                <div class="tweet-image-wrapper">
+                <div class="tweet-media-container"></div>
+            </div>
+            <div class="card-footer">
+                <div class="footer-text-container">
+                    <p>Poste com a #DedalosBar e apareça aqui na próxima vez! 😉</p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/webRating.js"></script>
+</body>
+</html>

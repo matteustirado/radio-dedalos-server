@@ -1,0 +1,54 @@
+.add-tweet-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .add-tweet-form {
+        grid-template-columns: 1fr 1fr;
+    }
+    .add-tweet-form .form-group:nth-child(2) { /* Textarea */
+        grid-column: 1 / -1;
+    }
+    .add-tweet-form .form-actions {
+        grid-column: 1 / -1;
+    }
+}
+
+.table-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.results-table th,
+.results-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.results-table th {
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+}
+
+.results-table thead tr {
+    border-bottom: 2px solid var(--border-color);
+}
+
+.results-table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.results-table .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
