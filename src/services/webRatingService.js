@@ -16,11 +16,16 @@ const fetchAndStoreReviews = async (locationSlug) => {
     }
 
     const apiKey = process.env.SERPAPI_API_KEY;
+    if (!apiKey) {
+        console.error("[WebRatingService] A chave da API (SERPAPI_API_KEY) não está configurada no ambiente do servidor.");
+        throw new Error("Configuração do servidor incompleta: a chave da API de busca não foi encontrada.");
+    }
+
     let allReviews = [];
     let nextPageToken = null;
     let continueFetching = true;
     let pagesFetched = 0;
-    const MAX_PAGES_TO_FETCH = 3; // Limite de segurança ajustado para 3 páginas
+    const MAX_PAGES_TO_FETCH = 3;
 
     while(continueFetching && pagesFetched < MAX_PAGES_TO_FETCH) {
         const params = {
