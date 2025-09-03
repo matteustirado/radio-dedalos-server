@@ -74,11 +74,7 @@ async function auditSongs() {
 
             const dbDuration = song.duration_seconds;
 
-<<<<<<< HEAD
             if (Math.abs(actualDuration - dbDuration) > 2) { 
-=======
-            if (Math.abs(actualDuration - dbDuration) > 2) { // Tolerância de 2 segundos
->>>>>>> e15963b0e5894e407579033c94c1439aeb73b4f2
                 discrepancies.push({
                     id: song.id,
                     title: song.title,
