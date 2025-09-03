@@ -46,71 +46,10 @@
                 </div>
                 <form id="music-form" class="form-layout" autocomplete="off">
                     <input type="hidden" id="music-id">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="music-name">Nome da Música *</label>
-                            <input type="text" id="music-name" class="form-input" required>
-                        </div>
-                        <div class="form-group autocomplete-container">
-                            <label for="artist-name">Artista *</label>
-                            <input type="text" id="artist-name" class="form-input" required>
-                            <div id="artist-autocomplete-list" class="autocomplete-list"></div>
-                        </div>
+
+                    <div id="upload-step">
                         <div class="form-group full-width">
-                            <label for="featuring-artist-input">Artistas Participantes</label>
-                            <div class="tag-input-wrapper autocomplete-container">
-                                <input type="text" id="featuring-artist-input" class="form-input" placeholder="Adicionar participante">
-                                <div id="featuring-artist-autocomplete-list" class="autocomplete-list"></div>
-                                <button type="button" id="add-featuring-artist-btn" class="button primary-button icon-only"><i class="fa-solid fa-plus"></i></button>
-                            </div>
-                            <div id="featuring-artists-container" class="tags-display-area"></div>
-                        </div>
-                        <div class="form-group autocomplete-container">
-                            <label for="album-name">Álbum</label>
-                            <input type="text" id="album-name" class="form-input">
-                            <div id="album-autocomplete-list" class="autocomplete-list"></div>
-                        </div>
-                        <div class="form-group autocomplete-container">
-                            <label for="label-name">Gravadora</label>
-                            <input type="text" id="label-name" class="form-input">
-                            <div id="label-autocomplete-list" class="autocomplete-list"></div>
-                        </div>
-                        <div class="form-group">
-                            <label for="release-year">Ano</label>
-                            <input type="text" id="release-year" class="form-input" pattern="[0-9]*" maxlength="4">
-                        </div>
-                        <div class="form-group">
-                            <label for="video-director">Diretor do Videoclipe</label>
-                            <input type="text" id="video-director" class="form-input">
-                        </div>
-                        <div class="form-group">
-                            <label for="new-tag-input">Categorias (Tags)</label>
-                            <div class="tag-input-wrapper autocomplete-container">
-                                <input type="text" id="new-tag-input" class="form-input" placeholder="Nova tag">
-                                <div id="tag-autocomplete-list" class="autocomplete-list"></div>
-                                <button type="button" id="add-tag-btn" class="button primary-button icon-only"><i class="fa-solid fa-plus"></i></button>
-                            </div>
-                            <div id="tags-container" class="tags-display-area"></div>
-                        </div>
-                        <div class="form-group">
-                            <label for="duration">Duração</label>
-                            <input type="text" id="duration" class="form-input" placeholder="MM:SS">
-                        </div>
-                        <div class="form-group full-width">
-                            <label>Dias da Semana Disponíveis</label>
-                            <div class="day-options">
-                                <button type="button" class="day-option">Seg</button>
-                                <button type="button" class="day-option">Ter</button>
-                                <button type="button" class="day-option">Qua</button>
-                                <button type="button" class="day-option">Qui</button>
-                                <button type="button" class="day-option">Sex</button>
-                                <button type="button" class="day-option">Sáb</button>
-                                <button type="button" class="day-option">Dom</button>
-                                <button type="button" class="day-option selected" data-all="true">Todos</button>
-                            </div>
-                        </div>
-                        <div class="form-group full-width">
-                            <label>Arquivo de Mídia (.mp4, .mp3) *</label>
+                            <label>Passo 1: Envie o Arquivo de Mídia (.mp4, .mp3)</label>
                             <div class="file-input-wrapper">
                                 <label for="media-file-input" class="button primary-button">
                                     <i class="fa-solid fa-upload"></i> Escolher Arquivo
@@ -120,14 +59,85 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-actions">
-                        <div class="form-buttons">
-                            <button type="button" class="button secondary-button cancel-btn">Cancelar</button>
-                            <button id="form-submit-btn" type="submit" class="button primary-button">Salvar Música</button>
+                    
+                    <div id="metadata-step" class="hidden">
+                        <div class="form-group">
+                            <hr class="section-divider">
+                            <label>Passo 2: Revise as Informações da Música</label>
                         </div>
-                        <div id="upload-status-container" class="hidden">
-                            <div class="spinner"></div>
-                            <span id="upload-status-text"></span>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="music-name">Nome da Música *</label>
+                                <input type="text" id="music-name" class="form-input" required>
+                            </div>
+                            <div class="form-group autocomplete-container">
+                                <label for="artist-name">Artista *</label>
+                                <input type="text" id="artist-name" class="form-input" required>
+                                <div id="artist-autocomplete-list" class="autocomplete-list"></div>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="featuring-artist-input">Artistas Participantes</label>
+                                <div class="tag-input-wrapper autocomplete-container">
+                                    <input type="text" id="featuring-artist-input" class="form-input" placeholder="Adicionar participante">
+                                    <div id="featuring-artist-autocomplete-list" class="autocomplete-list"></div>
+                                    <button type="button" id="add-featuring-artist-btn" class="button primary-button icon-only"><i class="fa-solid fa-plus"></i></button>
+                                </div>
+                                <div id="featuring-artists-container" class="tags-display-area"></div>
+                            </div>
+                            <div class="form-group autocomplete-container">
+                                <label for="album-name">Álbum</label>
+                                <input type="text" id="album-name" class="form-input">
+                                <div id="album-autocomplete-list" class="autocomplete-list"></div>
+                            </div>
+                            <div class="form-group autocomplete-container">
+                                <label for="label-name">Gravadora</label>
+                                <input type="text" id="label-name" class="form-input">
+                                <div id="label-autocomplete-list" class="autocomplete-list"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="release-year">Ano</label>
+                                <input type="text" id="release-year" class="form-input" pattern="[0-9]*" maxlength="4">
+                            </div>
+                            <div class="form-group">
+                                <label for="video-director">Diretor do Videoclipe</label>
+                                <input type="text" id="video-director" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-tag-input">Categorias (Tags)</label>
+                                <div class="tag-input-wrapper autocomplete-container">
+                                    <input type="text" id="new-tag-input" class="form-input" placeholder="Nova tag">
+                                    <div id="tag-autocomplete-list" class="autocomplete-list"></div>
+                                    <button type="button" id="add-tag-btn" class="button primary-button icon-only"><i class="fa-solid fa-plus"></i></button>
+                                </div>
+                                <div id="tags-container" class="tags-display-area"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="duration">Duração (não editável)</label>
+                                <input type="text" id="duration" class="form-input" placeholder="MM:SS" readonly>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Dias da Semana Disponíveis</label>
+                                <div class="day-options">
+                                    <button type="button" class="day-option">Seg</button>
+                                    <button type="button" class="day-option">Ter</button>
+                                    <button type="button" class="day-option">Qua</button>
+                                    <button type="button" class="day-option">Qui</button>
+                                    <button type="button" class="day-option">Sex</button>
+                                    <button type="button" class="day-option">Sáb</button>
+                                    <button type="button" class="day-option">Dom</button>
+                                    <button type="button" class="day-option selected" data-all="true">Todos</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <div class="form-buttons">
+                                <button type="button" class="button secondary-button cancel-btn">Cancelar</button>
+                                <button id="form-submit-btn" type="submit" class="button primary-button">Salvar Música</button>
+                            </div>
+                            <div id="upload-status-container" class="hidden">
+                                <div class="spinner"></div>
+                                <span id="upload-status-text"></span>
+                            </div>
                         </div>
                     </div>
                 </form>

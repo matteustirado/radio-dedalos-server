@@ -1,0 +1,105 @@
+.game-body {
+    background: radial-gradient(circle at center, var(--bg-dark-secondary) 0%, var(--bg-dark-primary) 45%, #28241e 100%);
+}
+
+.placard-game-container {
+    padding: 2rem;
+}
+
+.game-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+}
+
+.score-board {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.score-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.score-label {
+    flex: 0 0 140px;
+    text-align: right;
+    font-weight: 600;
+    color: var(--color-text-muted);
+}
+
+.progress-bar-container {
+    flex-grow: 1;
+    height: 30px;
+    background-color: #374151;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 8px;
+    transition: width 0.5s ease-in-out;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 10px;
+    box-sizing: border-box;
+}
+
+.progress-bar-percentage {
+    font-weight: 700;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+}
+
+.score-item[data-option="versatil"] .progress-bar-fill { background: linear-gradient(90deg, #3f6bc6, #5B82E8); }
+.score-item[data-option="passivo"] .progress-bar-fill { background: linear-gradient(90deg, #388e3c, #4CAF50); }
+.score-item[data-option="ativo"] .progress-bar-fill { background: linear-gradient(90deg, #d32f2f, #FF5722); }
+.score-item[data-option="beber_curtir"] .progress-bar-fill { background: linear-gradient(90deg, #FFA000, #FFC107); }
+.score-item[data-option="so_amizade"] .progress-bar-fill { background: linear-gradient(90deg, #7B1FA2, #9C27B0); }
+
+.movement-thermometer {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.thermometer-bar-container {
+    width: 100%;
+    height: 35px;
+    background-color: #374151;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.thermometer-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #4CAF50, #FFC107, #FF5722);
+    transition: width 0.5s ease-in-out;
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+    box-sizing: border-box;
+}
+
+.thermometer-label {
+    font-weight: 600;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+}
+
+.movement-message {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--color-text);
+    min-height: 1.5em;
+}

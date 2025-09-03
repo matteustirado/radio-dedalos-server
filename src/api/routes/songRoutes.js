@@ -10,6 +10,8 @@ const upload = multer({ storage: multer.memoryStorage() });
 router.get('/', SongController.getAllSongs);
 router.get('/:id', SongController.getSongById);
 
+router.post('/extract-metadata', authMiddleware, roleMiddleware(['admin', 'master']), upload.single('mediaFile'), SongController.extractMetadata);
+
 router.post('/', authMiddleware, roleMiddleware(['admin', 'master']), upload.single('mediaFile'), SongController.createSong);
 router.put('/:id', authMiddleware, roleMiddleware(['admin', 'master']), upload.single('mediaFile'), SongController.updateSong);
 router.delete('/:id', authMiddleware, roleMiddleware(['admin', 'master']), SongController.deleteSong);
