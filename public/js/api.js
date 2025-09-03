@@ -1,5 +1,4 @@
-
-const API_BASE_URL = 'http://159.65.161.7:3000';
+const API_BASE_URL = 'http://192.168.1.44:3000';
 
 async function apiFetch(endpoint, options = {}) {
     const token = getToken();
