@@ -14,7 +14,6 @@ class ArtistController {
 
     static async createArtist(request, response) {
         try {
-            // Alterado de ArtistModel.create para ArtistModel.findOrCreate
             const artist = await ArtistModel.findOrCreate(request.body.name);
             response.status(201).json(artist);
         } catch (error) {

@@ -21,12 +21,6 @@ function runFfmpeg(args) {
   });
 }
 
-/**
- * Converte um arquivo de vídeo para o formato HLS.
- * @param {string} inputPath O caminho para o arquivo de vídeo de entrada.
- * @param {string} outputDir O diretório onde os arquivos HLS (.m3u8, .ts) serão salvos.
- * @returns {Promise<string>} O caminho para o arquivo de manifesto .m3u8.
- */
 async function convertToHls(inputPath, outputDir) {
   ensureDir(outputDir);
 

@@ -39,15 +39,45 @@ document.addEventListener('DOMContentLoaded', function() {
     const mediaFileInput = document.getElementById('media-file-input');
     const fileNameDisplay = document.getElementById('file-name-display');
     const submitBtn = document.getElementById('form-submit-btn');
+    const uploadStep = document.getElementById('upload-step');
+    const metadataStep = document.getElementById('metadata-step');
     
     let itemToDelete = {};
 
     if (mediaFileInput && fileNameDisplay) {
-        mediaFileInput.addEventListener('change', () => {
+        mediaFileInput.addEventListener('change', async () => {
             if (mediaFileInput.files.length > 0) {
-                fileNameDisplay.textContent = mediaFileInput.files[0].name;
+                const file = mediaFileInput.files[0];
+                fileNameDisplay.textContent = file.name;
+                
+                const formData = new FormData();
+                formData.append('mediaFile', file);
+
+                uploadStatusText.textContent = 'Analisando arquivo...';
+                uploadStatusContainer.classList.remove('hidden');
+                
+                try {
+                    const metadata = await apiFetch('/songs/extract-metadata', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    document.getElementById('music-name').value = metadata.title || '';
+                    artistInput.value = metadata.artist || '';
+                    albumInput.value = metadata.album || '';
+                    durationInput.value = metadata.duration || '00:00';
+                    
+                    metadataStep.classList.remove('hidden');
+                } catch (error) {
+                    showMessage(`Erro ao extrair metadados: ${error.message}`, 'danger');
+                    fileNameDisplay.textContent = 'Nenhum arquivo selecionado';
+                    mediaFileInput.value = '';
+                } finally {
+                    uploadStatusContainer.classList.add('hidden');
+                }
             } else {
                 fileNameDisplay.textContent = 'Nenhum arquivo selecionado';
+                metadataStep.classList.add('hidden');
             }
         });
     }
@@ -125,6 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.textContent = 'Salvar Música';
         releaseYearInput.classList.remove('error');
         submitBtn.disabled = false;
+        metadataStep.classList.add('hidden');
     };
 
     const formatSecondsToDuration = (totalSeconds) => {
@@ -175,6 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
         formTitle.innerHTML = '<i class="fas fa-compact-disc icon"></i> Editar Música';
         submitBtn.textContent = 'Atualizar Música';
         openSection('add-music-form');
+        metadataStep.classList.remove('hidden');
     };
 
     const setupAutocomplete = (inputEl, listEl, sourceCallback, onSelect) => {

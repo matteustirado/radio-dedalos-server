@@ -1,0 +1,96 @@
+.score-board {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.score-item {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    align-items: center;
+    gap: 1rem;
+}
+
+.score-label {
+    text-align: right;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+.progress-bar-container {
+    height: 28px;
+    background-color: var(--bg-dark-secondary);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    border-radius: 0.5rem;
+    transition: width 0.5s ease-in-out;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 10px;
+    box-sizing: border-box;
+}
+
+.progress-bar-percentage {
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--bg-dark-primary);
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.2);
+}
+
+.movement-thermometer {
+    text-align: center;
+}
+
+.thermometer-bar-container {
+    width: 100%;
+    height: 35px;
+    background-color: var(--bg-dark-secondary);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 1.5rem 0 1rem 0;
+    border: 1px solid var(--border-color);
+}
+
+.thermometer-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--color-success), var(--color-warning), var(--color-danger));
+    transition: width 0.5s ease-in-out;
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+    box-sizing: border-box;
+}
+
+.thermometer-label {
+    font-weight: 600;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+}
+
+.movement-message {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    min-height: 1.5em;
+}
+
+@media (max-width: 600px) {
+    .score-item {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    .score-label {
+        text-align: left;
+    }
+}

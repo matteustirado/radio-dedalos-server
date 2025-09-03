@@ -4,7 +4,7 @@ const roleMiddleware = require('../middlewares/roleMiddleware');
 
 const router = express.Router();
 
-const TwitterRepostController = require('../controllers/twitterRepostController'); // Nome do controller corrigido
+const TwitterRepostController = require('../controllers/twitterRepostController');
 
 const managementRoles = ['admin', 'master', 'playlist_creator', 'musics'];
 

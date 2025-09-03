@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Verifica se os elementos da seção de sugestões existem na página antes de executar
     if (!document.getElementById('consult-suggestions-btn')) {
         return;
     }
@@ -10,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let activeSuggestionTab = 'pendente';
 
-    // Funções de utilidade necessárias para esta UI
     const openSection = (sectionId) => {
         allMainSections.forEach(sec => sec.classList.add('hidden'));
         const section = document.getElementById(sectionId);

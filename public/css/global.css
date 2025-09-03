@@ -6,6 +6,86 @@
     padding: 0;
 }
 
+.multi {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.multichrome-background {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: radial-gradient(circle at center, var(--bg-dark-secondary) 0%, var(--bg-dark-primary) 45%, #28241e 100%);
+}
+
+.multichrome-light {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150%;
+    height: 150%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle at center, rgba(255, 77, 0, 0.15) 0%, rgba(255, 77, 0, 0) 60%);
+}
+
+.multichrome-ambient-1,
+.multichrome-ambient-2,
+.multichrome-ambient-3 {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.5;
+}
+
+.multichrome-ambient-1 {
+    width: 500px;
+    height: 500px;
+    background-color: rgba(255, 77, 0, 0.3);
+    top: -150px;
+    left: -150px;
+}
+
+.multichrome-ambient-2 {
+    width: 400px;
+    height: 400px;
+    background-color: rgba(255, 204, 0, 0.2);
+    bottom: -100px;
+    right: -100px;
+}
+
+.multichrome-ambient-3 {
+    width: 300px;
+    height: 300px;
+    background-color: rgba(255, 0, 34, 0.2);
+    top: 50%;
+    left: 50%;
+}
+
+.float-effect-1 {
+    animation: float 15s ease-in-out infinite alternate;
+}
+
+.float-effect-2 {
+    animation: float 20s ease-in-out infinite alternate-reverse;
+}
+
+.float-effect-3 {
+    animation: float 18s ease-in-out infinite alternate;
+}
+
+@keyframes float {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(100px, 50px) scale(1.2); }
+}
+
+
 input,
 button,
 textarea,
@@ -67,7 +147,7 @@ button {
 }
 
 body {
-    background: radial-gradient(circle at center, var(--bg-dark-secondary) 0%, var(--bg-dark-primary) 45%, #28241e 100%);
+    background-color: var(--bg-dark-primary);
     color: var(--color-text);
     min-height: 100vh;
     font-family: 'Poppins', sans-serif;
@@ -79,19 +159,6 @@ body {
 
 body.modal-open {
     overflow: hidden;
-}
-
-body::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: linear-gradient(rgba(245, 166, 35, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(245, 166, 35, 0.03) 1px, transparent 1px);
-    background-size: 30px 30px;
-    opacity: 0.3;
-    z-index: -1;
 }
 
 #app-container {

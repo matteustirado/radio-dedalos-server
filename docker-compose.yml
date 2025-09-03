@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
   radio-app:
-    # A seção 'build' foi alterada para passar o contexto e os argumentos
     build:
       context: .
       args:

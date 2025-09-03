@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placar da Noite</title>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/placard.css">
+</head>
+<body class="game-body">
+    <main id="app-container" class="gradient-border">
+        <header id="panel-header" style="text-align: center;">
+            <h1 class="header-title gradient-text">PLACAR DA NOITE</h1>
+        </header>
+
+        <section class="card-style">
+            <div class="score-board">
+                <div class="score-item" data-option="versatil">
+                    <span class="score-label">VERSÁTIL</span>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 0%;">
+                            <span class="progress-bar-percentage">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="score-item" data-option="passivo">
+                    <span class="score-label">PASSIVO</span>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 0%;">
+                            <span class="progress-bar-percentage">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="score-item" data-option="ativo">
+                    <span class="score-label">ATIVO</span>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 0%;">
+                            <span class="progress-bar-percentage">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="score-item" data-option="beber_curtir">
+                    <span class="score-label">BEBER/CURTIR</span>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 0%;">
+                            <span class="progress-bar-percentage">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="score-item" data-option="so_amizade">
+                    <span class="score-label">SÓ AMIZADE</span>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 0%;">
+                            <span class="progress-bar-percentage">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card-style">
+            <div class="movement-thermometer">
+                 <h2 class="section-title" style="justify-content: center;">Movimento na Casa</h2>
+                <div class="thermometer-bar-container">
+                    <div class="thermometer-fill" style="width: 5%;">
+                        <span class="thermometer-label">Movimento: 5%</span>
+                    </div>
+                </div>
+                <p class="movement-message">A galera tá chegando, que tal um drink no bar para ver o que está rolando?</p>
+            </div>
+        </section>
+    </main>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/placardUI.js"></script>
+</body>
+</html>

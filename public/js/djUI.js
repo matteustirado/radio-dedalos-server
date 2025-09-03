@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentTimeEl = document.getElementById('current-time');
     const totalTimeEl = document.getElementById('total-time');
     const progressBarFill = document.getElementById('progress-bar-fill');
-    const liveIndicator = document.getElementById('live-indicator'); // Nova variável
+    const liveIndicator = document.getElementById('live-indicator');
 
     let selectedSongForBan = null;
     let playbackTimer = null;
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updatePlayerUI = (nowPlaying, playerState) => {
         clearInterval(playbackTimer);
-        liveIndicator.classList.toggle('active', playerState.isPlaying); // Lógica do indicador
+        liveIndicator.classList.toggle('active', playerState.isPlaying);
 
         if (nowPlaying && playerState && playerState.playbackStartTimestamp) {
             nowPlayingTitle.textContent = nowPlaying.title;

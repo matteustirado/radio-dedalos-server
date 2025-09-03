@@ -1,0 +1,183 @@
+body {
+    justify-content: center;
+    align-items: center;
+}
+
+#game-main-wrapper {
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 800px;
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+}
+
+.game-screen {
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.game-screen.hidden {
+    display: none !important;
+}
+
+.game-screen:not(.hidden) {
+    display: flex;
+}
+
+.header-content {
+    margin-bottom: 7rem;
+}
+
+#idle-title {
+    font-size: 4.5rem;
+    text-shadow: 0 0 20px rgba(255, 165, 0, 0.8);
+    margin-bottom: 1.5rem;
+}
+
+.header-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.header-subtitle {
+    font-size: 2rem;
+    color: var(--color-text-muted);
+}
+
+.idle-content {
+    padding: 1rem 0;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.option-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    color: var(--color-text);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 160px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.option-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--color-primary);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.option-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-primary);
+}
+
+.option-card.selected {
+    border-color: var(--color-secondary);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+}
+
+.option-card.selected .option-icon {
+    color: var(--color-secondary);
+}
+
+.game-message {
+    margin-top: 2rem;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--color-success);
+    transition: opacity 0.3s ease;
+}
+
+.game-message.error {
+    color: var(--color-danger);
+}
+
+.idle-text {
+    font-size: 1.5rem;
+    color: var(--color-text-muted);
+    margin: 1.5rem 0;
+}
+
+.idle-hint {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 1rem;
+}
+
+.logo-loader {
+    width: 200px;
+    height: auto;
+    margin: 1.5rem auto;
+    display: block;
+}
+
+.logo-loader path {
+    stroke: url(#logo-gradient-stroke);
+    stroke-width: 5;
+    stroke-dasharray: 5000;
+    stroke-dashoffset: 5000;
+    animation: draw-logo-final 4s ease-in-out infinite;
+}
+
+@keyframes draw-logo-final {
+    0% {
+        stroke-dashoffset: 5000;
+    }
+    50% {
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dashoffset: -5000;
+    }
+}
+
+/* Estilos para Tablet Vertical (800x1200) */
+@media (min-width: 768px) and (orientation: portrait) {
+    #game-main-wrapper {
+        padding: 4rem;
+        max-width: 700px;
+        width: 90%;
+        min-height: 90vh;
+    }
+
+    .options-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .option-card {
+        min-height: 200px;
+        font-size: 1.3rem;
+    }
+
+    .option-icon {
+        font-size: 3.5rem;
+    }
+}

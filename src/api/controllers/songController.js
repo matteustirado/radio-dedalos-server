@@ -1,13 +1,14 @@
 const SongModel = require('../models/songModel');
 const ArtistModel = require('../models/artistModel');
 const CategoryModel = require('../models/categoryModel');
-const RecordLabelModel = require('../models/recordLabelModel'); // Certifique-se de que este modelo exista
+const RecordLabelModel = require('../models/recordLabelModel');
 const logService = require('../../services/logService');
 const storageService = require('../../services/storageService');
 const socketService = require('../../services/socketService');
 const path = require('path');
 const fs = require('fs');
 const { convertToHls, ensureDir } = require('../../services/mediaPipeline');
+const ffmpeg = require('fluent-ffmpeg');
 
 const formatFilenameForStorage = (originalFilename) => {
     if (!originalFilename) return null;
@@ -27,19 +28,70 @@ const getMimeType = (filePath) => {
 
 const parseDurationToSeconds = (durationStr) => {
     if (!durationStr || typeof durationStr !== 'string' || !durationStr.includes(':')) {
-        return null;
+        return 0;
     }
     const parts = durationStr.split(':');
     const minutes = parseInt(parts[0], 10);
     const seconds = parseInt(parts[1], 10);
     if (isNaN(minutes) || isNaN(seconds)) {
-        return null;
+        return 0;
     }
     return (minutes * 60) + seconds;
 };
 
 
 class SongController {
+    static async extractMetadata(request, response) {
+        let tempFilePath = '';
+        try {
+            if (!request.file) {
+                return response.status(400).json({ message: 'Nenhum arquivo de mídia foi enviado.' });
+            }
+
+            const file = request.file;
+            const uploadsRoot = path.join(__dirname, '../../..', 'uploads');
+            const tempDir = path.join(uploadsRoot, 'temp');
+            ensureDir(tempDir);
+
+            const tempFileName = `${Date.now()}_${file.originalname}`;
+            tempFilePath = path.join(tempDir, tempFileName);
+            fs.writeFileSync(tempFilePath, file.buffer);
+
+            ffmpeg.ffprobe(tempFilePath, (err, metadata) => {
+                if (fs.existsSync(tempFilePath)) {
+                    fs.unlinkSync(tempFilePath);
+                }
+
+                if (err) {
+                    console.error("Erro ao extrair metadados com ffprobe:", err);
+                    return response.status(500).json({ message: 'Erro ao analisar o arquivo de mídia.' });
+                }
+
+                const format = metadata.format;
+                const tags = format.tags || {};
+                const durationInSeconds = Math.round(format.duration || 0);
+                const minutes = Math.floor(durationInSeconds / 60);
+                const seconds = durationInSeconds % 60;
+
+                const extractedData = {
+                    title: tags.title || '',
+                    artist: tags.artist || '',
+                    album: tags.album || '',
+                    duration: `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+                };
+
+                response.status(200).json(extractedData);
+            });
+
+        } catch (error) {
+            if (tempFilePath && fs.existsSync(tempFilePath)) {
+                fs.unlinkSync(tempFilePath);
+            }
+            console.error("ERRO AO EXTRAIR METADADOS:", error);
+            response.status(500).json({ message: 'Erro interno ao processar o arquivo.', error: error.message });
+        }
+    }
+    
     static async getAllSongs(request, response) {
         try {
             const { include_commercials, excludeBanned } = request.query;

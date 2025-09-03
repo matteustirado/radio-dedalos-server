@@ -28,7 +28,11 @@ const startMaestroLoop = (request) => {
         }
 
         const songDurationMs = (currentSong.duration_seconds || 0) * 1000;
-        if (songDurationMs <= 0) return;
+        if (songDurationMs <= 0) {
+            console.log(`[Maestro] Música "${currentSong.title}" com duração inválida (${songDurationMs}ms). Pulando para a próxima.`);
+            await socketService.playNextSong(request);
+            return;
+        }
 
         const startTime = playerState.playbackStartTimestamp;
         const pausedDuration = playerState.accumulatedPausedDuration;
