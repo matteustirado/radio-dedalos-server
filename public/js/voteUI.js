@@ -1,36 +1,41 @@
 document.addEventListener('DOMContentLoaded', () => {
     const idleScreen = document.getElementById('idle-screen');
     const voteScreen = document.getElementById('vote-screen');
+    const confirmationScreen = document.getElementById('confirmation-screen');
     const optionCards = document.querySelectorAll('.option-card');
-    const voteMessage = document.getElementById('vote-message');
-    
-    let voteCasted = false;
-    let newRegistrationPending = false;
 
-    const showMessage = (message, isError = false) => {
-        voteMessage.textContent = message;
-        voteMessage.classList.remove('hidden', 'error');
-        if (isError) {
-            voteMessage.classList.add('error');
-        }
-    };
+    let voteCasted = false;
 
     const showVoteScreen = () => {
         idleScreen.classList.add('hidden');
+        confirmationScreen.classList.add('hidden');
         voteScreen.classList.remove('hidden');
         voteCasted = false;
-        voteMessage.classList.add('hidden');
+        
         optionCards.forEach(card => {
             card.disabled = false;
             card.style.opacity = '1';
             card.classList.remove('selected');
         });
+
+        setTimeout(() => {
+            if (!voteCasted) {
+                console.log('Tempo esgotado para votação, voltando para tela de descanso.');
+                showIdleScreen();
+            }
+        }, 20000);
     };
 
     const showIdleScreen = () => {
         voteScreen.classList.add('hidden');
+        confirmationScreen.classList.add('hidden');
         idleScreen.classList.remove('hidden');
-        newRegistrationPending = false;
+    };
+    
+    const showConfirmationScreen = () => {
+        voteScreen.classList.add('hidden');
+        idleScreen.classList.add('hidden');
+        confirmationScreen.classList.remove('hidden');
     };
 
     const handleVote = async (option) => {
@@ -39,27 +44,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         optionCards.forEach(card => {
             card.disabled = true;
-            if (card.dataset.option === option) {
-                card.classList.add('selected');
-            } else {
-                card.style.opacity = '0.5';
-            }
         });
 
-        showMessage('Voto computado com sucesso! Obrigado por participar.');
+        showConfirmationScreen();
 
         try {
             console.log(`Voto enviado: ${option}`);
-            setTimeout(showIdleScreen, 3000);
+            setTimeout(showIdleScreen, 8000); // Aumentei o tempo para a mensagem ser lida
 
         } catch (error) {
-            showMessage(`Erro ao enviar o voto: ${error.message}`, true);
-            optionCards.forEach(card => {
-                card.disabled = false;
-                card.style.opacity = '1';
-                card.classList.remove('selected');
-            });
-            voteCasted = false;
+            console.error("Erro ao processar voto:", error);
+            showIdleScreen(); // Volta para a tela inicial em caso de erro
         }
     };
 
@@ -70,20 +65,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const simulateNewRegistration = () => {
-        if (!newRegistrationPending) {
-            newRegistrationPending = true;
-            console.log('Novo cadastro detectado! Liberando votação.');
+    const setupSocketListeners = () => {
+        const socket = io();
+
+        socket.on('connect', () => {
+            console.log('Conectado ao servidor de Socket.IO para a tela de votação.');
+        });
+
+        socket.on('triggerVote', (data) => {
+            console.log('Evento "triggerVote" recebido!', data);
             showVoteScreen();
-            
-            setTimeout(() => {
-                if (newRegistrationPending && !voteCasted) {
-                    console.log('Tempo esgotado para votação, voltando para tela de descanso.');
-                    showIdleScreen();
-                }
-            }, 20000);
-        }
+        });
     };
-    
+
     showIdleScreen();
+    setupSocketListeners();
 });

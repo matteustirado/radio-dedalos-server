@@ -1,31 +1,13 @@
 body {
-<<<<<<< HEAD
     justify-content: center;
     align-items: center;
 }
 
 #game-main-wrapper {
-=======
-    background: radial-gradient(circle at center, var(--bg-dark-secondary) 0%, var(--bg-dark-primary) 45%, #28241e 100%);
-    color: var(--color-text);
-    font-family: 'Poppins', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    overflow: hidden;
-    position: relative;
-    text-align: center;
-}
-
-main#game-main-wrapper {
->>>>>>> e15963b0e5894e407579033c94c1439aeb73b4f2
     background-color: rgba(0, 0, 0, 0.6);
     border-radius: 1.5rem;
     padding: 2.5rem;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-<<<<<<< HEAD
     width: 100%;
     max-width: 800px;
     backdrop-filter: blur(5px);
@@ -33,31 +15,16 @@ main#game-main-wrapper {
     justify-content: center;
     align-items: center;
     margin: auto;
-=======
-    max-width: 900px;
-    width: 90%;
-    backdrop-filter: blur(5px);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    justify-content: center;
-    align-items: center;
->>>>>>> e15963b0e5894e407579033c94c1439aeb73b4f2
 }
 
 .game-screen {
     width: 100%;
-<<<<<<< HEAD
+    height: 1000px;
     display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-=======
-    display: none; 
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
->>>>>>> e15963b0e5894e407579033c94c1439aeb73b4f2
 }
 
 .game-screen.hidden {
@@ -68,68 +35,36 @@ main#game-main-wrapper {
     display: flex;
 }
 
-<<<<<<< HEAD
 .header-content {
-    margin-bottom: 7rem;
+    margin: 3rem 0 7rem 0;
 }
 
 #idle-title {
-    font-size: 4.5rem;
-    text-shadow: 0 0 20px rgba(255, 165, 0, 0.8);
-    margin-bottom: 1.5rem;
+    font-size: 3.8rem;
+    margin: 1rem 0 0 0;
 }
 
 .header-title {
-    font-size: 2.8rem;
+    font-size: 3rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
 }
 
 .header-subtitle {
-    font-size: 2rem;
+    font-size: 1.5rem;
     color: var(--color-text-muted);
 }
 
 .idle-content {
     padding: 1rem 0;
-=======
-#idle-title {
-    font-size: 3.5rem;
-    background: linear-gradient(45deg, #FFD700, #FFA500, #FF4500);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    color: transparent;
-    text-shadow: 0 0 20px rgba(255, 165, 0, 0.8);
-}
-
-
-.game-title {
-    font-size: 2.8rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    text-shadow: 0 0 15px rgba(255, 77, 0, 0.7);
-}
-
-.game-subtitle {
-    font-size: 1.4rem;
-    color: var(--color-text-muted);
-    margin-bottom: 2.5rem;
->>>>>>> e15963b0e5894e407579033c94c1439aeb73b4f2
 }
 
 .options-grid {
     display: grid;
-<<<<<<< HEAD
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
     width: 100%;
     margin-top: 1rem;
-=======
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
->>>>>>> e15963b0e5894e407579033c94c1439aeb73b4f2
 }
 
 .option-card {
@@ -146,11 +81,7 @@ main#game-main-wrapper {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-<<<<<<< HEAD
     min-height: 160px;
-=======
-    min-height: 150px;
->>>>>>> e15963b0e5894e407579033c94c1439aeb73b4f2
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
@@ -160,77 +91,36 @@ main#game-main-wrapper {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
-.option-icon {
-    font-size: 2.5rem;
+.option-emoji {
+    font-size: 3.5rem;
     margin-bottom: 1rem;
-    color: var(--color-primary);
+    line-height: 1;
 }
-
-<<<<<<< HEAD
-.option-card.selected {
-    border-color: var(--color-secondary);
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
-}
-
-.option-card.selected .option-icon {
-    color: var(--color-secondary);
-=======
-.option-card[data-option="versatil"] .option-icon { color: #5B82E8; }
-.option-card[data-option="passivo"] .option-icon { color: #4CAF50; }
-.option-card[data-option="ativo"] .option-icon { color: #FF5722; }
-.option-card[data-option="beber_curtir"] .option-icon { color: #FFC107; }
-.option-card[data-option="so_amizade"] .option-icon { color: #9C27B0; }
-
 
 .option-card.selected {
-    border: 3px solid var(--color-accent);
-    box-shadow: 0 0 20px rgba(var(--color-accent-rgb), 0.7);
+    border-color: var(--color-primary);
     transform: scale(1.05);
->>>>>>> e15963b0e5894e407579033c94c1439aeb73b4f2
+    box-shadow: 0 0 20px rgba(255, 77, 0, 0.5);
 }
 
-.game-message {
-    margin-top: 2rem;
-<<<<<<< HEAD
-    font-size: 1.2rem;
-    font-weight: 500;
-=======
-    font-size: 1.3rem;
-    font-weight: 600;
->>>>>>> e15963b0e5894e407579033c94c1439aeb73b4f2
-    color: var(--color-success);
-    transition: opacity 0.3s ease;
-}
-
-.game-message.error {
-    color: var(--color-danger);
-}
-
-<<<<<<< HEAD
-=======
-.idle-screen-container {
-    min-height: 500px;
-}
-
->>>>>>> e15963b0e5894e407579033c94c1439aeb73b4f2
 .idle-text {
     font-size: 1.5rem;
     color: var(--color-text-muted);
-    margin: 1.5rem 0;
+    margin: 10rem 0 15rem 0;
+    font-style: italic;
 }
 
 .idle-hint {
     font-size: 1rem;
     color: rgba(255, 255, 255, 0.5);
     margin-top: 1rem;
+    text-shadow: 0 0 20px rgba(255, 165, 0, 0.8);
 }
 
 .logo-loader {
-<<<<<<< HEAD
-    width: 200px;
+    width: 250px;
     height: auto;
-    margin: 1.5rem auto;
+    margin: 1.5rem auto 2rem auto;
     display: block;
 }
 
@@ -239,35 +129,6 @@ main#game-main-wrapper {
     stroke-width: 5;
     stroke-dasharray: 5000;
     stroke-dashoffset: 5000;
-=======
-    /* Define a largura desejada, por exemplo, 200px ou menos */
-    width: 200px; /* Mantemos 200px como no seu código, ajuste se precisar */
-    
-    /* Isso garante que a altura seja calculada automaticamente mantendo a proporção do viewBox */
-    height: auto; 
-    
-    /* Adicionamos margem para centralizar e dar um respiro, se necessário */
-    margin: 1.5rem auto; /* 'auto' centraliza horizontalmente */
-    
-    /* Adicionado display: block para garantir que margin: auto funcione */
-    display: block; 
-}
-
-/* SUBSTITUA SEU ANTIGO `.logo-loader path` E O @keyframes POR ESTE CÓDIGO */
-
-.logo-loader path {
-    /* Aplica o gradiente que definimos no HTML */
-    stroke: url(#logo-gradient-stroke); 
-    
-    /* Espessura da linha (ajuste se desejar) */
-    stroke-width: 5;
-
-    /* Um valor alto para cobrir os caminhos longos do seu novo SVG */
-    stroke-dasharray: 5000;
-    stroke-dashoffset: 5000;
-    
-    /* Animação para desenhar e depois apagar, em loop */
->>>>>>> e15963b0e5894e407579033c94c1439aeb73b4f2
     animation: draw-logo-final 4s ease-in-out infinite;
 }
 
@@ -276,122 +137,57 @@ main#game-main-wrapper {
         stroke-dashoffset: 5000;
     }
     50% {
-<<<<<<< HEAD
         stroke-dashoffset: 0;
     }
     100% {
-=======
-        /* No meio da animação, o logo está totalmente desenhado */
-        stroke-dashoffset: 0;
-    }
-    100% {
-        /* No final, ele "des-desenha" para reiniciar o loop */
->>>>>>> e15963b0e5894e407579033c94c1439aeb73b4f2
         stroke-dashoffset: -5000;
     }
 }
 
-<<<<<<< HEAD
-/* Estilos para Tablet Vertical (800x1200) */
-@media (min-width: 768px) and (orientation: portrait) {
-    #game-main-wrapper {
-        padding: 4rem;
-        max-width: 700px;
-        width: 90%;
-        min-height: 90vh;
-    }
+/* Estilos para a Tela de Confirmação */
+#confirmation-screen .header-title {
+    font-size: 3.5rem;
+}
 
-=======
-/* Responsividade */
-@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
-    main#game-main-wrapper {
-        padding: 3rem;
-        max-width: 700px;
-        width: 95%;
-        min-height: 90vh;
-    }
+#confirmation-screen .header-subtitle {
+    font-size: 1.6rem;
+}
 
-    #idle-title {
-        font-size: 4rem;
-    }
+.logo-static-glow {
+    width: 220px;
+    height: auto;
+    margin: 10rem auto 20rem auto;
+    display: block;
+    filter: drop-shadow(0 0 15px var(--color-primary));
+}
 
-    .game-title {
-        font-size: 3rem;
-    }
+.logo-static-glow path {
+    stroke: var(--color-primary);
+    stroke-width: 5;
+}
 
-    .game-subtitle {
-        font-size: 1.5rem;
-    }
+.final-message {
+    font-size: 1.8rem;
+    font-style: italic;
+    color: var(--color-text);
+    margin: 0 0 2rem 0;
+    text-shadow: 0 0 10px rgba(255, 77, 0, 0.5);
+}
 
->>>>>>> e15963b0e5894e407579033c94c1439aeb73b4f2
+/* Media Queries */
+@media (min-width: 768px) {
     .options-grid {
-        grid-template-columns: repeat(2, 1fr);
+        margin: 7rem 1rem;
+        grid-template-columns: repeat(3, 1fr);
         gap: 2rem;
     }
 
     .option-card {
-<<<<<<< HEAD
         min-height: 200px;
         font-size: 1.3rem;
-=======
-        min-height: 180px;
-        font-size: 1.2rem;
->>>>>>> e15963b0e5894e407579033c94c1439aeb73b4f2
     }
 
-    .option-icon {
-        font-size: 3.5rem;
+    .option-emoji {
+        font-size: 4rem;
     }
-<<<<<<< HEAD
-=======
-
-    .idle-text {
-        font-size: 1.8rem;
-    }
-    
-    .logo-loader {
-        width: 250px;
-    }
-}
-
-@media (max-width: 767px) {
-    main#game-main-wrapper {
-        padding: 1.5rem;
-        width: 95%;
-    }
-
-    #idle-title {
-        font-size: 2.5rem;
-    }
-
-    .game-title {
-        font-size: 2rem;
-    }
-
-    .game-subtitle {
-        font-size: 1.1rem;
-    }
-
-    .options-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .option-card {
-        min-height: 120px;
-        font-size: 1em;
-    }
-
-    .option-icon {
-        font-size: 2em;
-    }
-
-    .idle-text {
-        font-size: 1.2rem;
-    }
-    
-    .logo-loader {
-        width: 180px;
-    }
->>>>>>> e15963b0e5894e407579033c94c1439aeb73b4f2
 }
