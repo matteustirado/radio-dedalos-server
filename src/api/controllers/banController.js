@@ -17,14 +17,11 @@ class BanController {
             
             await logService.logAction(request, 'SONG_BANNED', { banId: newBan.id, songId: song_id, period: ban_period });
             
-            // Força a atualização da lista de bans e da fila no servidor
             await queueService._refreshBans();
 
             const io = socketService.getIo();
             if (io) {
-                // Notifica a todos que a lista de bans mudou
                 io.emit('bans:updated');
-                // Notifica a todos sobre a nova fila de reprodução (já sem a música banida)
                 socketService.enrichAndEmitQueue();
             }
 
@@ -43,14 +40,11 @@ class BanController {
             if (affectedRows > 0) {
                 await logService.logAction(request, 'BAN_REMOVED', { banId: id });
                 
-                // Força a atualização da lista de bans no servidor
                 await queueService._refreshBans();
 
                 const io = socketService.getIo();
                 if (io) {
-                    // Notifica a todos que a lista de bans mudou
                     io.emit('bans:updated');
-                    // Notifica a todos sobre a fila (caso a música desbanida possa ser adicionada de novo)
                     socketService.enrichAndEmitQueue();
                 }
                 response.status(200).json({ message: 'Banimento desativado com sucesso.' });

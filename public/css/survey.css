@@ -109,7 +109,6 @@
     resize: none;
 }
 
-/* Otimização para Tablet Paisagem */
 @media (max-width: 1280px) and (max-height: 800px) and (orientation: landscape) {
     body {
         justify-content: center;

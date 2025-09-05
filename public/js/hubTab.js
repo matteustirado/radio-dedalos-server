@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
             radioCardDescription.textContent = "A rádio está fora do ar no momento. Voltamos às 16h!";
         }
     };
-    
+
     emojiBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             clearTimeout(inactivityTimer);
@@ -89,12 +89,12 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('selected');
             const clickedImg = this.querySelector('img');
             clickedImg.src = clickedImg.dataset.animatedSrc;
-            
+
             const info = emojiInfo[selectedRating];
             emojiInfoText.textContent = info.meaning;
             feedbackLabel.textContent = info.label;
 
-            successMessage.classList.add('hidden'); 
+            successMessage.classList.add('hidden');
             feedbackForm.classList.remove('hidden');
             accessSection.classList.add('hidden');
 
@@ -134,13 +134,13 @@ document.addEventListener('DOMContentLoaded', function() {
             inactivityTimer = setTimeout(resetUI, 10000);
             return;
         }
-        
+
         console.log('Avaliação:', selectedRating);
         console.log('Feedback:', feedbackText.value.trim());
         console.log('Pulseira:', wristbandCode);
-        
+
         localStorage.setItem(`vote_cooldown_${wristbandCode}`, Date.now());
-        
+
         const info = emojiInfo[selectedRating];
         successText.textContent = info.message || "Obrigado pelo seu feedback!";
         successMessage.classList.remove('hidden');
@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(inactivityTimer);
         inactivityTimer = setTimeout(resetUI, 10000);
     });
-    
+
     radioPlayer.subscribe(updateRadioStatus);
     radioPlayer.initialize();
 });

@@ -1,5 +1,5 @@
 const WebRatingModel = require('../models/webRatingModel');
-const TwitterRepostModel = require('../models/twitterRepostModel'); // Nome do model corrigido
+const TwitterRepostModel = require('../models/twitterRepostModel');
 const webRatingService = require('../../services/webRatingService');
 
 class WebRatingController {

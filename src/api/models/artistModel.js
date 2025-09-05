@@ -27,7 +27,6 @@ class ArtistModel {
             return { id: artistId, name: name };
         } catch (error) {
             await connection.rollback();
-            // Ignora erro de entrada duplicada que pode ocorrer em condições de concorrência
             if (error.code === 'ER_DUP_ENTRY') {
                 let [rows] = await connection.execute('SELECT id FROM artists WHERE name = ?', [name]);
                 return { id: rows[0].id, name: name };

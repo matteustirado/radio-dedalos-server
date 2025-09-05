@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeBansBtn = document.querySelector('#consult-bans-section .close-section-btn');
     const bansSection = document.getElementById('consult-bans-section');
     const banTabButtons = document.querySelectorAll('#consult-bans-section .tab-btn');
-    
+
     let activeBanTab = 'pendente';
 
     const renderBanRequests = (banRequests, container) => {
@@ -42,8 +42,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const date = new Date(req.banned_at).toLocaleString('pt-BR');
             const musicText = `${req.song_title} - ${req.artist_name}`;
-            const statusTag = req.is_active ? 
-                '<span class="status-tag active">Ativo</span>' : 
+            const statusTag = req.is_active ?
+                '<span class="status-tag active">Ativo</span>' :
                 '<span class="status-tag draft">Inativo</span>';
 
             let itemHTML = `
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!listContainer) return;
 
         let url = `/bans?status=${activeBanTab}`;
-        
+
         const filterPopup = document.getElementById(`${activeBanTab}-bans-filter-popup`);
         if (filterPopup) {
             const month = filterPopup.querySelector('select[id$="-month-filter"]').value;
@@ -81,10 +81,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 url += `&month=${month}&year=${year}`;
             }
         }
-        
+
         const listContent = listContainer.querySelector('.list-content') || listContainer;
         listContent.innerHTML = '<div class="spinner-container"><div class="spinner"></div></div>';
-        
+
         try {
             const banRequests = await apiFetch(url);
             renderBanRequests(banRequests, listContainer);
@@ -113,27 +113,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const monthFilter = document.getElementById(`${type}-bans-month-filter`);
         const yearFilter = document.getElementById(`${type}-bans-year-filter`);
-        
+
         const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
         monthFilter.innerHTML = months.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('');
-        
+
         const currentYear = new Date().getFullYear();
         yearFilter.innerHTML = '';
         for (let i = 0; i < 5; i++) {
             const year = currentYear - i;
             yearFilter.add(new Option(year, year));
         }
-        
+
         monthFilter.value = new Date().getMonth() + 1;
         yearFilter.value = currentYear;
-        
+
         btn.addEventListener('click', () => popup.classList.toggle('hidden'));
         monthFilter.addEventListener('change', fetchAndRenderBanRequests);
         yearFilter.addEventListener('change', fetchAndRenderBanRequests);
     };
 
     consultBansBtn.addEventListener('click', () => {
-        document.getElementById('consult-history-section').classList.add('hidden'); 
+        document.getElementById('consult-history-section').classList.add('hidden');
         bansSection.classList.remove('hidden');
         activeBanTab = 'pendente';
         banTabButtons.forEach(b => b.classList.toggle('active', b.dataset.tab === 'pendente'));

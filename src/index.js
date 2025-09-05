@@ -42,7 +42,6 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Middleware de Log de Requisições - ADICIONADO PARA DEBUG
 app.use((req, res, next) => {
     console.log(`[REQUEST LOGGER] Method: ${req.method}, URL: ${req.originalUrl}, IP: ${req.ip}`);
     next();

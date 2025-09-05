@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const [year, month, day] = d.split('-');
                 return `${day}-${month}-${year}`;
             });
-            
+
             selectedDays.forEach(day => {
                 if (!dataToSave.dias[day]) dataToSave.dias[day] = { prices: {}, messages: {} };
                 document.querySelectorAll('.price-input').forEach(input => {
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
             holidaySection.classList.toggle('hidden', !isFeriadosActive);
         }
     }));
-    
+
     if (addHolidayBtn) {
         addHolidayBtn.addEventListener('click', () => {
             const dateValue = holidayDateInput.value;

@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
         thermometerLabel.textContent = `${percentage.toFixed(0)}%`;
 
         thermometerFill.classList.toggle('full', percentage >= 100);
-        
+
         movementMessage.textContent = movementMessages[roundedPercentage] || "A diversão está só começando! 🎉";
     };
 
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         socket.on('placardUpdate', updatePlacard);
         socket.on('capacityUpdate', (data) => updateThermometer(data.currentCapacity));
     };
-    
+
     initializeWithMockData();
     setupSocketListeners();
 });

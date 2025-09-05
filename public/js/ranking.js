@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderPodium = (podiumData) => {
         podiumContainer.innerHTML = '';
-        
+
         if (!podiumData || podiumData.length === 0) {
             podiumContainer.innerHTML = '<p class="placeholder-text">O ranking da semana anterior ainda não foi fechado. Vote no seu artista favorito para o ranking desta semana!</p>';
             return;
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             rankingList.appendChild(listItem);
         });
     };
-    
+
     const setupAutocomplete = () => {
         const container = artistNameInput.closest('.autocomplete-container');
 
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!ValidationConfig.isMasterCode(wristbandCode)) {
                 localStorage.setItem(`ranking_cooldown_${wristbandCode}`, Date.now());
             }
-            
+
             voteFormWrapper.classList.add('hidden');
             voteConfirmationText.textContent = `Seu voto para ${artistName} foi computado com sucesso!`;
             thankYouMessage.classList.remove('hidden');

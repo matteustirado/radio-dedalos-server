@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Por favor, digite o código da pulseira.');
             return;
         }
-        
+
         const isMaster = ValidationConfig.isMasterCode(code);
 
         if (!isMaster) {

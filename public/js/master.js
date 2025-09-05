@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let users = [];
     let allReports = [];
     let allLogs = [];
-    let currentUserId = null; 
+    let currentUserId = null;
     let itemToDelete = null;
 
     const listUsersView = document.getElementById('list-users-view');
@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 filial = newFilialSelect.value;
                 finalRole = `${baseRole}_${filial}`;
             }
-            
+
             const description = roleDescriptionMap[finalRole];
             const payload = { username, password, role: finalRole, description, filial };
 
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 filial = editFilialSelect.value;
                 finalRole = `${baseRole}_${filial}`;
             }
-            
+
             const description = roleDescriptionMap[finalRole];
             const payload = { username, role: finalRole, description, filial };
             if (password) payload.password = password;
@@ -297,13 +297,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     document.getElementById('edit-username').value = user.username;
                     editRoleSelect.value = baseRole;
-                    
+
                     handleRoleChange(editRoleSelect, editFilialGroup);
-                    
+
                     if (filial) {
                         editFilialSelect.value = filial;
                     }
-                    
+
                     document.getElementById('edit-password').value = '';
                     showView(editUserView);
                 }
@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    
+
     if (reportsList) {
         reportsList.addEventListener('change', async (e) => {
             if (e.target.classList.contains('status-select')) {
@@ -345,9 +345,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    
+
     if (logoutBtn) logoutBtn.addEventListener('click', logout);
-    
+
     if (cancelDeleteBtn) {
         cancelDeleteBtn.addEventListener('click', () => {
             deleteModal.classList.add('hidden');
@@ -355,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
             itemToDelete = null;
         });
     }
-    
+
     if (confirmDeleteBtn) {
         confirmDeleteBtn.addEventListener('click', async () => {
             if (!itemToDelete) return;
@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
             applyAndRenderReports();
         });
     }
-    
+
     if (logsFilterBtn) logsFilterBtn.addEventListener('click', () => logsFilterPopup.classList.toggle('hidden'));
     if (filterMonth) filterMonth.addEventListener('change', applyAndRenderLogs);
     if (filterYear) filterYear.addEventListener('change', applyAndRenderLogs);
@@ -407,7 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const initialize = async () => {
         await loadUsers();
-        await loadLogs(); 
+        await loadLogs();
         await loadReports();
         showListView();
     };

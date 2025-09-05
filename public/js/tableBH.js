@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     let pricingData = {};
     const locationSlug = 'bh';
-    const serverUrl = 'http://159.65.161.7:3000/'; // Assumindo que o servidor é o mesmo
+    const serverUrl = 'http://159.65.161.7:3000/';
     const weekDays = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
 
     function isHoliday(date) {

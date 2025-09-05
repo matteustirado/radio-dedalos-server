@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const role = getUserRole();
 
                 const [baseRole, filial] = role.split('_');
-                
+
                 const roleRedirects = {
                     'master': '/master.html',
                     'admin': '/musics.html',

@@ -6,10 +6,6 @@ section:last-child {
     margin-bottom: 0;
 }
 
-
-
-
-
 .main-actions-header {
     display: flex;
     flex-wrap: wrap;
@@ -65,8 +61,6 @@ section:last-child {
     flex-direction: column;
 }
 
-
-
 .suggestion-header {
     display: grid;
     align-items: center;
@@ -110,9 +104,6 @@ section:last-child {
     gap: 0.5rem;
     justify-content: flex-start;
 }
-
-
-
 
 .section-header-with-filter {
     display: flex;
@@ -160,11 +151,6 @@ section:last-child {
 .filter-popup .form-group:last-of-type {
     margin-bottom: 0;
 }
-
-
-
-
-
 
 .header-title {
     font-size: 2rem;

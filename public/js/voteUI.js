@@ -50,11 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             console.log(`Voto enviado: ${option}`);
-            setTimeout(showIdleScreen, 8000); // Aumentei o tempo para a mensagem ser lida
+            setTimeout(showIdleScreen, 8000);
 
         } catch (error) {
             console.error("Erro ao processar voto:", error);
-            showIdleScreen(); // Volta para a tela inicial em caso de erro
+            showIdleScreen();
         }
     };
 

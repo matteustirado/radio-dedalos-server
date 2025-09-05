@@ -130,15 +130,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderPlaylistInfo = (upcomingRequests) => {
         const today = new Date().getDay();
-        const dailyTitles = ["Domingo Relax", "Segunda é Rock!", "Terça Black Music", "Quarta TOP POP", "Quinta #TBT", "Sexta MIX", "Sábado Rock"];
+        const dailyTitles = ["Domingo Tribal Power", "Segunda Rock", "Terça Black Music", "Quarta POP", "Quinta #TBT", "Sexta MIX", "Sábado Night Beats"];
         const dailyThemes = [
-            "Domingo de boa. 😌 Para fechar o fim de semana, uma trilha sonora mais tranquila, com clássicos e sons relaxantes para recarregar as energias. 🛋️☕",
+            "Domingo de preguiça? Aqui não! A gente fecha o fim de semana com a batida forte e envolvente do Tribal House. Uma energia contagiante pra você já começar a semana lá em cima. Deixa o som te levar! 💪🎧",
             "Começando a semana com o pé na porta! 🤘 Hoje o dia é movido a guitarras, atitude e os maiores hinos do rock. Aumenta o volume que a energia aqui é garantida! 🎸⚡️",
             "Hoje é dia de celebrar a genialidade e a história da música preta. ✨ Nossa programação é uma homenagem aos artistas negros que revolucionaram o mundo com o soul, o funk e o R&B. E a partir das 23h, nosso DJ residente comanda um set ao vivo especial, mergulhando fundo nesse groove! 🎷🕺",
             "O meio da semana pede um som pra cima! 🎉 A 'Quarta TOP' chega com os maiores hits do pop internacional que estão dominando as paradas. A partir das 23h, a programação esquenta ainda mais com um DJ set especial só com as mais pedidas. 🔊💃",
             "Nostalgia no ar! 📼 Hoje, a programação é toda no clima de #TBT, com os clássicos do pop que a gente ama. E a noite promete: teremos o set especial do nosso 'DJ TBT' e a icônica 'Festa Cueca' rolando na nossa rádio! 🥰",
             "SEXTOU! 🔥 Hoje a gente bota fogo na pista com o MIX mais atualizado da cidade. É dia de virais, funk 🇧🇷 e tudo que tá no hype. A partir das 23h, começa o esquenta oficial para a 'Festa dos Novinhos'! Só vem! 🚀",
-            "O aquecimento oficial para a sua noite! 🌃 Hoje é dia de Sábado Rock, com uma seleção de hinos para cantar junto e se preparar pra festa. 🍻"
+            "Sábado é dia de se jogar na pista! Aumenta o volume que o nosso esquenta já começou com o melhor da música eletrônica e do tribal house. Prepara o look, chama os amigos e vem que a noite promete! 🚀✨"
         ];
         dailyThemeTitle.innerHTML = `<i class="fas fa-info-circle icon"></i> Playlist de Hoje: ${dailyTitles[today]}`;
         playlistDescription.textContent = dailyThemes[today];

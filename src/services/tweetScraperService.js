@@ -32,7 +32,7 @@ class TweetScraperService {
                 text: `"${text}"`,
                 date,
                 profile_photo_url,
-                image_url: JSON.stringify(media_urls) // Salva como uma string JSON
+                image_url: JSON.stringify(media_urls) 
             };
 
         } catch (error) {

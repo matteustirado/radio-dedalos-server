@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const consultSuggestionsBtn = document.getElementById('consult-suggestions-btn');
     const suggestionTabButtons = document.querySelectorAll('#consult-suggestions-section .tab-btn');
     const allMainSections = document.querySelectorAll('.form-section');
-    
+
     let activeSuggestionTab = 'pendente';
 
     const openSection = (sectionId) => {
@@ -83,10 +83,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const year = filterPopup.querySelector('select[id$="-year-filter"]').value;
             url += `&month=${month}&year=${year}`;
         }
-        
+
         const listContent = listContainer.querySelector('.list-content') || listContainer;
         listContent.innerHTML = '<div class="spinner-container"><div class="spinner"></div></div>';
-        
+
         try {
             const suggestions = await apiFetch(url);
             renderSuggestions(suggestions, listContainer);
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
             monthFilter.addEventListener('change', fetchAndRenderSuggestions);
             yearFilter.addEventListener('change', fetchAndRenderSuggestions);
         };
-        
+
         setupFilter('aceita');
         setupFilter('recusada');
 

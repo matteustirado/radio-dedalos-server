@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitPlaylistBtn = document.getElementById('submit-playlist-btn');
     const saveDraftBtn = document.getElementById('save-draft-btn');
     const successMessage = document.getElementById('success-message');
-    
+
     const scheduleOptionsContainer = document.getElementById('schedule-options-container');
     const padraoOptions = document.getElementById('padrao-options');
     const weekdaySelect = document.getElementById('weekday-select');
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
             b.classList.remove('active');
             b.classList.add('secondary');
         });
-        
+
         weekdaySelect.value = '';
         scheduledDateInput.value = '';
         scheduledTimeInput.value = '';
@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (p.scheduled_time) {
                 scheduleInfo += ` às ${p.scheduled_time.substring(0, 5)}`;
             }
-            
+
             const songCount = p.song_count || 0;
             const totalDuration = formatDuration(p.total_duration);
             const playlistStats = `${songCount} músicas • ${totalDuration}`;
@@ -344,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(updateButtons, 100);
         });
     };
-    
+
     const populateFilterTags = () => {
         const { allCategories } = playlistState.getState();
         filterTagsDropdown.innerHTML = '';
@@ -363,9 +363,9 @@ document.addEventListener('DOMContentLoaded', () => {
             songSearchDropdown.classList.remove('show');
             return;
         }
-        
+
         const results = playlistState.getFilteredSongs(term);
-        
+
         results.forEach(song => {
             const item = document.createElement('div');
             item.className = 'dropdown-item';
@@ -386,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
         playlistState.updateActivePlaylistField('name', e.target.value);
         checkFormCompletion();
     });
-    
+
     playlistTypeButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             const newType = btn.dataset.type;
@@ -422,7 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
     specialScheduledTimeInput.addEventListener('input', (e) => {
         playlistState.updateActivePlaylistField('scheduled_time', e.target.value);
     });
-    
+
     songSearchInput.addEventListener('input', () => updateSongSearchResults());
     currentPlaylistElement.addEventListener('click', (e) => {
         const removeBtn = e.target.closest('.remove-song-btn');
@@ -472,7 +472,7 @@ document.addEventListener('DOMContentLoaded', () => {
         playlistState.setActiveFilters(filters);
         updateSongSearchResults();
     });
-    
+
     clearFiltersBtn.addEventListener('click', () => {
         filterYearStart.value = '';
         filterYearEnd.value = '';
@@ -482,7 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
         playlistState.clearFilters();
         updateSongSearchResults();
     });
-    
+
     filterTagsTrigger.addEventListener('click', () => {
         filterTagsDropdown.classList.toggle('hidden');
     });
@@ -504,14 +504,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const playlistId = editBtn.dataset.id;
             await playlistState.loadPlaylistForEditing(playlistId);
             const { activePlaylist } = playlistState.getState();
-            
+
             playlistNameInput.value = activePlaylist.name;
             playlistTypeButtons.forEach(b => {
                 const isCurrentType = b.dataset.type === activePlaylist.type;
                 b.classList.toggle('active', isCurrentType);
                 b.classList.toggle('secondary', !isCurrentType);
             });
-            
+
             weekdaySelect.value = activePlaylist.weekday || '';
             scheduledDateInput.value = activePlaylist.scheduled_date ? new Date(activePlaylist.scheduled_date).toISOString().split('T')[0] : '';
             scheduledTimeInput.value = activePlaylist.scheduled_time || '';
@@ -536,7 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteModal.classList.remove('hidden');
             document.body.classList.add('modal-open');
         }
-        
+
         if (songSearchDropdown && !e.target.closest('.dropdown')) {
             songSearchDropdown.classList.remove('show');
         }

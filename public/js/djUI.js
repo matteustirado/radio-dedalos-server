@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const lists = { today: banListToday, week: banListWeek, permanent: banListPermanent };
         Object.values(lists).forEach(list => list.innerHTML = '');
-        
+
         (bannedSongs || []).forEach(song => {
             if (lists[song.ban_period]) {
                 lists[song.ban_period].appendChild(createBanPill(song));
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (lists.week.children.length === 0) lists.week.innerHTML = '<div class="ban-list-empty">Nenhuma música no castigo semanal.</div>';
         if (lists.permanent.children.length === 0) lists.permanent.innerHTML = '<div class="ban-list-empty">Nenhum banimento permanente.</div>';
     };
-    
+
     const createPlaylistCard = (pl) => {
         const card = document.createElement('div');
         card.className = 'card playlist-card';
@@ -154,25 +154,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderAvailablePlaylists = (availablePlaylists) => {
         if (!Array.isArray(availablePlaylists)) return;
         availablePlaylistsGrid.innerHTML = '';
-    
+
         const today = new Date();
         const year = today.getFullYear();
         const month = String(today.getMonth() + 1).padStart(2, '0');
         const day = String(today.getDate()).padStart(2, '0');
         const todayDateString = `${year}-${month}-${day}`;
-    
+
         const dailyPlaylists = availablePlaylists.filter(p => {
             if (p.type !== 'diaria' || !p.scheduled_date) return false;
             const playlistDateString = p.scheduled_date.split('T')[0];
             return playlistDateString === todayDateString;
         });
-        
+
         const standardPlaylists = availablePlaylists.filter(p => p.type === 'padrao');
-        
+
         const weekdayOrder = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-        const todayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1; 
+        const todayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1;
         const sortedWeekdayOrder = [...weekdayOrder.slice(todayIndex), ...weekdayOrder.slice(0, todayIndex)];
-        
+
         standardPlaylists.sort((a, b) => {
             return sortedWeekdayOrder.indexOf(a.weekday) - sortedWeekdayOrder.indexOf(b.weekday);
         });
@@ -206,18 +206,18 @@ document.addEventListener('DOMContentLoaded', () => {
             commercialsGrid.innerHTML = '<div class="placeholder-text">Nenhum comercial disponível.</div>';
         }
     };
-    
+
     const renderPlaylistInfo = (upcomingRequests) => {
         const today = new Date().getDay();
-        const dailyTitles = ["Domingo Relax", "Segunda Rock", "Terça Black Music", "Quarta POP", "Quinta #TBT", "Sexta MIX", "Sábado Rock"];
+        const dailyTitles = ["Domingo Tribal Power", "Segunda Rock", "Terça Black Music", "Quarta POP", "Quinta #TBT", "Sexta MIX", "Sábado Night Beats"];
         const dailyThemes = [
-            "Domingo de boa. 😌 Para fechar o fim de semana, uma trilha sonora mais tranquila, com clássicos e sons relaxantes para recarregar as energias. 🛋️☕",
+            "Domingo de preguiça? Aqui não! A gente fecha o fim de semana com a batida forte e envolvente do Tribal House. Uma energia contagiante pra você já começar a semana lá em cima. Deixa o som te levar! 💪🎧",
             "Começando a semana com o pé na porta! 🤘 Hoje o dia é movido a guitarras, atitude e os maiores hinos do rock. Aumenta o volume que a energia aqui é garantida! 🎸⚡️",
             "Hoje é dia de celebrar a genialidade e a história da música preta. ✨ Nossa programação é uma homenagem aos artistas negros que revolucionaram o mundo com o soul, o funk e o R&B. E a partir das 23h, nosso DJ residente comanda um set ao vivo especial, mergulhando fundo nesse groove! 🎷🕺",
             "O meio da semana pede um som pra cima! 🎉 A 'Quarta TOP' chega com os maiores hits do pop internacional que estão dominando as paradas. A partir das 23h, a programação esquenta ainda mais com um DJ set especial só com as mais pedidas. 🔊💃",
             "Nostalgia no ar! 📼 Hoje, a programação é toda no clima de #TBT, com os clássicos do pop que a gente ama. E a noite promete: teremos o set especial do nosso 'DJ TBT' e a icônica 'Festa Cueca' rolando na nossa rádio! 🥰",
             "SEXTOU! 🔥 Hoje a gente bota fogo na pista com o MIX mais atualizado da cidade. É dia de virais, funk 🇧🇷 e tudo que tá no hype. A partir das 23h, começa o esquenta oficial para a 'Festa dos Novinhos'! Só vem! 🚀",
-            "O aquecimento oficial para a sua noite! 🌃 Hoje é dia de Sábado Rock, com uma seleção de hinos para cantar junto e se preparar pra festa. 🍻"
+            "Sábado é dia de se jogar na pista! Aumenta o volume que o nosso esquenta já começou com o melhor da música eletrônica e do tribal house. Prepara o look, chama os amigos e vem que a noite promete! 🚀✨"
         ];
 
         dailyThemeTitle.innerHTML = `<i class="fa-solid fa-circle-info icon"></i> Playlist do Dia: ${dailyTitles[today]}`;
@@ -254,9 +254,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 dropdown.classList.remove('show');
                 return;
             }
-            
-            const results = allSongs.filter(s => 
-                !bannedSongIds.has(s.id) && 
+
+            const results = allSongs.filter(s =>
+                !bannedSongIds.has(s.id) &&
                 (s.title.toLowerCase().includes(term) || (s.artist_name && s.artist_name.toLowerCase().includes(term)))
             );
 
@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const handleOverlayUpload = async (event) => {
         const file = event.target.files[0];
         if (!file) return;
-        
+
         const formData = new FormData();
         formData.append('overlayImage', file);
 
@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
         logoutBtn.addEventListener('click', logout);
         uploadOverlayBtn.addEventListener('click', () => overlayUploadInput.click());
         overlayUploadInput.addEventListener('change', handleOverlayUpload);
-        
+
         document.getElementById('app-container').addEventListener('click', async (e) => {
             const activateBtn = e.target.closest('.activate-playlist-btn');
             if (activateBtn && !activateBtn.disabled) {
@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                     .catch(error => showMessage(`Erro ao banir: ${error.message}`, 'danger'));
             }
-            
+
             const unbanBtn = e.target.closest('.unban-btn');
             if (unbanBtn) {
                 const banId = unbanBtn.dataset.id;
@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     .catch(error => showMessage(`Erro ao remover banimento: ${error.message}`, 'danger'));
             }
         });
-        
+
         banDurationOptions.addEventListener('click', (e) => {
             const durationBtn = e.target.closest('.day-option');
             if (!durationBtn || !selectedSongForBan) return;
@@ -373,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const fullRender = () => {
         const state = radioPlayer.getState();
         const { upcomingRequests, playerState, currentSong, availablePlaylists, commercials, bannedSongs } = state;
-        
+
         renderQueue(currentSong, upcomingRequests);
         updatePlayerUI(currentSong, playerState);
         renderPlaylistInfo(upcomingRequests);
@@ -386,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     radioPlayer.subscribe(fullRender);
     radioPlayer.initialize();
-    
+
     setupEventListeners();
     setupAutocomplete(addSongInput, addSongDropdown, (song) => {
         addSongError.classList.add('hidden');

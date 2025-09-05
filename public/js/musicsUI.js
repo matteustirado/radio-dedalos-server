@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const submitBtn = document.getElementById('form-submit-btn');
     const uploadStep = document.getElementById('upload-step');
     const metadataStep = document.getElementById('metadata-step');
-    
+
     let itemToDelete = {};
 
     if (mediaFileInput && fileNameDisplay) {
@@ -49,13 +49,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (mediaFileInput.files.length > 0) {
                 const file = mediaFileInput.files[0];
                 fileNameDisplay.textContent = file.name;
-                
+
                 const formData = new FormData();
                 formData.append('mediaFile', file);
 
                 uploadStatusText.textContent = 'Analisando arquivo...';
                 uploadStatusContainer.classList.remove('hidden');
-                
+
                 try {
                     const metadata = await apiFetch('/songs/extract-metadata', {
                         method: 'POST',
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     artistInput.value = metadata.artist || '';
                     albumInput.value = metadata.album || '';
                     durationInput.value = metadata.duration || '00:00';
-                    
+
                     metadataStep.classList.remove('hidden');
                 } catch (error) {
                     showMessage(`Erro ao extrair metadados: ${error.message}`, 'danger');
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const onSelect = (item) => {
             addPill(typeof item === 'string' ? item : item.name);
         };
-        
+
         setupAutocomplete(inputEl, listEl, sourceCallback, onSelect);
     };
 
@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function() {
             container.appendChild(itemEl);
         });
     };
-    
+
     musicForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         if (!validateYear()) {
@@ -557,12 +557,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             setupPillInput(tagInput, addTagBtn, tagsContainer, tagList, () => musicsState.getState().categories);
             setupPillInput(featuringArtistInput, addFeaturingArtistBtn, featuringArtistsContainer, featuringArtistList, () => musicsState.getState().artists);
-            
+
         } catch (error) {
             console.error("Erro fatal na inicialização da UI:", error);
             alert("Ocorreu um erro crítico ao carregar a página de Admin. Verifique o console.");
         }
     };
-    
+
     initializePage();
 });
