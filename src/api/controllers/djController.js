@@ -147,6 +147,7 @@ class DjController {
         } else {
             queueService.resume();
             if(io) io.emit('player:play');
+            startMaestroLoop(request);
             await logService.logAction(request, 'PLAYER_RESUMED');
             socketService.enrichAndEmitQueue();
             response.status(200).json({ message: 'Retomando a transmissão.' });
