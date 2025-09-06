@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!pricingData.dias || !pricingData.dias[day] || !pricingData.dias[day].prices) {
             document.querySelectorAll('.price-card .price').forEach(span => span.textContent = '--');
             document.querySelectorAll('.dynamic-message').forEach(el => el.remove());
+            document.querySelectorAll('.price-per-person').forEach(el => el.textContent = '');
             return;
         }
         const dayData = pricingData.dias[day];
@@ -47,18 +48,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const priceValue = dayData.prices?.[key]?.[period];
             const priceValueDiv = card.querySelector('.price-value');
+            const pricePerPersonDiv = card.querySelector('.price-per-person');
 
             if (day === 'segunda' && (period === 'manha' || period === 'tarde') && priceValue === 0) {
                 priceValueDiv.textContent = 'FREE';
                 priceValueDiv.style.fontSize = '2rem';
+                 if (pricePerPersonDiv) {
+                    pricePerPersonDiv.textContent = '';
+                }
             }
             else if (priceValue !== undefined && priceValue !== null) {
                 priceValueDiv.innerHTML = `R$ <span class="price">${priceValue.toFixed(2).replace('.', ',')}</span>`;
                 priceValueDiv.style.fontSize = '2.2rem';
+                 if (pricePerPersonDiv) {
+                    let perPersonPrice;
+                    if (key === 'amiga') {
+                        perPersonPrice = (priceValue / 2).toFixed(2).replace('.', ',');
+                        pricePerPersonDiv.textContent = `(R$ ${perPersonPrice} por pessoa)`;
+                    } else if (key === 'marmita') {
+                        perPersonPrice = (priceValue / 3).toFixed(2).replace('.', ',');
+                        pricePerPersonDiv.textContent = `(R$ ${perPersonPrice} por pessoa)`;
+                    } else {
+                        pricePerPersonDiv.textContent = '';
+                    }
+                }
             }
             else {
                 priceValueDiv.innerHTML = `R$ <span class="price">--</span>`;
                 priceValueDiv.style.fontSize = '2.2rem';
+                if (pricePerPersonDiv) {
+                    pricePerPersonDiv.textContent = '';
+                }
             }
 
             const featuresList = card.querySelector('.price-features');

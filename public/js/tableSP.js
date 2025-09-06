@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!pricingData.dias || !pricingData.dias[day] || !pricingData.dias[day].prices) {
             document.querySelectorAll('.price-card .price').forEach(span => span.textContent = '--');
             document.querySelectorAll('.dynamic-message').forEach(el => el.remove());
+            document.querySelectorAll('.price-per-person').forEach(el => el.textContent = '');
             return;
         }
         const dayData = pricingData.dias[day];
@@ -37,8 +38,30 @@ document.addEventListener('DOMContentLoaded', () => {
             if (type === 'player') key = 'player';
             else if (type === 'amiga') key = 'amiga';
             else if (type === 'marmita') key = 'marmita';
+            
             const priceSpan = card.querySelector('.price');
-            priceSpan.textContent = dayData.prices?.[key]?.[period]?.toFixed(2).replace('.', ',') || '--';
+            const pricePerPersonDiv = card.querySelector('.price-per-person');
+            const priceValue = dayData.prices?.[key]?.[period];
+
+            priceSpan.textContent = priceValue?.toFixed(2).replace('.', ',') || '--';
+
+            if (pricePerPersonDiv) {
+                if (priceValue) {
+                    let perPersonPrice;
+                    if (key === 'amiga') {
+                        perPersonPrice = (priceValue / 2).toFixed(2).replace('.', ',');
+                        pricePerPersonDiv.textContent = `(R$ ${perPersonPrice} por pessoa)`;
+                    } else if (key === 'marmita') {
+                        perPersonPrice = (priceValue / 3).toFixed(2).replace('.', ',');
+                        pricePerPersonDiv.textContent = `(R$ ${perPersonPrice} por pessoa)`;
+                    } else {
+                        pricePerPersonDiv.textContent = '';
+                    }
+                } else {
+                    pricePerPersonDiv.textContent = '';
+                }
+            }
+            
             const featuresList = card.querySelector('.price-features');
             let messageItem = featuresList.querySelector('.dynamic-message');
             if (messageItem) messageItem.remove();
