@@ -1,8 +1,6 @@
 const express = require('express');
 const multer = require('multer');
 const SongController = require('../controllers/songController');
-const authMiddleware = require('../middlewares/authMiddleware');
-const roleMiddleware = require('../middlewares/roleMiddleware');
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -10,16 +8,16 @@ const upload = multer({ storage: multer.memoryStorage() });
 router.get('/', SongController.getAllSongs);
 router.get('/:id', SongController.getSongById);
 
-router.post('/extract-metadata', authMiddleware, roleMiddleware(['admin', 'master']), upload.single('mediaFile'), SongController.extractMetadata);
+router.post('/extract-metadata', upload.single('mediaFile'), SongController.extractMetadata);
 
-router.post('/', authMiddleware, roleMiddleware(['admin', 'master']), upload.single('mediaFile'), SongController.createSong);
-router.put('/:id', authMiddleware, roleMiddleware(['admin', 'master']), upload.single('mediaFile'), SongController.updateSong);
-router.delete('/:id', authMiddleware, roleMiddleware(['admin', 'master']), SongController.deleteSong);
+router.post('/', upload.single('mediaFile'), SongController.createSong);
+router.put('/:id', upload.single('mediaFile'), SongController.updateSong);
+router.delete('/:id', SongController.deleteSong);
 
-router.post('/:id/categories', authMiddleware, roleMiddleware(['admin', 'master']), SongController.manageSongCategories);
-router.post('/:id/weekdays', authMiddleware, roleMiddleware(['admin', 'master']), SongController.manageSongWeekdays);
+router.post('/:id/categories', SongController.manageSongCategories);
+router.post('/:id/weekdays', SongController.manageSongWeekdays);
 
-router.post('/:id/featuring', authMiddleware, roleMiddleware(['admin', 'master']), async (request, response) => {
+router.post('/:id/featuring', async (request, response) => {
     try {
         const {
             id

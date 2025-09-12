@@ -1,15 +1,20 @@
 const express = require('express');
 const AuthController = require('../controllers/authController');
-const authMiddleware = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
 router.post('/login', AuthController.login);
 
-router.get('/profile', authMiddleware, (request, response) => {
+router.get('/profile', (request, response) => {
+    
+    const user = {
+        id: 1,
+        role: 'master',
+        username: 'master'
+    };
     response.status(200).json({
-        message: 'Você está vendo uma rota protegida!',
-        user: request.user
+        message: 'Você está vendo uma rota que antes era protegida!',
+        user: user
     });
 });
 
