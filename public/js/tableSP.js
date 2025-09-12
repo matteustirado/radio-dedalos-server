@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     let pricingData = {};
     const locationSlug = 'sp';
-    const serverUrl = 'http://159.65.161.7:3000/';
     const weekDays = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
 
     function isHoliday(date) {
@@ -170,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(autoRefreshPeriod, 60000);
     setInterval(autoRefreshDay, 60000);
 
-    const socket = io(serverUrl);
+    const socket = io();
     socket.on('connect', () => console.log('Conectado ao servidor de atualizações em tempo real.'));
     socket.on('prices:updated', data => {
         if (data.location === locationSlug) {
@@ -183,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fetchAndRenderSlides(activeDay);
         }
     });
-    
+
     setInterval(() => {
         fetchAndRenderPrices();
         fetchAndRenderSlides(getCurrentDay());
