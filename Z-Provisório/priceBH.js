@@ -1,6 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
+    protectPage();
     const validRoles = ['master', 'adm-tabela-bh'];
-    
+    if (!validRoles.includes(getUserRole())) {
+        alert('Acesso negado. Você não tem permissão para editar esta tabela.');
+        window.location.href = '/';
+        return;
+    }
+
     const locationSlug = 'bh';
     let currentData = {};
     let holidays = new Set();
@@ -164,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (logoutBtn) logoutBtn.addEventListener('click', () => { window.location.href = '/' });
+    if (logoutBtn) logoutBtn.addEventListener('click', logout);
 
     loadPriceData();
 });

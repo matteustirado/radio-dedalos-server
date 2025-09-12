@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+    protectPage();
+    if (getUserRole() !== 'master') {
+        alert('Acesso negado. Esta área é restrita para o usuário Master.');
+        window.location.href = '/';
+        return;
+    }
+
     let users = [];
     let allReports = [];
     let allLogs = [];
@@ -339,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (logoutBtn) logoutBtn.addEventListener('click', () => { window.location.href = '/' });
+    if (logoutBtn) logoutBtn.addEventListener('click', logout);
 
     if (cancelDeleteBtn) {
         cancelDeleteBtn.addEventListener('click', () => {

@@ -37,7 +37,16 @@ document.addEventListener('DOMContentLoaded', () => {
         usernameInput.classList.remove('error');
         passwordInput.classList.remove('error');
     };
-    
+
+    const showLoginError = () => {
+        buttonText.textContent = 'Tente Novamente';
+        loadingSpinner.classList.add('hidden');
+        loginButton.disabled = false;
+        loginButton.classList.add('error');
+        usernameInput.classList.add('error');
+        passwordInput.classList.add('error');
+    };
+
     if (showReportViewBtn) showReportViewBtn.addEventListener('click', showReportView);
     if (cancelReportBtn) cancelReportBtn.addEventListener('click', showLoginView);
     if (backToLoginBtn) {
@@ -48,11 +57,68 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            window.location.href = '/master.html';
+            resetLoginState();
+            buttonText.textContent = 'Conectando...';
+            loadingSpinner.classList.remove('hidden');
+            loginButton.disabled = true;
+            try {
+                const data = await apiFetch('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        username: usernameInput.value,
+                        password: passwordInput.value
+                    })
+                });
+                saveToken(data.token);
+                const role = getUserRole();
+
+                const [baseRole, filial] = role.split('_');
+
+                const roleRedirects = {
+                    'master': '/master.html',
+                    'admin': '/musics.html',
+                    'playlist_creator': '/playlists.html',
+                    'dj': '/dj.html',
+                    'adm_tabela': filial === 'sp' ? '/priceSP.html' : '/priceBH.html',
+                    'jukebox_user': filial === 'sp' ? '/jukebox.html' : '/jukeboxBH.html',
+                    'view_tabela': filial === 'sp' ? '/tableSP.html' : '/tableBH.html'
+                };
+
+                const redirectUrl = roleRedirects[baseRole] || roleRedirects[role];
+
+                if (redirectUrl) {
+                    window.location.href = redirectUrl;
+                } else {
+                    const legacyRedirects = {
+                        'adm-tabela-sp': '/priceSP.html',
+                        'adm-tabela-bh': '/priceBH.html',
+                        'tabela-sp': '/tableSP.html',
+                        'tabela-bh': '/tableBH.html'
+                    };
+                    if (legacyRedirects[role]) {
+                        window.location.href = legacyRedirects[role];
+                    } else {
+                        throw new Error('Função de usuário não reconhecida ou sem página de destino.');
+                    }
+                }
+            } catch (error) {
+                alert(`Falha no login: ${error.message}`);
+                showLoginError();
+            }
         });
     }
+
+    [usernameInput, passwordInput].forEach(input => {
+        if (input) {
+            input.addEventListener('input', () => {
+                if (loginButton.classList.contains('error')) {
+                    resetLoginState();
+                }
+            });
+        }
+    });
 
     if (togglePasswordBtn) {
         togglePasswordBtn.addEventListener('click', () => {

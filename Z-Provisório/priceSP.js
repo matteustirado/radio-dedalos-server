@@ -1,6 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+    protectPage();
     const validRoles = ['master', 'adm-tabela-sp'];
-    
+    if (!validRoles.includes(getUserRole())) {
+        alert('Acesso negado. Você não tem permissão para editar esta tabela.');
+        window.location.href = '/';
+        return;
+    }
     const locationSlug = 'sp';
     let currentData = {};
     let selectedFiles = [];
@@ -364,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
         expandSlidesBtn.classList.remove('hidden');
     });
 
-    if (logoutBtn) logoutBtn.addEventListener('click', () => { window.location.href = '/' });
+    if (logoutBtn) logoutBtn.addEventListener('click', logout);
 
     loadPriceData();
     loadSlides();

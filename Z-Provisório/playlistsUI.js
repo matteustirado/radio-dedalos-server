@@ -1,5 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+    protectPage();
     const validRoles = ['admin', 'master', 'playlist_creator'];
+    if (!validRoles.includes(getUserRole())) {
+        alert('Acesso negado. Você não tem permissão para gerenciar playlists.');
+        window.location.href = '/';
+        return;
+    }
 
     const logoutBtn = document.getElementById('logout-btn');
     const playlistNameInput = document.getElementById('playlist-name');
@@ -375,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
         songSearchDropdown.classList.toggle('show', results.length > 0 && term.length > 0);
     };
 
-    logoutBtn.addEventListener('click', () => { window.location.href = '/' });
+    logoutBtn.addEventListener('click', logout);
     playlistNameInput.addEventListener('input', (e) => {
         playlistState.updateActivePlaylistField('name', e.target.value);
         checkFormCompletion();

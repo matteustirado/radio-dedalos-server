@@ -1,6 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
+    protectPage();
     const validRoles = ['dj', 'admin', 'master'];
-    
+    if (!validRoles.includes(getUserRole())) {
+        alert('Acesso negado. Esta área é restrita para DJs.');
+        window.location.href = '/';
+        return;
+    }
+
     const nowPlayingTitle = document.getElementById('now-playing-title');
     const nowPlayingArtist = document.getElementById('now-playing-artist');
     const playlistBody = document.getElementById('playlist-body');
@@ -294,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const setupEventListeners = () => {
         playPauseBtn.addEventListener('click', radioPlayer.actions.togglePause);
         skipBtn.addEventListener('click', radioPlayer.actions.skip);
-        logoutBtn.addEventListener('click', () => { window.location.href = '/' });
+        logoutBtn.addEventListener('click', logout);
         uploadOverlayBtn.addEventListener('click', () => overlayUploadInput.click());
         overlayUploadInput.addEventListener('change', handleOverlayUpload);
 

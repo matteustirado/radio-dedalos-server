@@ -1,5 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+    protectPage();
     const validRoles = ['admin', 'master', 'playlist_creator', 'musics'];
+    if (!validRoles.includes(getUserRole())) {
+        alert('Acesso negado.');
+        window.location.href = '/';
+        return;
+    }
 
     const addTweetForm = document.getElementById('add-tweet-form');
     const tweetsListBody = document.getElementById('tweets-list-body');
@@ -98,6 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    logoutBtn.addEventListener('click', () => { window.location.href = '/' });
+    logoutBtn.addEventListener('click', logout);
     loadTweets();
 });
