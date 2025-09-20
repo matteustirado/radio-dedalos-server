@@ -44,8 +44,11 @@
                 <h3 id="modal-title">Observações do Armário #000</h3>
             </div>
             <div class="form-group">
-                <label for="observation-text">Observação:</label>
-                <textarea id="observation-text" class="form-input" rows="4" placeholder="Anote aqui o nome do cliente ou outra informação..."></textarea>
+                <div class="label-container">
+                    <label for="observation-text">Observação:</label>
+                    <div id="char-counter">0 / 30</div>
+                </div>
+                <textarea id="observation-text" class="form-input" rows="4" placeholder="Anote aqui o nome do cliente ou outra informação..." maxlength="30"></textarea>
             </div>
             <div class="form-actions">
                 <button type="button" id="cancel-modal-btn" class="button secondary-button">Cancelar</button>

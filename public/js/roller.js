@@ -6,14 +6,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const observationModal = document.getElementById('observation-modal');
     const modalTitle = document.getElementById('modal-title');
     const observationText = document.getElementById('observation-text');
+    const charCounter = document.getElementById('char-counter');
     const cancelModalBtn = document.getElementById('cancel-modal-btn');
     const confirmModalBtn = document.getElementById('confirm-modal-btn');
+    const appContainer = document.getElementById('app-container');
 
     let currentDraw = [];
     let selectedLockerId = null;
 
     const renderDraw = (lockers) => {
         drawnLockersContainer.innerHTML = '';
+
+        if (document.querySelector('.print-table')) {
+            document.querySelector('.print-table').remove();
+        }
+
         if (!lockers || lockers.length === 0) {
             startDrawBtn.classList.remove('hidden');
             printBtn.classList.add('hidden');
@@ -25,6 +32,21 @@ document.addEventListener('DOMContentLoaded', () => {
         printBtn.classList.remove('hidden');
         clearDrawBtn.classList.remove('hidden');
 
+        const printTable = document.createElement('table');
+        printTable.className = 'print-table';
+        printTable.innerHTML = `
+            <thead>
+                <tr>
+                    <th>Armário</th>
+                    <th>Observação</th>
+                    <th>Anotações</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        `;
+        const printTbody = printTable.querySelector('tbody');
+
         lockers.forEach(locker => {
             const card = document.createElement('div');
             card.className = 'locker-card';
@@ -33,10 +55,19 @@ document.addEventListener('DOMContentLoaded', () => {
             card.innerHTML = `
                 <div class="locker-number">${String(locker.locker_number).padStart(3, '0')}</div>
                 <div class="locker-size">${locker.locker_size}</div>
-                <div class="print-observation">${locker.observation || ''}</div>
             `;
             drawnLockersContainer.appendChild(card);
+            
+            const tableRow = document.createElement('tr');
+            tableRow.innerHTML = `
+                <td>${String(locker.locker_number).padStart(3, '0')} (${locker.locker_size})</td>
+                <td>${locker.observation || ''}</td>
+                <td></td>
+            `;
+            printTbody.appendChild(tableRow);
         });
+
+        drawnLockersContainer.insertAdjacentElement('afterend', printTable);
     };
 
     const loadCurrentDraw = async () => {
@@ -48,31 +79,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const updateCharCounter = () => {
+        const currentLength = observationText.value.length;
+        const maxLength = observationText.maxLength;
+        charCounter.textContent = `${currentLength} / ${maxLength}`;
+    };
+
     startDrawBtn.addEventListener('click', async () => {
-        if (confirm('Tem certeza que deseja iniciar um novo sorteio? O sorteio anterior será limpo.')) {
-            try {
-                await apiFetch('/roller/clear', { method: 'DELETE' });
-                currentDraw = await apiFetch('/roller/start', { method: 'POST' });
-                renderDraw(currentDraw);
-            } catch (error) {
-                alert(`Erro ao iniciar sorteio: ${error.message}`);
-            }
+        try {
+            await apiFetch('/roller/clear', { method: 'DELETE' });
+            currentDraw = await apiFetch('/roller/start', { method: 'POST' });
+            renderDraw(currentDraw);
+        } catch (error) {
+            alert(`Erro ao iniciar sorteio: ${error.message}`);
         }
     });
 
     printBtn.addEventListener('click', () => {
+        appContainer.classList.add('printing-section');
         window.print();
+        appContainer.classList.remove('printing-section');
     });
 
     clearDrawBtn.addEventListener('click', async () => {
-        if (confirm('Tem certeza que deseja limpar o sorteio? Ele será salvo no histórico.')) {
-            try {
-                await apiFetch('/roller/clear', { method: 'DELETE' });
-                currentDraw = [];
-                renderDraw(currentDraw);
-            } catch (error) {
-                alert(`Erro ao limpar sorteio: ${error.message}`);
-            }
+        try {
+            await apiFetch('/roller/clear', { method: 'DELETE' });
+            currentDraw = [];
+            renderDraw(currentDraw);
+        } catch (error) {
+            alert(`Erro ao limpar sorteio: ${error.message}`);
         }
     });
 
@@ -84,10 +119,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (locker) {
                 modalTitle.textContent = `Observações do Armário #${String(locker.locker_number).padStart(3, '0')}`;
                 observationText.value = locker.observation || '';
+                updateCharCounter();
                 observationModal.classList.remove('hidden');
             }
         }
     });
+
+    observationText.addEventListener('input', updateCharCounter);
 
     cancelModalBtn.addEventListener('click', () => {
         observationModal.classList.add('hidden');

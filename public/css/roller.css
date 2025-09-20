@@ -7,12 +7,12 @@
 
 .drawn-lockers-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: repeat(10, 1fr);
     gap: 1rem;
 }
 
 .locker-card {
-    padding: 1rem;
+    padding: 0.5rem;
     border-radius: 0.5rem;
     border: 1px solid var(--border-color);
     text-align: center;
@@ -26,12 +26,12 @@
 }
 
 .locker-number {
-    font-size: 1.5rem;
+    font-size: 1rem;
     font-weight: 700;
 }
 
 .locker-size {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     color: var(--color-text-muted);
     text-transform: uppercase;
     margin-top: 0.25rem;
@@ -52,35 +52,97 @@
     max-width: 500px;
 }
 
+.label-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+#char-counter {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+
 /* History Page Styles */
 .history-item {
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 0.5rem;
     margin-bottom: 1rem;
+    overflow: hidden;
 }
 
 .history-header {
     padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.history-header:hover {
+    background-color: #374151;
+}
+
+.history-header-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .history-date {
     font-weight: 600;
 }
 
+.history-header .expand-icon {
+    transition: transform 0.3s ease-in-out;
+}
+
+.history-item.expanded .history-header .expand-icon {
+    transform: rotate(180deg);
+}
+
 .history-body {
     padding: 1.5rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 1rem;
+    border-top: 1px solid var(--border-color);
+    display: none;
+}
+
+.history-item.expanded .history-body {
+    display: block;
+}
+
+.print-table {
+    display: none;
 }
 
 /* Print Styles */
 @media print {
+    body > *:not(.printing-section) {
+        display: none !important;
+    }
+
+    .printing-section,
+    .printing-section .history-body,
+    .printing-section .print-table {
+        display: block !important;
+    }
+    
+    .printing-section .history-header {
+        display: flex !important;
+        justify-content: space-between;
+    }
+    
+    .printing-section .print-btn,
+    .printing-section .expand-icon,
+    #controls-section,
+    .drawn-lockers-grid {
+        display: none !important;
+    }
+
     body {
         background-color: #fff;
         color: #000;
@@ -90,37 +152,26 @@
         border: none;
         box-shadow: none;
         padding: 0;
+        margin: 0;
     }
 
-    #panel-header, .modal-overlay, #controls-section {
-        display: none;
+    .print-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
     }
 
-    .locker-card {
+    .print-table th, .print-table td {
         border: 1px solid #ccc;
-        page-break-inside: avoid;
-        position: relative;
-        padding-bottom: 50px; /* Space for notes */
-    }
-    
-    .locker-card::after {
-        content: "Anotações: ________________";
-        position: absolute;
-        bottom: 10px;
-        left: 10px;
-        font-size: 0.8rem;
-        color: #555;
+        padding: 8px;
+        text-align: left;
     }
 
-    .print-observation {
-        display: block;
-        font-size: 0.9rem;
-        margin-top: 0.5rem;
-        font-style: italic;
-        color: #333;
+    .print-table th {
+        background-color: #f2f2f2;
     }
-}
 
-.print-observation {
-    display: none;
+    .print-table td:last-child {
+        min-width: 200px;
+    }
 }

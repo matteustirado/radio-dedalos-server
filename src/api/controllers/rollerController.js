@@ -16,10 +16,10 @@ class RollerController {
             const allLockers = [];
             for (let i = 1; i <= LOCKER_CONFIG.total; i++) {
                 let size = '';
-                if (i <= 60) size = 'micro';
-                else if (i <= 162) size = 'small';
-                else if (i <= 198) size = 'medium';
-                else size = 'large';
+                if (i <= 60) size = 'MICRO';
+                else if (i <= 162) size = 'PEQUENO';
+                else if (i <= 198) size = 'MÉDIO';
+                else size = 'GRANDE';
                 allLockers.push({ locker_number: i, locker_size: size });
             }
 
