@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roller - Sorteio de Armários</title>
+    <link rel="icon" href="assets/img/logo.png" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/roller.css">
+</head>
+<body>
+    <main id="app-container" class="gradient-border">
+        <header id="panel-header">
+            <div>
+                <h1 class="header-title gradient-text">Roller de Armários</h1>
+                <p class="header-subtitle">Sorteie os armários premiados da noite.</p>
+            </div>
+            <div class="header-buttons">
+                <a href="/roller-log.html" id="history-log-btn" class="button ghost-button small">
+                    <i class="fas fa-history"></i> Ver Histórico
+                </a>
+            </div>
+        </header>
+
+        <section class="card-style">
+            <div id="controls-section" class="controls-container">
+                <button id="start-draw-btn" class="button primary-button"><i class="fas fa-play"></i> Iniciar Sorteio</button>
+                <button id="print-btn" class="button secondary-button hidden"><i class="fas fa-print"></i> Imprimir</button>
+                <button id="clear-draw-btn" class="button danger-button hidden"><i class="fas fa-trash"></i> Limpar Sorteio</button>
+            </div>
+
+            <div id="drawn-lockers-container" class="drawn-lockers-grid">
+            </div>
+        </section>
+    </main>
+
+    <div id="observation-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Observações do Armário #000</h3>
+            </div>
+            <div class="form-group">
+                <label for="observation-text">Observação:</label>
+                <textarea id="observation-text" class="form-input" rows="4" placeholder="Anote aqui o nome do cliente ou outra informação..."></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="button" id="cancel-modal-btn" class="button secondary-button">Cancelar</button>
+                <button type="button" id="confirm-modal-btn" class="button primary-button">Confirmar e Resgatar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/roller.js"></script>
+</body>
+</html>

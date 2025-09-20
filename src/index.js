@@ -29,6 +29,7 @@ const rankingRoutes = require('./api/routes/rankingRoutes');
 const webRatingRoutes = require('./api/routes/webRatingRoutes');
 const twitterRepostRoutes = require('./api/routes/twitterRepostRoutes');
 const gameRoutes = require('./api/routes/gameRoutes');
+const rollerRoutes = require('./api/routes/rollerRoutes');
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -77,6 +78,7 @@ app.use('/api/ranking', rankingRoutes);
 app.use('/api/webrating', webRatingRoutes);
 app.use('/api/tweets', twitterRepostRoutes);
 app.use('/api/game', gameRoutes);
+app.use('/api/roller', rollerRoutes);
 
 httpServer.listen(PORT, () => {
     console.log(`Servidor da Rádio Dédalos rodando na porta ${PORT}`);

@@ -3,6 +3,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const SlideController = require('../controllers/slideController');
+const authMiddleware = require('../middlewares/authMiddleware');
+const roleMiddleware = require('../middlewares/roleMiddleware');
 
 const router = express.Router();
 
@@ -32,16 +34,24 @@ const upload = multer({
     storage: storage,
     fileFilter: fileFilter
 });
+const adminRoles = ['master', 'adm-tabela-sp', 'adm-tabela-bh'];
 
 router.get('/:locationSlug/:dayOfWeek', SlideController.getSlidesByDay);
-router.get('/:locationSlug', SlideController.getAllSlidesGrouped);
+
+router.get('/:locationSlug', authMiddleware, roleMiddleware(adminRoles), SlideController.getAllSlidesGrouped);
+
 router.post(
     '/:locationSlug',
+    authMiddleware,
+    roleMiddleware(adminRoles),
     upload.array('slideImages', 12),
     SlideController.uploadSlides
 );
+
 router.delete(
     '/:slideId',
+    authMiddleware,
+    roleMiddleware(adminRoles),
     SlideController.deleteSlide
 );
 
