@@ -1,16 +1,10 @@
 const API_BASE_URL = '';
 
 async function apiFetch(endpoint, options = {}) {
-    const token = getToken();
-
     const headers = {
         'Content-Type': 'application/json',
         ...options.headers,
     };
-
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
     if (options.body instanceof FormData) {
         delete headers['Content-Type'];
