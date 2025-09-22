@@ -5,9 +5,14 @@ document.addEventListener('slidesRendered', () => {
         return;
     }
 
+    let slideInterval;
+
     const imagens = Array.from(slider.getElementsByTagName('img'));
     if (imagens.length === 0) {
         console.log('Nenhuma imagem para exibir no slider.');
+        if (slideInterval) {
+            clearInterval(slideInterval);
+        }
         return;
     }
 
@@ -23,9 +28,10 @@ document.addEventListener('slidesRendered', () => {
         imagens[indiceAtual].classList.add('active');
     }
 
+    if (slideInterval) {
+        clearInterval(slideInterval);
+    }
+    
     imagens[0].classList.add('active');
-
-    setInterval(() => {
-        mostrarSlideSeguinte();
-    }, 5000);
+    slideInterval = setInterval(mostrarSlideSeguinte, 5000);
 });

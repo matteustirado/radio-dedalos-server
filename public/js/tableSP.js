@@ -182,9 +182,4 @@ document.addEventListener('DOMContentLoaded', () => {
             fetchAndRenderSlides(activeDay);
         }
     });
-
-    setInterval(() => {
-        fetchAndRenderPrices();
-        fetchAndRenderSlides(getCurrentDay());
-    }, 3600000);
 });

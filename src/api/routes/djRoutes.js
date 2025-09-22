@@ -3,8 +3,6 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const DjController = require('../controllers/djController');
-const authMiddleware = require('../middlewares/authMiddleware');
-const roleMiddleware = require('../middlewares/roleMiddleware');
 
 const router = express.Router();
 
@@ -26,8 +24,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 router.get('/queue', DjController.getLiveQueue);
-
-router.use(authMiddleware, roleMiddleware(['dj', 'admin', 'master']));
 
 router.post('/control/overlay', upload.single('overlayImage'), DjController.uploadOverlay);
 router.get('/info', DjController.getPlaylistInfo);

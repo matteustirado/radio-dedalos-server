@@ -1,11 +1,10 @@
 const express = require('express');
-const CommercialController = require('../controllers/commercialController');
-const authMiddleware = require('../middlewares/authMiddleware');
-const roleMiddleware = require('../middlewares/roleMiddleware');
+const SuggestionController = require('../controllers/suggestionController');
 
 const router = express.Router();
 
-router.use(authMiddleware, roleMiddleware(['dj', 'admin', 'master']));
-router.get('/', CommercialController.getAllCommercials);
+router.get('/', SuggestionController.getAllSuggestions);
+router.put('/:id/status', SuggestionController.updateSuggestionStatus);
+router.delete('/:id', SuggestionController.deleteSuggestion);
 
 module.exports = router;
