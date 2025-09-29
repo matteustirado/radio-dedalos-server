@@ -94,8 +94,7 @@ const musicsState = (() => {
             const xhr = new XMLHttpRequest();
             const fullUrl = `${API_BASE_URL}${url}`;
             xhr.open(method, fullUrl, true);
-            xhr.setRequestHeader('Authorization', `Bearer ${getToken()}`);
-
+            
             xhr.upload.onprogress = (event) => {
                 if (event.lengthComputable) {
                     const percentComplete = Math.round((event.loaded / event.total) * 100);
