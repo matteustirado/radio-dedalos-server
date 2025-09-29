@@ -339,7 +339,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (logoutBtn) logoutBtn.addEventListener('click', () => { window.location.href = '/' });
+    // *** INÍCIO DA CORREÇÃO ***
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => { window.location.href = '/' });
+    }
+    // *** FIM DA CORREÇÃO ***
 
     if (cancelDeleteBtn) {
         cancelDeleteBtn.addEventListener('click', () => {
