@@ -1,411 +1,561 @@
-document.addEventListener('DOMContentLoaded', () => {
-    let users = [];
-    let allReports = [];
-    let allLogs = [];
-    let currentUserId = null;
-    let itemToDelete = null;
-
-    const listUsersView = document.getElementById('list-users-view');
-    const addUserView = document.getElementById('add-user-view');
-    const editUserView = document.getElementById('edit-user-view');
-    const usersList = document.getElementById('users-list');
-    const reportsList = document.getElementById('reports-list');
-    const accessLogsTable = document.getElementById('access-logs');
-    const showAddViewBtn = document.getElementById('show-add-view-btn');
-    const addUserForm = document.getElementById('add-user-form');
-    const editUserForm = document.getElementById('edit-user-form');
-    const logoutBtn = document.getElementById('logout-btn');
+document.addEventListener('DOMContentLoaded', function() {
+    
+    const allMainSections = document.querySelectorAll('.form-section');
+    const dbCards = document.querySelectorAll('.db-card');
     const deleteModal = document.getElementById('delete-modal');
-    const deleteModalTitle = document.getElementById('delete-modal-title');
-    const deleteModalText = document.getElementById('delete-modal-text');
-    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
-    const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
-    const reportsFilterBtn = document.getElementById('reports-filter-btn');
-    const reportsFilterPopup = document.getElementById('reports-filter-popup');
-    const filterStatus = document.getElementById('filter-status');
-    const filterCategory = document.getElementById('filter-category');
-    const clearFiltersBtn = document.getElementById('clear-filters-btn');
-    const logsFilterBtn = document.getElementById('logs-filter-btn');
-    const logsFilterPopup = document.getElementById('logs-filter-popup');
-    const filterMonth = document.getElementById('filter-month');
-    const filterYear = document.getElementById('filter-year');
-    const resetLogsFilterBtn = document.getElementById('reset-logs-filter-btn');
     const messageAlertEl = document.getElementById('success-message');
     const messageTextEl = document.getElementById('success-text');
-    const allViews = [addUserView, editUserView];
-    const newRoleSelect = document.getElementById('new-role');
-    const newFilialGroup = document.getElementById('new-filial-group');
-    const newFilialSelect = document.getElementById('new-filial');
-    const editRoleSelect = document.getElementById('edit-role');
-    const editFilialGroup = document.getElementById('edit-filial-group');
-    const editFilialSelect = document.getElementById('edit-filial');
+    const musicForm = document.getElementById('music-form');
+    const musicIdInput = document.getElementById('music-id');
+    const formTitle = document.getElementById('form-title');
+    const formButtons = document.querySelector('.form-buttons');
+    const uploadStatusContainer = document.getElementById('upload-status-container');
+    const uploadStatusText = document.getElementById('upload-status-text');
+    const dayOptions = document.querySelectorAll('#add-music-form .day-option');
+    const searchMusicInput = document.getElementById('search-music-input');
+    const artistInput = document.getElementById('artist-name');
+    const artistList = document.getElementById('artist-autocomplete-list');
+    const albumInput = document.getElementById('album-name');
+    const albumList = document.getElementById('album-autocomplete-list');
+    const labelInput = document.getElementById('label-name');
+    const labelList = document.getElementById('label-autocomplete-list');
+    const tagInput = document.getElementById('new-tag-input');
+    const tagList = document.getElementById('tag-autocomplete-list');
+    const addTagBtn = document.getElementById('add-tag-btn');
+    const tagsContainer = document.getElementById('tags-container');
+    const featuringArtistInput = document.getElementById('featuring-artist-input');
+    const featuringArtistList = document.getElementById('featuring-artist-autocomplete-list');
+    const addFeaturingArtistBtn = document.getElementById('add-featuring-artist-btn');
+    const featuringArtistsContainer = document.getElementById('featuring-artists-container');
+    const releaseYearInput = document.getElementById('release-year');
+    const durationInput = document.getElementById('duration');
+    const mediaFileInput = document.getElementById('media-file-input');
+    const fileNameDisplay = document.getElementById('file-name-display');
+    const submitBtn = document.getElementById('form-submit-btn');
+    const uploadStep = document.getElementById('upload-step');
+    const metadataStep = document.getElementById('metadata-step');
 
-    const roleDescriptionMap = {
-        master: 'Controle total do sistema e gerenciamento de usuários.',
-        admin: 'Gerencia todo o acervo de músicas e artistas da rádio.',
-        playlist_creator: 'Cria e gerencia as playlists padrão, diárias e especiais.',
-        dj: 'Controla a Rádio Dedalos em tempo real.',
-        adm_tabela_sp: 'Gerencia e atualiza a tabela de preços e promoções de São Paulo.',
-        adm_tabela_bh: 'Gerencia e atualiza a tabela de preços e promoções de Belo Horizonte.',
-        jukebox_user_sp: 'Permite a solicitação de músicas através do painel Jukebox de São Paulo.',
-        jukebox_user_bh: 'Permite a solicitação de músicas através do painel Jukebox de Belo Horizonte.',
-        view_tabela_sp: 'Login para visualização direta da tabela de preços de São Paulo.',
-        view_tabela_bh: 'Login para visualização direta da tabela de preços de Belo Horizonte.'
+    let itemToDelete = {};
+
+    if (mediaFileInput && fileNameDisplay) {
+        mediaFileInput.addEventListener('change', async () => {
+            if (mediaFileInput.files.length > 0) {
+                const file = mediaFileInput.files[0];
+                fileNameDisplay.textContent = file.name;
+
+                const formData = new FormData();
+                formData.append('mediaFile', file);
+
+                uploadStatusText.textContent = 'Analisando arquivo...';
+                uploadStatusContainer.classList.remove('hidden');
+
+                try {
+                    const metadata = await apiFetch('/songs/extract-metadata', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    document.getElementById('music-name').value = metadata.title || '';
+                    artistInput.value = metadata.artist || '';
+                    albumInput.value = metadata.album || '';
+                    durationInput.value = metadata.duration || '00:00';
+
+                    metadataStep.classList.remove('hidden');
+                } catch (error) {
+                    showMessage(`Erro ao extrair metadados: ${error.message}`, 'danger');
+                    fileNameDisplay.textContent = 'Nenhum arquivo selecionado';
+                    mediaFileInput.value = '';
+                } finally {
+                    uploadStatusContainer.classList.add('hidden');
+                }
+            } else {
+                fileNameDisplay.textContent = 'Nenhum arquivo selecionado';
+                metadataStep.classList.add('hidden');
+            }
+        });
+    }
+
+    const validateYear = () => {
+        const year = parseInt(releaseYearInput.value, 10);
+        const currentYear = new Date().getFullYear();
+        if (releaseYearInput.value && (year < 1500 || year > currentYear)) {
+            releaseYearInput.classList.add('error');
+            submitBtn.disabled = true;
+            return false;
+        } else {
+            releaseYearInput.classList.remove('error');
+            submitBtn.disabled = false;
+            return true;
+        }
     };
 
-    const rolesThatNeedFilial = ['adm_tabela', 'jukebox_user', 'view_tabela'];
+    if (releaseYearInput) {
+        releaseYearInput.addEventListener('input', validateYear);
+    }
 
     const showMessage = (message, type = 'success') => {
         messageTextEl.textContent = message;
-        messageAlertEl.classList.remove('success-alert', 'danger-alert', 'hidden');
+        messageAlertEl.classList.remove('success-alert', 'danger-alert');
         messageAlertEl.classList.add(type === 'success' ? 'success-alert' : 'danger-alert');
+        messageAlertEl.classList.remove('hidden');
         setTimeout(() => messageAlertEl.classList.add('hidden'), 4000);
     };
 
-    const showListView = () => {
-        allViews.forEach(view => view.classList.add('hidden'));
-        if (listUsersView) listUsersView.classList.remove('hidden');
+    const openSection = (sectionId) => {
+        allMainSections.forEach(sec => sec.classList.add('hidden'));
+        const section = document.getElementById(sectionId);
+        if (section) section.classList.remove('hidden');
     };
 
-    const showView = (viewToShow) => {
-        if (listUsersView) listUsersView.classList.add('hidden');
-        if (viewToShow) viewToShow.classList.remove('hidden');
+    const setupPillInput = (inputEl, buttonEl, containerEl, listEl, sourceCallback) => {
+        const addPill = (value) => {
+            const trimmedValue = value.trim();
+            if (trimmedValue) {
+                const pill = document.createElement('div');
+                pill.className = 'tag-pill';
+                pill.innerHTML = `<span>${trimmedValue}</span><button type="button" class="delete-tag-btn"><i class="fas fa-times"></i></button>`;
+                containerEl.appendChild(pill);
+                inputEl.value = '';
+                pill.querySelector('.delete-tag-btn').addEventListener('click', () => pill.remove());
+            }
+        };
+        buttonEl.addEventListener('click', () => addPill(inputEl.value));
+        inputEl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addPill(inputEl.value);
+            }
+        });
+
+        const onSelect = (item) => {
+            addPill(typeof item === 'string' ? item : item.name);
+        };
+
+        setupAutocomplete(inputEl, listEl, sourceCallback, onSelect);
     };
 
-    const renderUsers = (usersData) => {
-        if (!usersList) return;
-        usersList.innerHTML = '';
-        usersData.forEach(user => {
+    const resetMusicForm = () => {
+        musicForm.reset();
+        musicIdInput.value = '';
+        tagsContainer.innerHTML = '';
+        featuringArtistsContainer.innerHTML = '';
+        dayOptions.forEach(opt => opt.classList.remove('selected'));
+        if (fileNameDisplay) {
+            fileNameDisplay.textContent = 'Nenhum arquivo selecionado';
+        }
+        document.querySelector('.day-option[data-all="true"]').classList.add('selected');
+        formTitle.innerHTML = '<i class="fas fa-compact-disc icon"></i> Adicionar Nova Música';
+        submitBtn.textContent = 'Salvar Música';
+        releaseYearInput.classList.remove('error');
+        submitBtn.disabled = false;
+        metadataStep.classList.add('hidden');
+    };
+
+    const formatSecondsToDuration = (totalSeconds) => {
+        if (isNaN(totalSeconds) || totalSeconds === null || totalSeconds === 0) return '';
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    };
+
+    const populateMusicForm = (song) => {
+        const { artists } = musicsState.getState();
+        resetMusicForm();
+        musicIdInput.value = song.id;
+        document.getElementById('music-name').value = song.title;
+        artistInput.value = artists.find(a => a.id === song.artist_id)?.name || '';
+        albumInput.value = song.album || '';
+        releaseYearInput.value = song.release_year === '0000' ? '' : song.release_year;
+        durationInput.value = formatSecondsToDuration(song.duration_seconds);
+        labelInput.value = song.record_label_name || '';
+        document.getElementById('video-director').value = song.director || '';
+        tagsContainer.innerHTML = '';
+        (song.categories || []).forEach(cat => {
+            const pill = document.createElement('div');
+            pill.className = 'tag-pill';
+            pill.innerHTML = `<span>${cat.name}</span><button type="button" class="delete-tag-btn"><i class="fas fa-times"></i></button>`;
+            tagsContainer.appendChild(pill);
+            pill.querySelector('.delete-tag-btn').addEventListener('click', () => pill.remove());
+        });
+        featuringArtistsContainer.innerHTML = '';
+        (song.featuring_artists || []).forEach(artist => {
+            const pill = document.createElement('div');
+            pill.className = 'tag-pill';
+            pill.innerHTML = `<span>${artist.name}</span><button type="button" class="delete-tag-btn"><i class="fas fa-times"></i></button>`;
+            featuringArtistsContainer.appendChild(pill);
+            pill.querySelector('.delete-tag-btn').addEventListener('click', () => pill.remove());
+        });
+        if (song.weekdays && song.weekdays.length > 0) {
+            dayOptions.forEach(opt => opt.classList.remove('selected'));
+            const weekdayMap = { 'Seg': 'monday', 'Ter': 'tuesday', 'Qua': 'wednesday', 'Qui': 'thursday', 'Sex': 'friday', 'Sáb': 'saturday', 'Dom': 'sunday' };
+            dayOptions.forEach(opt => {
+                if (opt.dataset.all) return;
+                const dayKey = weekdayMap[opt.textContent];
+                if (song.weekdays.includes(dayKey)) {
+                    opt.classList.add('selected');
+                }
+            });
+        }
+        formTitle.innerHTML = '<i class="fas fa-compact-disc icon"></i> Editar Música';
+        submitBtn.textContent = 'Atualizar Música';
+        openSection('add-music-form');
+        metadataStep.classList.remove('hidden');
+    };
+
+    const setupAutocomplete = (inputEl, listEl, sourceCallback, onSelect) => {
+        const defaultOnSelect = (item) => {
+            inputEl.value = typeof item === 'string' ? item : item.name;
+        };
+        const selectHandler = onSelect || defaultOnSelect;
+
+        inputEl.addEventListener('input', () => {
+            const value = inputEl.value.toLowerCase();
+            const items = sourceCallback();
+            listEl.innerHTML = '';
+            if (!value) {
+                listEl.classList.remove('show');
+                return;
+            }
+            const filteredItems = items.filter(item => {
+                const itemName = (typeof item === 'string' ? item : item.name).toLowerCase();
+                return itemName.includes(value);
+            });
+            filteredItems.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'autocomplete-item';
+                itemEl.textContent = typeof item === 'string' ? item : item.name;
+                itemEl.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    selectHandler(item);
+                    listEl.classList.remove('show');
+                });
+                listEl.appendChild(itemEl);
+            });
+            listEl.classList.toggle('show', filteredItems.length > 0);
+        });
+        inputEl.addEventListener('blur', () => {
+            setTimeout(() => {
+                listEl.classList.remove('show');
+            }, 150);
+        });
+    };
+
+    const renderSongsTable = (songsToRender) => {
+        const { artists } = musicsState.getState();
+        const artistMap = new Map(artists.map(a => [a.id, a.name]));
+        const tbody = document.getElementById('search-results');
+        tbody.innerHTML = '';
+        songsToRender.forEach(song => {
             const row = document.createElement('tr');
-            const description = roleDescriptionMap[user.role] || user.role;
             row.innerHTML = `
-                <td>${user.id}</td>
-                <td>${user.username}</td>
-                <td class="description-cell description-minimized" title="Clique para expandir">${description}</td>
+                <td>${song.title}</td>
+                <td>${artistMap.get(song.artist_id) || 'Desconhecido'}</td>
+                <td>${song.album || '-'}</td>
+                <td>${song.release_year === '0000' ? '' : song.release_year}</td>
                 <td>
                     <div class="action-buttons">
-                        <button class="button primary-button small icon-only edit-user-btn" data-id="${user.id}" title="Editar"><i class="fas fa-user-edit"></i></button>
-                        <button class="button danger-button small icon-only delete-user-btn" data-id="${user.id}" data-name="${user.username}" title="Excluir"><i class="fas fa-trash-can"></i></button>
+                        <button class="button primary-button small icon-only edit-song-btn" data-id="${song.id}" title="Editar"><i class="fas fa-pen-to-square"></i></button>
+                        <button class="button danger-button small icon-only delete-item-btn" data-id="${song.id}" data-name="${song.title}" data-type="song" title="Excluir"><i class="fas fa-trash-can"></i></button>
                     </div>
                 </td>`;
-            usersList.appendChild(row);
+            tbody.appendChild(row);
         });
     };
 
-    const loadUsers = async () => {
-        try {
-            users = await apiFetch('/users');
-            renderUsers(users);
-        } catch (error) {
-            showMessage(`Erro ao carregar usuários: ${error.message}`, 'danger');
+    const renderDbList = (type) => {
+        const { artists, categories, commercials } = musicsState.getState();
+        const container = document.querySelector(`#${type}s-content .db-list`);
+        let items = [];
+        let renderType = type;
+        if (type === 'artist') items = artists;
+        if (type === 'commercial') items = commercials;
+        if (type === 'tag') {
+            items = categories;
+            renderType = 'category';
         }
-    };
-
-    const renderReports = (reports) => {
-        if (!reportsList) return;
-        reportsList.innerHTML = '';
-        reports.forEach(report => {
-            const row = document.createElement('tr');
-            const statusClass = { 'pendente': 'status-warning', 'em_analise': 'status-info', 'resolvido': 'status-success' }[report.status] || '';
-            const statusOptions = ['pendente', 'em_analise', 'resolvido'];
-            const selectOptions = statusOptions.map(opt => `<option value="${opt.replace(' ', '_')}" ${report.status === opt ? 'selected' : ''}>${opt.replace('_', ' ')}</option>`).join('');
-            row.innerHTML = `<td>${new Date(report.reported_at).toLocaleString('pt-BR')}</td><td>${report.category}</td><td><div class="description-cell description-minimized" title="Clique para expandir">${report.description}</div></td><td><select class="status-select ${statusClass}" data-id="${report.id}">${selectOptions}</select></td>`;
-            reportsList.appendChild(row);
-        });
-    };
-
-    const populateCategoryFilter = () => {
-        const categories = [...new Set(allReports.map(report => report.category))];
-        filterCategory.innerHTML = '<option value="">Todas</option>';
-        categories.sort().forEach(category => {
-            const option = document.createElement('option');
-            option.value = category;
-            option.textContent = category;
-            filterCategory.appendChild(option);
-        });
-    };
-
-    const applyAndRenderReports = () => {
-        const status = filterStatus.value;
-        const category = filterCategory.value;
-        let filteredReports = [...allReports];
-        if (status) {
-            filteredReports = filteredReports.filter(r => r.status === status);
+        if (type === 'album') {
+            items = musicsState.getUniqueAlbums();
         }
-        if (category) {
-            filteredReports = filteredReports.filter(r => r.category === category);
+        container.innerHTML = '';
+        items.forEach(item => {
+            const itemEl = document.createElement('div');
+            itemEl.dataset.id = item.id;
+            if (type === 'tag') {
+                itemEl.className = 'tag-pill';
+                itemEl.innerHTML = `<span>${item.name}</span><button class="delete-item-btn" data-id="${item.id}" data-name="${item.name}" data-type="category"><i class="fas fa-times"></i></button>`;
+            } else if (type === 'album') {
+                itemEl.className = 'list-item';
+                itemEl.innerHTML = `<div><div>${item.title}</div><div class="album-artist">${item.artist_name}</div></div>`;
+            } else if (type === 'commercial') {
+                itemEl.className = 'list-item';
+                itemEl.innerHTML = `<span class="item-name">${item.title}</span><div class="action-buttons"><button class="button primary-button small icon-only edit-song-btn" data-id="${item.id}" title="Editar"><i class="fas fa-pen-to-square"></i></button><button class="button danger-button small icon-only delete-item-btn" data-id="${item.id}" data-name="${item.title}" data-type="song" title="Excluir"><i class="fas fa-trash-can"></i></button></div>`;
+            } else {
+                itemEl.className = 'list-item';
+                itemEl.innerHTML = `<span class="item-name">${item.name}</span><div class="action-buttons"><button class="button primary-button small icon-only edit-item-btn" data-id="${item.id}" data-type="${renderType}" title="Editar"><i class="fas fa-pen-to-square"></i></button><button class="button danger-button small icon-only delete-item-btn" data-id="${item.id}" data-name="${item.name}" data-type="${renderType}" title="Excluir"><i class="fas fa-trash-can"></i></button></div>`;
+            }
+            container.appendChild(itemEl);
+        });
+    };
+
+    musicForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (!validateYear()) {
+            showMessage('O ano de lançamento é inválido.', 'danger');
+            return;
         }
-        renderReports(filteredReports);
-    };
-
-    const loadReports = async () => {
-        try {
-            allReports = await apiFetch('/reports');
-            populateCategoryFilter();
-            applyAndRenderReports();
-        } catch (error) {
-            showMessage(`Erro ao carregar relatórios: ${error.message}`, 'danger');
+        const songId = musicIdInput.value;
+        const artistName = artistInput.value.trim();
+        const title = document.getElementById('music-name').value.trim();
+        const mediaFile = mediaFileInput.files[0];
+        if (!artistName || !title) {
+            return showMessage('Nome da música e do artista são obrigatórios.', 'danger');
         }
-    };
-
-    const renderAccessLogs = (logs) => {
-        if (!accessLogsTable) return;
-        accessLogsTable.innerHTML = '';
-        logs.forEach(log => {
-            const row = document.createElement('tr');
-            let details = {};
-            if (log.details) {
-                try {
-                    const parsed = JSON.parse(log.details);
-                    if (parsed && typeof parsed === 'object') {
-                        details = parsed;
-                    }
-                } catch (e) {}
-            }
-            let detailsString = Object.entries(details).map(([key, value]) => `${key}: ${value}`).join(', ');
-            row.innerHTML = `<td>${new Date(log.created_at).toLocaleString('pt-BR')}</td><td>${log.username}</td><td>${log.ip_address || 'N/A'}</td><td>${log.action} ${detailsString ? `(${detailsString})` : ''}</td>`;
-            accessLogsTable.appendChild(row);
-        });
-    };
-
-    const populateLogFilters = () => {
-        const years = [...new Set(allLogs.map(log => new Date(log.created_at).getFullYear()))];
-        filterYear.innerHTML = '';
-        years.sort((a, b) => b - a).forEach(year => {
-            const option = document.createElement('option');
-            option.value = year;
-            option.textContent = year;
-            filterYear.appendChild(option);
-        });
-        const now = new Date();
-        filterMonth.value = now.getMonth();
-        filterYear.value = now.getFullYear();
-    };
-
-    const applyAndRenderLogs = () => {
-        const month = parseInt(filterMonth.value, 10);
-        const year = parseInt(filterYear.value, 10);
-        const filteredLogs = allLogs.filter(log => {
-            const logDate = new Date(log.created_at);
-            return logDate.getMonth() === month && logDate.getFullYear() === year;
-        });
-        renderAccessLogs(filteredLogs);
-    };
-
-    const loadLogs = async () => {
-        try {
-            allLogs = await apiFetch('/logs');
-            populateLogFilters();
-            applyAndRenderLogs();
-        } catch (error) {
-            showMessage(`Erro ao carregar logs: ${error.message}`, 'danger');
+        if (!songId && !mediaFile) {
+            return showMessage('Um arquivo de mídia é obrigatório ao adicionar uma nova música.', 'danger');
         }
-    };
-
-    const handleRoleChange = (roleSelect, filialGroup) => {
-        const selectedRole = roleSelect.value;
-        filialGroup.classList.toggle('hidden', !rolesThatNeedFilial.includes(selectedRole));
-    };
-
-    newRoleSelect.addEventListener('change', () => handleRoleChange(newRoleSelect, newFilialGroup));
-    editRoleSelect.addEventListener('change', () => handleRoleChange(editRoleSelect, editFilialGroup));
-
-    if (showAddViewBtn) {
-        showAddViewBtn.addEventListener('click', () => {
-            if (addUserForm) addUserForm.reset();
-            handleRoleChange(newRoleSelect, newFilialGroup);
-            showView(addUserView);
-        });
-    }
-
-    document.querySelectorAll('.cancel-btn').forEach(btn => btn.addEventListener('click', showListView));
-
-    if (addUserForm) {
-        addUserForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('new-username').value;
-            const baseRole = newRoleSelect.value;
-            const password = document.getElementById('new-password').value;
-            let finalRole = baseRole;
-            let filial = null;
-
-            if (rolesThatNeedFilial.includes(baseRole)) {
-                filial = newFilialSelect.value;
-                finalRole = `${baseRole}_${filial}`;
-            }
-
-            const description = roleDescriptionMap[finalRole];
-            const payload = { username, password, role: finalRole, description, filial };
-
-            try {
-                await apiFetch('/users', { method: 'POST', body: JSON.stringify(payload) });
-                showMessage('Usuário adicionado com sucesso!');
-                await loadUsers();
-                showListView();
-            } catch (error) {
-                showMessage(`Erro ao adicionar usuário: ${error.message}`, 'danger');
-            }
-        });
-    }
-
-    if (editUserForm) {
-        editUserForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('edit-username').value;
-            const baseRole = editRoleSelect.value;
-            const password = document.getElementById('edit-password').value;
-            let finalRole = baseRole;
-            let filial = null;
-
-            if (rolesThatNeedFilial.includes(baseRole)) {
-                filial = editFilialSelect.value;
-                finalRole = `${baseRole}_${filial}`;
-            }
-
-            const description = roleDescriptionMap[finalRole];
-            const payload = { username, role: finalRole, description, filial };
-            if (password) payload.password = password;
-
-            try {
-                await apiFetch(`/users/${currentUserId}`, { method: 'PUT', body: JSON.stringify(payload) });
-                showMessage('Usuário atualizado com sucesso!');
-                await loadUsers();
-                showListView();
-            } catch (error) {
-                showMessage(`Erro ao atualizar usuário: ${error.message}`, 'danger');
-            }
-        });
-    }
-
-    if (usersList) {
-        usersList.addEventListener('click', (e) => {
-            const editBtn = e.target.closest('.edit-user-btn');
-            if (editBtn) {
-                currentUserId = parseInt(editBtn.dataset.id);
-                const user = users.find(u => u.id === currentUserId);
-                if (user) {
-                    const roleParts = user.role.split('_');
-                    const baseRole = rolesThatNeedFilial.includes(roleParts[0]) ? roleParts[0] : user.role;
-                    const filial = user.filial || (roleParts.length > 1 && rolesThatNeedFilial.includes(baseRole) ? roleParts.slice(1).join('_') : null);
-
-                    document.getElementById('edit-username').value = user.username;
-                    editRoleSelect.value = baseRole;
-
-                    handleRoleChange(editRoleSelect, editFilialGroup);
-
-                    if (filial) {
-                        editFilialSelect.value = filial;
-                    }
-
-                    document.getElementById('edit-password').value = '';
-                    showView(editUserView);
+        const songDetails = {
+            title, artistName, mediaFile,
+            album: albumInput.value.trim(),
+            releaseYear: releaseYearInput.value,
+            director: document.getElementById('video-director').value.trim(),
+            label: labelInput.value.trim(),
+            duration: durationInput.value.trim(),
+            tags: Array.from(tagsContainer.querySelectorAll('.tag-pill span')).map(span => span.textContent),
+            featuringArtists: Array.from(featuringArtistsContainer.querySelectorAll('.tag-pill span')).map(span => span.textContent),
+            weekdays: Array.from(dayOptions).filter(opt => opt.classList.contains('selected') && !opt.dataset.all).map(opt => {
+                const weekdayMap = { 'Seg': 'monday', 'Ter': 'tuesday', 'Qua': 'wednesday', 'Qui': 'thursday', 'Sex': 'friday', 'Sáb': 'saturday', 'Dom': 'sunday' };
+                return weekdayMap[opt.textContent];
+            })
+        };
+        const onProgress = (progress) => {
+            if (progress.stage === 'upload') {
+                uploadStatusText.textContent = `Enviando ${progress.percent}%...`;
+                if (progress.percent === 100) {
+                    uploadStatusText.textContent = 'Processando no servidor...';
                 }
+            } else if (progress.stage === 'backend') {
+                uploadStatusText.textContent = progress.status;
             }
-
-            const deleteBtn = e.target.closest('.delete-user-btn');
-            if (deleteBtn) {
-                const userId = parseInt(deleteBtn.dataset.id);
-                const userName = deleteBtn.dataset.name;
-                itemToDelete = { id: userId, name: userName };
-                deleteModalTitle.textContent = 'Confirmar Exclusão de Usuário';
-                deleteModalText.textContent = `Tem certeza que deseja excluir o usuário "${userName}"?`;
-                deleteModal.classList.remove('hidden');
-                document.body.classList.add('modal-open');
+        };
+        formButtons.classList.add('hidden');
+        uploadStatusContainer.classList.remove('hidden');
+        uploadStatusText.textContent = 'Iniciando...';
+        try {
+            if (songId) {
+                await musicsState.updateSong(songId, songDetails, onProgress);
+                showMessage('Música atualizada com sucesso!');
+            } else {
+                const newSong = await musicsState.addSong(songDetails, onProgress);
+                showMessage(`Música "${newSong.title}" adicionada com sucesso!`);
             }
-        });
-    }
-
-    if (reportsList) {
-        reportsList.addEventListener('change', async (e) => {
-            if (e.target.classList.contains('status-select')) {
-                const reportId = e.target.dataset.id;
-                const newStatus = e.target.value;
-                try {
-                    await apiFetch(`/reports/${reportId}`, { method: 'PUT', body: JSON.stringify({ status: newStatus }) });
-                    await loadReports();
-                } catch (error) {
-                    showMessage(`Erro ao atualizar status: ${error.message}`, 'danger');
-                }
-            }
-        });
-
-        reportsList.addEventListener('click', (e) => {
-            const descriptionCell = e.target.closest('.description-cell');
-            if (descriptionCell) {
-                descriptionCell.classList.toggle('description-minimized');
-                const isMinimized = descriptionCell.classList.contains('description-minimized');
-                descriptionCell.title = isMinimized ? 'Clique para expandir' : 'Clique para minimizar';
-            }
-        });
-    }
-
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => { window.location.href = '/' });
-    }
-
-    if (cancelDeleteBtn) {
-        cancelDeleteBtn.addEventListener('click', () => {
-            deleteModal.classList.add('hidden');
-            document.body.classList.remove('modal-open');
-            itemToDelete = null;
-        });
-    }
-
-    if (confirmDeleteBtn) {
-        confirmDeleteBtn.addEventListener('click', async () => {
-            if (!itemToDelete) return;
-            try {
-                await apiFetch(`/users/${itemToDelete.id}`, { method: 'DELETE' });
-                showMessage('Usuário excluído com sucesso!');
-                await loadUsers();
-            } catch (error) {
-                showMessage(`Erro ao excluir usuário: ${error.message}`, 'danger');
-            } finally {
-                deleteModal.classList.add('hidden');
-                document.body.classList.remove('modal-open');
-                itemToDelete = null;
-            }
-        });
-    }
-
-    if (reportsFilterBtn) reportsFilterBtn.addEventListener('click', () => reportsFilterPopup.classList.toggle('hidden'));
-    if (filterStatus) filterStatus.addEventListener('change', applyAndRenderReports);
-    if (filterCategory) filterCategory.addEventListener('change', applyAndRenderReports);
-    if (clearFiltersBtn) {
-        clearFiltersBtn.addEventListener('click', () => {
-            filterStatus.value = '';
-            filterCategory.value = '';
-            applyAndRenderReports();
-        });
-    }
-
-    if (logsFilterBtn) logsFilterBtn.addEventListener('click', () => logsFilterPopup.classList.toggle('hidden'));
-    if (filterMonth) filterMonth.addEventListener('change', applyAndRenderLogs);
-    if (filterYear) filterYear.addEventListener('change', applyAndRenderLogs);
-    if (resetLogsFilterBtn) {
-        resetLogsFilterBtn.addEventListener('click', () => {
-            const now = new Date();
-            filterMonth.value = now.getMonth();
-            filterYear.value = now.getFullYear();
-            applyAndRenderLogs();
-        });
-    }
-
-    document.addEventListener('click', (e) => {
-        if (reportsFilterPopup && !reportsFilterBtn.contains(e.target) && !reportsFilterPopup.contains(e.target)) {
-            reportsFilterPopup.classList.add('hidden');
-        }
-        if (logsFilterPopup && !logsFilterBtn.contains(e.target) && !logsFilterPopup.contains(e.target)) {
-            logsFilterPopup.classList.add('hidden');
+            resetMusicForm();
+            openSection('search-music-section');
+            renderSongsTable(musicsState.getState().songs);
+        } catch (error) {
+            showMessage(`Erro ao salvar música: ${error.message}`, 'danger');
+        } finally {
+            formButtons.classList.remove('hidden');
+            uploadStatusContainer.classList.add('hidden');
         }
     });
 
-    const initialize = async () => {
-        await loadUsers();
-        await loadLogs();
-        await loadReports();
-        showListView();
+    document.getElementById('add-music-btn').addEventListener('click', () => {
+        resetMusicForm();
+        openSection('add-music-form');
+    });
+    document.getElementById('search-music-btn').addEventListener('click', () => {
+        openSection('search-music-section');
+        renderSongsTable(musicsState.getState().songs);
+    });
+    document.querySelectorAll('.close-section-btn, .cancel-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const wasEditing = musicIdInput.value !== '';
+            e.target.closest('.form-section').classList.add('hidden');
+            resetMusicForm();
+            if (wasEditing) {
+                openSection('search-music-section');
+            }
+        });
+    });
+
+    releaseYearInput.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+    });
+    durationInput.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/[^0-9]/g, '');
+        if (value.length > 2) {
+            value = value.slice(0, 2) + ':' + value.slice(2, 4);
+        }
+        e.target.value = value;
+    });
+    dayOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            if (this.dataset.all) {
+                const isBecomingActive = !this.classList.contains('selected');
+                dayOptions.forEach(opt => opt.classList.toggle('selected', isBecomingActive));
+            } else {
+                this.classList.toggle('selected');
+                const individualDays = Array.from(dayOptions).filter(d => !d.dataset.all);
+                const allSelected = individualDays.every(d => d.classList.contains('selected'));
+                document.querySelector('.day-option[data-all]').classList.toggle('selected', allSelected);
+            }
+        });
+    });
+    searchMusicInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const { songs, artists } = musicsState.getState();
+        const artistMap = new Map(artists.map(a => [a.id, a.name]));
+        const filteredSongs = songs.filter(song => {
+            const artistName = artistMap.get(song.artist_id) || '';
+            return song.title.toLowerCase().includes(searchTerm) ||
+                artistName.toLowerCase().includes(searchTerm) ||
+                (song.album && song.album.toLowerCase().includes(searchTerm));
+        });
+        renderSongsTable(filteredSongs);
+    });
+    dbCards.forEach(card => {
+        card.querySelector('.db-card-header').addEventListener('click', (e) => {
+            const clickedCard = e.currentTarget.closest('.db-card');
+            const isExpanding = !clickedCard.classList.contains('expanded');
+            dbCards.forEach(otherCard => {
+                otherCard.classList.remove('expanded', 'hidden');
+                otherCard.querySelector('.db-card-content').classList.add('hidden');
+                otherCard.querySelector('.expand-btn').classList.remove('open');
+            });
+            if (isExpanding) {
+                clickedCard.classList.add('expanded');
+                clickedCard.querySelector('.db-card-content').classList.remove('hidden');
+                clickedCard.querySelector('.expand-btn').classList.add('open');
+                dbCards.forEach(otherCard => {
+                    if (otherCard !== clickedCard) otherCard.classList.add('hidden');
+                });
+                const type = e.currentTarget.dataset.target.replace('-content', '');
+                renderDbList(type.slice(0, -1));
+            }
+        });
+    });
+    document.querySelectorAll('.add-db-item-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const type = e.currentTarget.dataset.type;
+            const input = e.currentTarget.previousElementSibling;
+            const name = input.value.trim();
+            if (!name) return;
+            try {
+                await musicsState.addDbItem(type, name);
+                input.value = '';
+                showMessage(`${type.charAt(0).toUpperCase() + type.slice(1)} adicionado(a) com sucesso!`);
+                renderDbList(type);
+            } catch (error) {
+                showMessage(`Erro ao adicionar: ${error.message}`, 'danger');
+            }
+        });
+    });
+    document.body.addEventListener('click', async (e) => {
+        const deleteBtn = e.target.closest('.delete-item-btn');
+        const editArtistBtn = e.target.closest('.edit-item-btn');
+        const confirmEditArtistBtn = e.target.closest('.confirm-edit-btn');
+        const cancelEditArtistBtn = e.target.closest('.cancel-edit-btn');
+        const editSongBtn = e.target.closest('.edit-song-btn');
+        if (deleteBtn) {
+            itemToDelete = { id: deleteBtn.dataset.id, name: deleteBtn.dataset.name, type: deleteBtn.dataset.type };
+            document.getElementById('delete-modal-title').textContent = `Excluir ${itemToDelete.type}`;
+            document.getElementById('delete-modal-text').textContent = `Tem certeza que deseja excluir "${itemToDelete.name}"?`;
+            deleteModal.classList.remove('hidden');
+            document.body.classList.add('modal-open');
+        }
+        if (editArtistBtn) {
+            const listItem = editArtistBtn.closest('.list-item');
+            const nameSpan = listItem.querySelector('.item-name');
+            const actionButtonsDiv = listItem.querySelector('.action-buttons');
+            const currentName = nameSpan.textContent;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'form-input small item-edit-input';
+            input.value = currentName;
+            nameSpan.replaceWith(input);
+            input.focus();
+            input.select();
+            actionButtonsDiv.innerHTML = `<button class="button primary-button small icon-only confirm-edit-btn" title="Confirmar"><i class="fas fa-check"></i></button><button class="button secondary-button small icon-only cancel-edit-btn" title="Cancelar"><i class="fas fa-times"></i></button>`;
+        }
+        if (cancelEditArtistBtn) {
+            renderDbList('artist');
+        }
+        if (confirmEditArtistBtn) {
+            const listItem = confirmEditArtistBtn.closest('.list-item');
+            const input = listItem.querySelector('.item-edit-input');
+            const id = listItem.dataset.id;
+            const newName = input.value.trim();
+            const type = 'artist';
+            if (newName) {
+                try {
+                    await musicsState.updateArtist(id, newName);
+                    showMessage('Artista atualizado com sucesso!');
+                    renderDbList(type);
+                    renderSongsTable(musicsState.getState().songs);
+                } catch (error) {
+                    showMessage(error.message, 'danger');
+                }
+            } else {
+                renderDbList(type);
+            }
+        }
+        if (editSongBtn) {
+            const songId = editSongBtn.dataset.id;
+            try {
+                const songDetails = await musicsState.getSongDetails(songId);
+                if (songDetails) {
+                    populateMusicForm(songDetails);
+                } else {
+                    showMessage('Não foi possível encontrar os detalhes da música.', 'danger');
+                }
+            } catch (error) {
+                showMessage(error.message, 'danger');
+            }
+        }
+    });
+    document.getElementById('cancel-delete').addEventListener('click', () => {
+        deleteModal.classList.add('hidden');
+        document.body.classList.remove('modal-open');
+    });
+    document.getElementById('confirm-delete').addEventListener('click', async () => {
+        try {
+            await musicsState.deleteDbItem(itemToDelete.type, itemToDelete.id);
+            showMessage(`${itemToDelete.type.charAt(0).toUpperCase() + itemToDelete.type.slice(1)} excluído(a) com sucesso!`);
+            if (itemToDelete.type === 'song') {
+                renderSongsTable(musicsState.getState().songs);
+            } else {
+                renderDbList(itemToDelete.type === 'category' ? 'tag' : itemToDelete.type);
+            }
+        } catch (error) {
+            const errorMessage = error.message.toLowerCase();
+            if (itemToDelete.type === 'artist' && (errorMessage.includes('foreign key') || errorMessage.includes('constraint'))) {
+                showMessage("Esse artista ainda possui musicas associadas a ele, nao é possivel deleta-lo no momento", 'danger');
+            } else {
+                showMessage(error.message, 'danger');
+            }
+        } finally {
+            deleteModal.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }
+    });
+
+    const initializePage = async () => {
+        try {
+            await musicsState.initialize();
+            setupAutocomplete(artistInput, artistList, () => musicsState.getState().artists);
+            setupAutocomplete(labelInput, labelList, () => musicsState.getState().labels);
+            setupAutocomplete(albumInput, albumList, () => {
+                const artistName = artistInput.value.trim();
+                return artistName ? musicsState.getAlbumsByArtist(artistName) : [];
+            });
+            setupPillInput(tagInput, addTagBtn, tagsContainer, tagList, () => musicsState.getState().categories);
+            setupPillInput(featuringArtistInput, addFeaturingArtistBtn, featuringArtistsContainer, featuringArtistList, () => musicsState.getState().artists);
+
+        } catch (error) {
+            console.error("Erro fatal na inicialização da UI:", error);
+            alert("Ocorreu um erro crítico ao carregar a página de Admin. Verifique o console.");
+        }
     };
 
-    initialize();
+    initializePage();
 });
