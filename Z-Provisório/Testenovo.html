@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dedalos Bar DJ Panel (V2 Mobile)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#FF4500",
+                        "background-light": "#f8f6f5",
+                        "background-dark": "#121212",
+                    },
+                    fontFamily: {
+                        "display": ["Poppins", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'glass': '0 4px 30px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.05)',
+                        '3d': '0px 5px 15px rgba(255, 69, 0, 0.3)',
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .liquid-glass {
+            background: rgba(30, 30, 30, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .bg-gradient-warm {
+            background-image: radial-gradient(circle at top left, #8B0000, #121212 50%), radial-gradient(circle at bottom right, #FF4500, #121212 50%);
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white">
+<div class="flex flex-col md:flex-row h-screen">
+<aside class="hidden md:flex w-64 bg-background-dark/50 backdrop-blur-sm border-r border-white/10 p-4 flex-col justify-between">
+<div class="flex flex-col gap-8">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" data-alt="DJ Dedalos profile picture with a red to orange gradient" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBfrvvQfKa0_nA-g_lzIwzBvZsTVShu9hJOWfvm6P93ZRaccxLHKQxRz95tMhXaTQfF0GWriGKvSiutFwzRKgGrlfWS25fIe_mqn4YO0HSZpF1MdOfJXQFQlebRCVyUm18J7iaXYJESqGQHTUVTwS3LLJeaelc8prqUPJHWD7FGVw-8l-eBwilY2i57kL8YnbmBqCCc3_RBnKcrTX6BtyWLsdekwCUM-KXifqLp-DCwtmswpUf1Mext1mjISzIReWyqNVpJO2RU9EI");'></div>
+<span class="absolute bottom-0 right-0 block h-3.5 w-3.5 rounded-full bg-green-500 border-2 border-background-dark"></span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-white text-lg font-bold leading-tight">DJ Dedalos</h1>
+<p class="text-green-400 text-sm font-medium">On Air</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/20 text-primary border border-primary/50" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-base font-semibold">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-colors" href="#">
+<span class="material-symbols-outlined">queue_music</span>
+<p class="text-base font-medium">Queue</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-colors" href="#">
+<span class="material-symbols-outlined">playlist_play</span>
+<p class="text-base font-medium">Playlists</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-colors" href="#">
+<span class="material-symbols-outlined">mic</span>
+<p class="text-base font-medium">Commercials</p>
+</a>
+</nav>
+</div>
+<div class="flex flex-col gap-4">
+<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-primary text-white text-base font-bold shadow-3d hover:bg-red-600 transition-all duration-300">
+<span class="truncate">Go Live</span>
+</button>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/10 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-base font-medium">Settings</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/10 transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<p class="text-base font-medium">Logout</p>
+</a>
+</div>
+</div>
+</aside>
+
+<main class="flex-1 p-4 md:p-8 overflow-y-auto bg-background-dark pb-24 md:pb-8"> <div class="md:hidden flex justify-between items-center mb-4">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" data-alt="DJ Dedalos profile picture with a red to orange gradient" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBfrvvQfKa0_nA-g_lzIwzBvZsTVShu9hJOWfvm6P93ZRaccxLHKQxRz95tMhXaTQfF0GWriGKvSiutFwzRKgGrlfWS25fIe_mqn4YO0HSZpF1MdOfJXQFQlebRCVyUm18J7iaXYJESqGQHTUVTwS3LLJeaelc8prqUPJHWD7FGVw-8l-eBwilY2i57kL8YnbmBqCCc3_RBnKcrTX6BtyWLsdekwCUM-KXifqLp-DCwtmswpUf1Mext1mjISzIReWyqNVpJO2RU9EI");'></div>
+<span class="absolute bottom-0 right-0 block h-3.5 w-3.5 rounded-full bg-green-500 border-2 border-background-dark"></span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-white text-lg font-bold leading-tight">DJ Dedalos</h1>
+<p class="text-green-400 text-sm font-medium">On Air</p>
+</div>
+</div>
+<button class="md:hidden p-2">
+<span class="material-symbols-outlined text-3xl">menu</span>
+</button>
+</div>
+<div class="flex flex-col gap-6">
+<div class="liquid-glass rounded-xl p-4 md:p-6 flex flex-col gap-4">
+<h1 class="text-white text-2xl md:text-3xl font-bold">Now Playing</h1>
+<div class="flex flex-col md:flex-row gap-4 md:gap-6 items-center">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-32 md:size-48 flex-shrink-0" data-alt="Album art with a red to orange gradient." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCFdhIyzJ5VFWd0TvluYzMT1eyYUK-aHn9mfs59suKbE26lXUAapzccMtMin5JGbxTdAd0aqy_83QqMsNsMYuxm0D4o-0qk8iDXR1--mhteW_W4F7JvA3NCQr8PbyaC-jMHMhmY4N6UN6oipxI1qLabE8J6HHNUOQjtbdXIVwkfrv8by2wkLQFhJXt4idf5cZzrxWOarKJNdXdoKw13VvWAG9h3JlBfZvCSBe43COAPR0vFeDSEN06rI3q9mDTgv3xjQe74ucOsd3A");'></div>
+<div class="flex flex-col gap-4 w-full">
+<div class="text-center md:text-left">
+<p class="text-white text-xl md:text-3xl font-bold leading-tight truncate">Cybernetic Dreams</p>
+<p class="text-white/70 text-base md:text-lg font-medium">Synthwave Rider</p>
+</div>
+<div class="flex items-center justify-center gap-4">
+<button class="flex shrink-0 items-center justify-center rounded-full size-12 text-white hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-4xl">skip_previous</span>
+</button>
+<button class="flex shrink-0 items-center justify-center rounded-full size-16 md:size-20 bg-primary text-white shadow-3d hover:bg-red-600 transition-all duration-300">
+<span class="material-symbols-outlined text-5xl">pause</span>
+</button>
+<button class="flex shrink-0 items-center justify-center rounded-full size-12 text-white hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-4xl">skip_next</span>
+</button>
+</div>
+<div>
+<div class="flex h-2 items-center justify-center group">
+<div class="h-1.5 flex-1 rounded-full bg-primary"></div>
+<div class="relative"><div class="absolute -left-2 -top-2 size-4 rounded-full bg-primary transition-transform group-hover:scale-110"></div></div>
+<div class="h-1.5 flex-1 rounded-full bg-white/20"></div>
+</div>
+<div class="flex items-center justify-between mt-1">
+<p class="text-white/70 text-sm font-medium">2:45</p>
+<p class="text-white/70 text-sm font-medium">4:12</p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-white/70">volume_up</span>
+<div class="flex h-1.5 flex-1 rounded-sm bg-white/20 group">
+<div class="h-full w-[75%] rounded-sm bg-primary relative">
+<div class="absolute right-0 -top-1.5 size-4 rounded-full bg-primary transition-transform group-hover:scale-110"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="liquid-glass rounded-xl p-4 md:p-6 flex flex-col gap-4">
+<div class="flex flex-col md:flex-row justify-between items-center gap-4">
+<h2 class="text-white text-2xl font-bold self-start md:self-center">Up Next</h2>
+<div class="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto">
+<input class="bg-white/10 border-none rounded-lg px-4 py-3 md:py-2 text-white placeholder:text-white/50 focus:ring-2 focus:ring-primary w-full" placeholder="Search for a song..." type="text"/>
+<button class="flex items-center justify-center gap-2 border border-primary text-primary px-4 py-3 md:py-2 rounded-lg font-semibold hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined">add</span>
+<span class="md:hidden">Add Track</span>
+<span class="hidden md:inline">Add</span>
+</button>
+</div>
+</div>
+<div class="overflow-y-auto max-h-60 md:max-h-none pr-2">
+<ul class="space-y-2">
+<li class="flex items-center p-3 rounded-lg hover:bg-white/10 transition-colors cursor-pointer">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded size-10 mr-4" data-alt="Album art with an orange to red gradient." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCZdDGQoKbDleH3CWENZDMi32Px_cnVUpndF9W8Yzpsvx0-x3Dd9VQPXKoVRcHofXk4NPhSBPLElxp0rWTrsK0BH7s0T6wb7TNnjq2ovEC12ZbyaW0ohfd9Fot0rIa3QXuT_8th3p_8pnx7PUEz6xOy1E8tBYjomX6SUnmQ7Jjow_rcs0FdTNY9Bno8f6J2XeS2UGIzF2pRwL-9iNKD_kwH-lWeAPzhUXYLhE6gr2m69a-UV4U9mGEbzbJ-eQsvPhq4DAHn-FQ4Xng");'></div>
+<div class="flex-1">
+<p class="font-semibold">Midnight Cruiser</p>
+<p class="text-sm text-white/70">Night Runner</p>
+</div>
+<p class="text-sm text-white/70 ml-2">3:56</p>
+</li>
+<li class="flex items-center p-3 rounded-lg hover:bg-white/10 transition-colors cursor-pointer">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded size-10 mr-4" data-alt="Album art with an orange to red gradient." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAD5H7T1ZMhhE8eLn7SYXPU_aE-3dwgywEyMc6ouR2_6yxq8VS-cc0KN6xc8DAlmyzgjxb2JetXLhBiCIeUs9lf87tvYBZPwfUl7kPucNdCit8d6lPvpNDcA0ekaGGWbVI7RYxucAcRy5nPUyXUmlDsZDSM91w1kgXEjIH1Gl99sZlaclf3J9zvEmp7lAa9NE2rwbjYr2lZy7T6YVRncRDqJg-rEpDca7Fp369xbfsEztzIwIev53TVxL_T21NQwuhJTl0uVRncSrM");'></div>
+<div class="flex-1">
+<p class="font-semibold">Digital Love</p>
+<p class="text-sm text-white/70">Daft Punk</p>
+</div>
+<p class="text-sm text-white/70 ml-2">5:01</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="liquid-glass rounded-xl p-4 md:p-6 flex flex-col gap-4">
+<h2 class="text-white text-2xl font-bold">Playlists</h2>
+<div class="space-y-3">
+<div class="bg-white/5 p-4 rounded-lg flex items-center justify-between">
+<div>
+<p class="font-semibold">80s Hits</p>
+<p class="text-sm text-white/70">45 tracks</p>
+</div>
+<button class="border border-primary/80 text-primary/80 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/20 hover:text-primary transition-colors">Load</button>
+</div>
+<div class="bg-white/5 p-4 rounded-lg flex items-center justify-between">
+<div>
+<p class="font-semibold">Techno Vibes</p>
+<p class="text-sm text-white/70">120 tracks</p>
+</div>
+<button class="border border-primary/80 text-primary/80 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/20 hover:text-primary transition-colors">Load</button>
+</div>
+</div>
+</div>
+<div class="liquid-glass rounded-xl p-4 md:p-6 flex flex-col gap-4">
+<h2 class="text-white text-2xl font-bold">Commercials</h2>
+<div class="space-y-3">
+<div class="bg-white/5 p-3 rounded-lg flex items-center justify-between">
+<p class="font-medium">Dedalos Bar Ad - 30s</p>
+<button class="text-white/70 hover:text-primary transition-colors p-2">
+<span class="material-symbols-outlined text-3xl">play_circle</span>
+</button>
+</div>
+<div class="bg-white/5 p-3 rounded-lg flex items-center justify-between">
+<p class="font-medium">Sponsor Spot - 15s</p>
+<button class="text-white/70 hover:text-primary transition-colors p-2">
+<span class="material-symbols-outlined text-3xl">play_circle</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-background-dark/80 backdrop-blur-lg border-t border-white/10 flex justify-around items-center p-2 z-50">
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-primary" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-xs font-semibold">Dashboard</p>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-white/70 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">queue_music</span>
+<p class="text-xs font-medium">Queue</p>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-white/70 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">playlist_play</span>
+<p class="text-xs font-medium">Playlists</p>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-white/70 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">mic</span>
+<p class="text-xs font-medium">Ads</p>
+</a>
+</div>
+</main>
+</div>
+
+</body></html>

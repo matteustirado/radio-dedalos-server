@@ -3,8 +3,10 @@ const GameController = require('../controllers/gameController');
 
 const router = express.Router();
 
-router.post('/trigger-vote', GameController.triggerVoteScreen);
-router.get('/trigger-vote-manual', GameController.triggerVoteScreen);
-router.post('/simulate-placard', GameController.simulatePlacard);
+router.post('/vote/:unit', GameController.registerVote);
+
+router.post('/reset/:unit', GameController.resetVotes); 
+router.post('/reset', GameController.resetVotes);     
+
 
 module.exports = router;

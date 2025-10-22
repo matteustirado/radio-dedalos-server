@@ -30,6 +30,7 @@ const webRatingRoutes = require('./api/routes/webRatingRoutes');
 const twitterRepostRoutes = require('./api/routes/twitterRepostRoutes');
 const gameRoutes = require('./api/routes/gameRoutes');
 const rollerRoutes = require('./api/routes/rollerRoutes');
+const gameConfigRoutes = require('./api/routes/gameConfigRoutes'); 
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -48,13 +49,9 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/assets/uploads', express.static(path.join(__dirname, '../public/assets/uploads')));
-app.use(express.static(path.join(__dirname, '../public')));
-
 app.get('/api', (request, response) => {
     response.send('API da Rádio Dédalos está no ar!');
 });
-
 app.use('/api/auth', authRoutes);
 app.use('/api/songs', songRoutes);
 app.use('/api/artists', artistRoutes);
@@ -79,6 +76,10 @@ app.use('/api/webrating', webRatingRoutes);
 app.use('/api/tweets', twitterRepostRoutes);
 app.use('/api/game', gameRoutes);
 app.use('/api/roller', rollerRoutes);
+app.use('/api/game-config', gameConfigRoutes); 
+
+app.use('/assets/uploads', express.static(path.join(__dirname, '../public/assets/uploads')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 httpServer.listen(PORT, () => {
     console.log(`Servidor da Rádio Dédalos rodando na porta ${PORT}`);

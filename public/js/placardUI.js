@@ -1,12 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const scoreItems = document.querySelectorAll('.score-pillar');
+    const placardContainer = document.getElementById('placard-container');
+    const loadingMessage = document.getElementById('placard-loading');
+    const errorMessage = document.getElementById('placard-error');
     const thermometerFill = document.querySelector('.thermometer-fill');
     const thermometerLabel = document.querySelector('.thermometer-label');
     const movementMessage = document.querySelector('.movement-message');
 
-    const MAX_CAPACITY = 200;
+    const unit = 'sp';
+    let currentConfig = null;
+    let currentVotes = {};
+    const MAX_CAPACITY = 210;
+
+    const WS_SERVER_EXTERNAL = 'https://placar-80b3f72889ba.herokuapp.com';
+    const API_SERVER_EXTERNAL = 'https://dedalosadm2-3dab78314381.herokuapp.com';
+    const API_TOKEN_EXTERNAL = '7a9e64071564f6fee8d96cd209ed3a4e86801552';
 
     const movementMessages = {
+        0: "A diversão está só começando! 🎉",
         5: "A galera tá chegando... Que tal um drink pra começar? 🍻",
         10: "A pista tá esquentando! Bora se enturmar e curtir o som. 🎶",
         15: "Clima perfeito pra um drink e uma boa conversa. Quem sabe rola algo mais? 😉",
@@ -29,48 +39,235 @@ document.addEventListener('DOMContentLoaded', () => {
         100: "SOLD OUT! A regra agora é se entregar sem medo! 🔥🥵"
     };
 
-    const updatePlacard = (votes) => {
-        if (!votes || typeof votes !== 'object') return;
-        const totalVotes = Object.values(votes).reduce((sum, count) => Number(sum) + Number(count), 0);
-        scoreItems.forEach(item => {
-            const option = item.dataset.option;
-            const voteCount = votes[option] || 0;
-            const percentage = totalVotes > 0 ? ((voteCount / totalVotes) * 100).toFixed(0) : 0;
-            const fill = item.querySelector('.pillar-fill');
-            const percentageText = item.querySelector('.pillar-percentage');
-            if (fill && percentageText) {
-                fill.style.height = `${percentage}%`;
-                percentageText.textContent = `${percentage}%`;
+    const showLoading = () => {
+        placardContainer.innerHTML = '';
+        if (loadingMessage) loadingMessage.classList.remove('hidden');
+        if (errorMessage) errorMessage.classList.add('hidden');
+        if (thermometerFill) thermometerFill.parentElement.parentElement.style.opacity = '0';
+    };
+
+    const showError = (message) => {
+        placardContainer.innerHTML = '';
+        if (loadingMessage) loadingMessage.classList.add('hidden');
+        if (errorMessage) {
+            errorMessage.textContent = `Erro: ${message}`;
+            errorMessage.classList.remove('hidden');
+        }
+        if (thermometerFill) thermometerFill.parentElement.parentElement.style.opacity = '0';
+    };
+
+    const renderPlacardStructure = () => {
+        if (!currentConfig || !currentConfig.options || !Array.isArray(currentConfig.options) || currentConfig.options.length === 0) {
+            showError("Configuração de opções inválida ou vazia.");
+            return;
+        }
+
+        if (loadingMessage) loadingMessage.classList.add('hidden');
+        if (errorMessage) errorMessage.classList.add('hidden');
+        placardContainer.innerHTML = '';
+
+        placardContainer.className = 'score-board';
+        placardContainer.classList.add(`${currentConfig.placard_orientation}-layout`);
+        
+        const count = currentConfig.options.length;
+        if (count > 0 && count <= 9) {
+             placardContainer.classList.add(`count-${count}`);
+        } else if (count > 9) {
+             placardContainer.classList.add(`count-9`);
+        }
+
+        currentConfig.options.forEach((option, index) => {
+            const optionElement = document.createElement('div');
+            optionElement.classList.add('placard-option');
+            optionElement.dataset.optionLabel = option.label;
+            optionElement.dataset.optionIndex = index;
+
+            let visualHTML = '';
+            if (option.type === 'image' && option.value) {
+                const imageUrl = `/assets/uploads/game_options/${unit}/${option.value}?t=${Date.now()}`;
+                visualHTML = `<img src="${imageUrl}" alt="" class="placard-visual placard-image">`;
+            } else if (option.type === 'emoji' && option.value) {
+                visualHTML = `<span class="placard-visual placard-emoji">${option.value}</span>`;
+            } else {
+                 visualHTML = `<div class="placard-visual placeholder"></div>`;
+            }
+
+            let innerHTML = '';
+            
+            if (currentConfig.placard_orientation === 'horizontal') {
+                innerHTML = `
+                    <div class="placard-info">
+                        ${visualHTML}
+                        <span class="placard-label">${option.label}</span>
+                    </div>
+                    <div class="placard-bar-container">
+                        <div class="placard-bar-track"></div>
+                        <div class="placard-bar">
+                            <span class="placard-percentage">0%</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                innerHTML = `
+                    <div class="placard-bar-container">
+                        <div class="placard-bar-track"></div>
+                        <div class="placard-bar"></div>
+                        <div class="placard-content-wrapper">
+                            <span class="placard-percentage">0%</span>
+                            <div class="placard-info">
+                                ${visualHTML}
+                                <span class="placard-label">${option.label}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            optionElement.innerHTML = innerHTML;
+            placardContainer.appendChild(optionElement);
+        });
+        
+        console.log(`Estrutura do placar (${currentConfig.placard_orientation}) renderizada com ${currentConfig.options.length} opções.`);
+        if (thermometerFill) thermometerFill.parentElement.parentElement.style.opacity = '1';
+    };
+
+    const updatePlacardVotes = (votesData) => {
+        if (!currentConfig || !currentConfig.options) return;
+
+        currentVotes = votesData || {};
+        let totalVotes = 0;
+        Object.values(currentVotes).forEach(count => totalVotes += Number(count));
+
+        console.log("Atualizando placar. Votos recebidos:", currentVotes, "Total:", totalVotes);
+        
+        currentConfig.options.forEach(option => {
+            const optionElement = placardContainer.querySelector(`.placard-option[data-option-label="${option.label}"]`);
+            if (!optionElement) return;
+
+            const voteCount = currentVotes[option.label] || 0;
+            const percentage = totalVotes > 0 ? ((voteCount / totalVotes) * 100) : 0;
+            const percentageText = percentage.toFixed(0);
+
+            const barElement = optionElement.querySelector('.placard-bar');
+            const percentageElement = optionElement.querySelector('.placard-percentage');
+
+            if (barElement) {
+                if (currentConfig.placard_orientation === 'vertical') {
+                    barElement.style.height = `${percentage}%`;
+                } else {
+                    barElement.style.width = `${percentage}%`;
+                }
+            }
+            if (percentageElement) {
+                percentageElement.textContent = `${percentageText}%`;
             }
         });
     };
 
     const updateThermometer = (currentCapacity) => {
-        const percentage = Math.min((currentCapacity / MAX_CAPACITY) * 100, 100);
-        const roundedPercentage = Math.floor(percentage / 5) * 5;
+         if (!thermometerFill || !thermometerLabel || !movementMessage) return;
+
+        const capacity = Number(currentCapacity) || 0;
+        
+        const percentage = Math.min(capacity, 100);
+        const percentageForMessage = Math.min((capacity / MAX_CAPACITY) * 100, 100);
+        
+        const roundedPercentage = Math.max(0, Math.floor(percentageForMessage / 5) * 5);
+
+        console.log(`Atualizando termômetro. Capacidade/Contador: ${capacity}, Porcentagem p/ Barra: ${percentage.toFixed(0)}%`);
 
         thermometerFill.style.width = `${percentage}%`;
         thermometerLabel.textContent = `${percentage.toFixed(0)}%`;
-
         thermometerFill.classList.toggle('full', percentage >= 100);
-
-        movementMessage.textContent = movementMessages[roundedPercentage] || "A diversão está só começando! 🎉";
+        movementMessage.textContent = movementMessages[roundedPercentage] || movementMessages[0];
     };
 
-    const initializeWithMockData = () => {
-        const mockPlacardData = { versatil: 10, passivo: 20, ativo: 15, curioso: 5, beber_curtir: 45, so_amizade: 5 };
-        const mockCapacity = 80;
-        updatePlacard(mockPlacardData);
-        updateThermometer(mockCapacity);
+    const buscarContadorExterno = async () => {
+        const url = `${API_SERVER_EXTERNAL}/api/contador/`;
+        try {
+            const response = await fetch(url, {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Authorization': `Token ${API_TOKEN_EXTERNAL}`
+                }
+            });
+            if (!response.ok) {
+                throw new Error(`Erro de rede ou acesso negado: ${response.status}`);
+            }
+            const dados = await response.json();
+            const numeroContador = dados.length > 0 ? dados[0].contador : 0;
+            
+            console.log(`Contador externo recebido: ${numeroContador}`);
+            updateThermometer(numeroContador);
+
+        } catch (error) {
+            console.error('Falha ao buscar o contador externo:', error);
+            updateThermometer(0); 
+        }
     };
 
-    const setupSocketListeners = () => {
+    const setupInternalSocketListeners = () => {
+        console.log("Conectando ao Socket.IO local (Votos)...");
         const socket = io();
-        socket.on('connect', () => console.log('Placar conectado ao servidor Socket.IO.'));
-        socket.on('placardUpdate', updatePlacard);
-        socket.on('capacityUpdate', (data) => updateThermometer(data.currentCapacity));
+
+        socket.on('connect', () => {
+            console.log('Conectado ao servidor Socket.IO local.');
+        });
+        socket.on('disconnect', () => {
+            console.log('Desconectado do servidor Socket.IO local.');
+        });
+        socket.on('connect_error', (err) => {
+             console.error('Erro ao conectar ao Socket.IO local:', err.message);
+        });
+        socket.on('placardUpdate', (data) => {
+            if (data && data.unit === unit && data.votes) {
+                console.log('Evento "placardUpdate" (Votos) recebido:', data);
+                updatePlacardVotes(data.votes);
+            }
+        });
     };
 
-    initializeWithMockData();
-    setupSocketListeners();
+    const setupExternalSocketListeners = () => {
+        console.log(`Conectando ao WebSocket externo (Contador): ${WS_SERVER_EXTERNAL}`);
+        const externalSocket = io(WS_SERVER_EXTERNAL, {
+            transports: ['websocket', 'polling']
+        });
+        externalSocket.on('connect', () => {
+            console.log('Placar conectado ao WebSocket externo (Placar).');
+        });
+        externalSocket.on('disconnect', () => {
+            console.log('Placar desconectado do WebSocket externo (Placar).');
+        });
+        externalSocket.on('connect_error', (err) => {
+             console.error('Erro de conexão WebSocket externo:', err.message);
+        });
+        
+        externalSocket.on('new_id', (data) => {
+            console.log('GATILHO "new_id" (externo) recebido!', data);
+            buscarContadorExterno();
+        });
+    };
+
+
+    const initializePlacard = async () => {
+        showLoading();
+        try {
+            console.log(`Buscando configuração inicial de /api/game-config/${unit}`);
+            const config = await apiFetch(`/game-config/${unit}`);
+            console.log('Configuração inicial recebida:', JSON.stringify(config, null, 2));
+            currentConfig = config;
+            renderPlacardStructure();
+            
+            setupInternalSocketListeners();
+            setupExternalSocketListeners();
+            
+            buscarContadorExterno();
+        } catch (error) {
+            console.error("Erro ao inicializar o placar:", error);
+            showError(error.message);
+        }
+    };
+
+    initializePlacard();
 });
