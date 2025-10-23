@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Análise - Placar BH</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        body { font-family: system-ui, sans-serif; background-color: #f0f2f5; margin: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 20px; width: 90%; max-width: 800px; }
+        h1, h2 { border-bottom: 2px solid #ddd; padding-bottom: 10px; color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f7f7f7; }
+        img { max-width: 60px; border-radius: 4px; vertical-align: middle; }
+        .status { padding: 10px 15px; border-radius: 5px; font-weight: bold; color: #fff; }
+        .connected { background-color: #28a745; }
+        .disconnected { background-color: #dc3545; }
+        .contador-valor { font-size: 2em; font-weight: bold; color: #1E3A8A; }
+    </style>
+</head>
+<body>
+
+    <h1>Dashboard - Placar BH</h1>
+
+    <div class="container">
+        <h2>
+            Status da Conexão WebSocket (BH): 
+            <span id="status-conexao" class="status disconnected">Desconectado</span>
+        </h2>
+        <p>Servidor: <code>https://placarbh-cf51a4a5b78a.herokuapp.com/</code></p>
+    </div>
+    
+    <div class="container">
+        <h2>Placar (Quem Matou Odete Roitman?)</h2>
+        <table id="placar-tabela">
+            <thead>
+                <tr>
+                    <th>Personagem</th>
+                    <th>Porcentagem</th>
+                    <th>Imagem</th>
+                </tr>
+            </thead>
+            <tbody id="placar-corpo-tabela">
+                <tr><td colspan="3">Carregando...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="container">
+        <h2>Termômetro de Movimento (BH)</h2>
+        <p>Número atual do contador:</p>
+        <p id="contador-valor">Carregando...</p>
+    </div>
+
+    <script>
+        // --- Referências do DOM ---
+        const corpoTabelaPlacar = document.getElementById('placar-corpo-tabela');
+        const displayContador = document.getElementById('contador-valor');
+        const displayStatus = document.getElementById('status-conexao');
+
+        // --- Constantes Descobertas (Versão BH) ---
+        const BASE_URL_API_BH = 'https://dedalosadm2bh-09d55dca461e.herokuapp.com';
+        const BASE_URL_WEBSOCKET_BH = 'https://placarbh-cf51a4a5b78a.herokuapp.com';
+        const TOKEN_BH = '919d97d7df39ecbd0036631caba657221acab99d';
+
+        // --- Headers de Autenticação (BH) ---
+        const authHeaders = new Headers();
+        authHeaders.append('Authorization', `Token ${TOKEN_BH}`);
+
+        // --- Funções de Busca de API (BH) ---
+
+        async function buscarDadosDoPlacar() {
+            const url = `${BASE_URL_API_BH}/api/placar/total_respostas`;
+            try {
+                // Em BH, esta chamada TAMBÉM precisa do token
+                const response = await fetch(url, { 
+                    method: 'GET',
+                    headers: authHeaders
+                }); 
+                if (!response.ok) throw new Error(`Erro de rede: ${response.status}`);
+                
+                const dados = await response.json();
+                corpoTabelaPlacar.innerHTML = ''; 
+                dados.forEach(item => {
+                    const linha = document.createElement('tr');
+                    linha.innerHTML = `<td>${item.texto_pergunta}</td><td><strong>${item.porcentagem}%</strong></td><td><img src="${item.comprovante}" alt="${item.texto_pergunta}"></td>`;
+                    corpoTabelaPlacar.appendChild(linha);
+                });
+            } catch (error) {
+                console.error('Falha ao buscar dados do placar (BH):', error);
+                corpoTabelaPlacar.innerHTML = `<tr><td colspan="3" style="color: red;">Falha ao carregar placar (BH). ${error.message}</td></tr>`;
+            }
+        }
+
+        async function buscarContador() {
+            const url = `${BASE_URL_API_BH}/api/contador/`;
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: authHeaders
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro de rede ou acesso negado: ${response.status}`);
+                }
+                
+                const dados = await response.json();
+                const numeroContador = dados.length > 0 ? dados[0].contador : 0;
+                
+                displayContador.textContent = numeroContador;
+                displayContador.style.color = '#1E3A8A';
+
+            } catch (error) {
+                console.error('Falha ao buscar o contador (BH):', error);
+                displayContador.textContent = 'Erro!';
+                displayContador.style.color = 'red';
+            }
+        }
+        
+        // --- Conexão WebSocket (BH) ---
+        const socket = io(BASE_URL_WEBSOCKET_BH, {
+            transports: ['websocket', 'polling']
+        });
+        
+        socket.on('connect', () => { 
+            displayStatus.textContent = 'Conectado'; 
+            displayStatus.className = 'status connected'; 
+            console.log('Conectado ao WebSocket de BH.');
+        });
+
+        socket.on('disconnect', () => { 
+            displayStatus.textContent = 'Desconectado'; 
+            displayStatus.className = 'status disconnected'; 
+            console.log('Desconectado do WebSocket de BH.');
+        });
+
+        socket.on('connect_error', (err) => {
+            console.error("Erro de conexão com o WebSocket (BH):", err);
+            displayStatus.textContent = 'Erro de Conexão';
+        });
+
+        // Evento que o servidor envia para atualizar os dados
+        // Este é o "gatilho" que monitora tudo
+        socket.on('new_id', () => {
+            console.log('Recebido evento "new_id" do WebSocket (BH). Atualizando dados...');
+            buscarDadosDoPlacar();
+            buscarContador();
+        });
+
+        // Busca os dados iniciais assim que a página carrega
+        document.addEventListener('DOMContentLoaded', () => {
+            buscarDadosDoPlacar();
+            buscarContador();
+        });
+    </script>
+</body>
+</html>

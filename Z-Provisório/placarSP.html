@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placar de Dados (Versão Corrigida)</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        body { font-family: system-ui, sans-serif; background-color: #f0f2f5; margin: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 20px; width: 90%; max-width: 800px; }
+        h1, h2 { border-bottom: 2px solid #ddd; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f7f7f7; }
+        img { max-width: 60px; border-radius: 4px; vertical-align: middle; }
+        .status { padding: 10px 15px; border-radius: 5px; font-weight: bold; color: #fff; }
+        .connected { background-color: #28a745; }
+        .disconnected { background-color: #dc3545; }
+        .contador-valor { font-size: 2em; font-weight: bold; color: #1E3A8A; }
+    </style>
+</head>
+<body>
+
+    <h1>Dashboard - Placar SP</h1>
+
+    <div class="container">
+        <h2>
+            Status da Conexão WebSocket: 
+            <span id="status-conexao" class="status disconnected">Desconectado</span>
+        </h2>
+    </div>
+    
+    <div class="container">
+        <h2>Placar</h2>
+        <table id="placar-tabela">
+            <thead>
+                <tr>
+                    <th>Personagem</th>
+                    <th>Porcentagem</th>
+                    <th>Imagem</th>
+                </tr>
+            </thead>
+            <tbody id="placar-corpo-tabela">
+                <tr><td colspan="3">Carregando...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="container">
+        <h2>Termômetro de Movimento</h2>
+        <p>Número atual do contador:</p>
+        <p id="contador-valor">Carregando...</p>
+    </div>
+
+    <script>
+        const corpoTabelaPlacar = document.getElementById('placar-corpo-tabela');
+        const displayContador = document.getElementById('contador-valor');
+        const displayStatus = document.getElementById('status-conexao');
+
+        const BASE_URL_API = 'https://dedalosadm2-3dab78314381.herokuapp.com';
+        // URL CORRIGIDA do WebSocket, conforme análise original
+        const BASE_URL_WEBSOCKET = 'https://placar-80b3f72889ba.herokuapp.com'; 
+        const TOKEN = '7a9e64071564f6fee8d96cd209ed3a4e86801552';
+
+        async function buscarDadosDoPlacar() {
+            // Adicionado `mode: 'cors'` para lidar com o bloqueio do navegador
+            const url = `${BASE_URL_API}/api/placar/total_respostas`;
+            try {
+                const response = await fetch(url, { mode: 'cors' }); // MODO CORS
+                if (!response.ok) throw new Error(`Erro de rede: ${response.status}`);
+                
+                const dados = await response.json();
+                corpoTabelaPlacar.innerHTML = ''; // Limpa a tabela antes de adicionar novos dados
+                dados.forEach(item => {
+                    const linha = document.createElement('tr');
+                    linha.innerHTML = `<td>${item.texto_pergunta}</td><td><strong>${item.porcentagem}%</strong></td><td><img src="${item.comprovante}" alt="${item.texto_pergunta}"></td>`;
+                    corpoTabelaPlacar.appendChild(linha);
+                });
+            } catch (error) {
+                console.error('Falha ao buscar dados do placar:', error);
+                corpoTabelaPlacar.innerHTML = `<tr><td colspan="3" style="color: red;">Falha ao carregar placar. O servidor pode estar bloqueando a requisição (CORS). Tente usar um proxy se o problema persistir.</td></tr>`;
+            }
+        }
+
+        async function buscarContador() {
+            const url = `${BASE_URL_API}/api/contador/`;
+            try {
+                // ADICIONADO O TOKEN E O MODO 'CORS'
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'cors', // MODO CORS
+                    headers: {
+                        'Authorization': `Token ${TOKEN}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro de rede ou acesso negado: ${response.status}`);
+                }
+                
+                const dados = await response.json();
+                const numeroContador = dados.length > 0 ? dados[0].contador : 0;
+                
+                displayContador.textContent = numeroContador;
+                displayContador.style.color = '#1E3A8A';
+
+            } catch (error) {
+                console.error('Falha ao buscar o contador:', error);
+                displayContador.textContent = 'Acesso negado!';
+                displayContador.style.color = 'red';
+            }
+        }
+        
+        // Conexão WebSocket com configuração para evitar erros de CORS
+        const socket = io(BASE_URL_WEBSOCKET, {
+            transports: ['websocket', 'polling'] // Ajuda a contornar bloqueios
+        });
+        
+        socket.on('connect', () => { 
+            displayStatus.textContent = 'Conectado'; 
+            displayStatus.className = 'status connected'; 
+        });
+
+        socket.on('disconnect', () => { 
+            displayStatus.textContent = 'Desconectado'; 
+            displayStatus.className = 'status disconnected'; 
+        });
+
+        socket.on('connect_error', (err) => {
+            console.error("Erro de conexão com o WebSocket:", err);
+            displayStatus.textContent = 'Erro de Conexão';
+        });
+
+        // Evento que o servidor envia para atualizar os dados
+        socket.on('new_id', () => {
+            console.log('Recebido evento "new_id" do WebSocket. Atualizando dados...');
+            buscarDadosDoPlacar();
+            buscarContador();
+        });
+
+        // Busca os dados iniciais assim que a página carrega
+        document.addEventListener('DOMContentLoaded', () => {
+            buscarDadosDoPlacar();
+            buscarContador();
+        });
+    </script>
+</body>
+</html>

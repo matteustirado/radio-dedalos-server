@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurar Game - BH</title>
+    <link rel="icon" href="assets/img/logo.png" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/editGamerx.css">
+    <link href="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.css" rel="stylesheet">
+</head>
+
+<body>
+    <main id="app-container" class="gradient-border">
+        <header id="panel-header">
+            <div>
+                <h1 class="header-title gradient-text">Configurar Interação Game</h1>
+                <p classs="header-subtitle">Defina as opções e o layout para a unidade BH</p>
+            </div>
+            <div class="header-buttons">
+                <button id="logout-btn" class="button ghost-button small"><i class="fas fa-sign-out-alt"></i> Sair</button>
+            </div>
+        </header>
+
+        <div id="success-message" class="alert success-alert hidden">
+            <i class="fas fa-check-circle"></i>
+            <span id="success-text"></span>
+        </div>
+        <div id="error-message" class="alert danger-alert hidden">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="error-text"></span>
+        </div>
+
+        <section class="card-style">
+            <form id="game-config-form">
+                <div class="form-group">
+                    <label for="options-count">Quantas opções o game deve ter?</label>
+                    <input type="number" id="options-count" class="form-input" min="1" max="9" placeholder="1 a 9">
+                </div>
+
+                <hr class="section-divider">
+
+                <div id="options-container">
+                </div>
+
+                <hr class="section-divider">
+
+                <div class="form-group">
+                    <label>Orientação do Placar</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="placard-orientation" value="vertical" checked> Vertical (Pilares)
+                        </label>
+                        <label>
+                            <input type="radio" name="placard-orientation" value="horizontal"> Horizontal (Barras)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="save-config-btn" class="button primary-button">
+                        <span id="save-btn-text">Salvar Configuração</span>
+                        <i id="save-spinner" class="fas fa-spinner fa-spin hidden"></i>
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>Developed by <a href="#" class="devsyon-link">DEVsyon</a> a Tech Solutions. &copy; 2025. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js" type="module"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script type="module" src="js/editGamerx.js"></script>
+</body>
+
+</html>

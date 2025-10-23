@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const placardMainWrapper = document.getElementById('placard-main-wrapper');
     const placardContainer = document.getElementById('placard-container');
     const loadingMessage = document.getElementById('placard-loading');
     const errorMessage = document.getElementById('placard-error');
@@ -6,14 +7,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const thermometerLabel = document.querySelector('.thermometer-label');
     const movementMessage = document.querySelector('.movement-message');
 
-    const unit = 'sp';
     let currentConfig = null;
     let currentVotes = {};
-    const MAX_CAPACITY = 210;
+    
+    const MAX_CAPACITIES = {
+        sp: 210,
+        bh: 162
+    };
+    
 
-    const WS_SERVER_EXTERNAL = 'https://placar-80b3f72889ba.herokuapp.com';
-    const API_SERVER_EXTERNAL = 'https://dedalosadm2-3dab78314381.herokuapp.com';
-    const API_TOKEN_EXTERNAL = '7a9e64071564f6fee8d96cd209ed3a4e86801552';
+    const detectUnitConfig = () => {
+        const path = window.location.pathname.toLowerCase();
+        if (path.includes('placardbh.html')) {
+            return {
+                unit: 'bh',
+                wsServer: 'https://placarbh-cf51a4a5b78a.herokuapp.com/',
+                apiServer: 'https://dedalosadm2bh-09d55dca461e.herokuapp.com',
+                apiToken: '919d97d7df39ecbd0036631caba657221acab99d'
+            };
+        }
+        return {
+            unit: 'sp',
+            wsServer: 'https://placar-80b3f72889ba.herokuapp.com',
+            apiServer: 'https://dedalosadm2-3dab78314381.herokuapp.com',
+            apiToken: '7a9e64071564f6fee8d96cd209ed3a4e86801552'
+        };
+    };
+
+    const config = detectUnitConfig();
+    const unit = config.unit;
+    const WS_SERVER_EXTERNAL = config.wsServer;
+    const API_SERVER_EXTERNAL = config.apiServer;
+    const API_TOKEN_EXTERNAL = config.apiToken;
+
+    const MAX_CAPACITY = MAX_CAPACITIES[unit] || 210; 
+    
+    console.log(`[placardUI.js] Configurando placar para unidade: ${unit}`);
+    console.log(`[placardUI.js] Capacidade Máxima (100%) definida para: ${MAX_CAPACITY}`);
+    
+
+    console.log(`[placardUI.js] WS Externo: ${WS_SERVER_EXTERNAL}`);
+    console.log(`[placardUI.js] API Externa: ${API_SERVER_EXTERNAL}`);
 
     const movementMessages = {
         0: "A diversão está só começando! 🎉",
@@ -66,6 +100,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (errorMessage) errorMessage.classList.add('hidden');
         placardContainer.innerHTML = '';
 
+        if (placardMainWrapper) {
+            placardMainWrapper.className = 'gradient-border';
+            placardMainWrapper.classList.add(`${currentConfig.placard_orientation}-layout-wrapper`);
+        }
+        
         placardContainer.className = 'score-board';
         placardContainer.classList.add(`${currentConfig.placard_orientation}-layout`);
         
@@ -95,16 +134,17 @@ document.addEventListener('DOMContentLoaded', () => {
             let innerHTML = '';
             
             if (currentConfig.placard_orientation === 'horizontal') {
+                optionElement.classList.add('placard-bar-container');
                 innerHTML = `
-                    <div class="placard-info">
+                    <div class="placard-bar-track"></div>
+                    <div class="placard-bar"></div>
+                    <div class="placard-content-wrapper-horizontal">
                         ${visualHTML}
-                        <span class="placard-label">${option.label}</span>
-                    </div>
-                    <div class="placard-bar-container">
-                        <div class="placard-bar-track"></div>
-                        <div class="placard-bar">
+                        <div class="placard-center-content">
                             <span class="placard-percentage">0%</span>
+                            <span class="placard-label">${option.label}</span>
                         </div>
+                        ${visualHTML}
                     </div>
                 `;
             } else {
@@ -167,20 +207,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateThermometer = (currentCapacity) => {
          if (!thermometerFill || !thermometerLabel || !movementMessage) return;
 
-        const capacity = Number(currentCapacity) || 0;
+        const count = Number(currentCapacity) || 0;
         
-        const percentage = Math.min(capacity, 100);
-        const percentageForMessage = Math.min((capacity / MAX_CAPACITY) * 100, 100);
-        
-        const roundedPercentage = Math.max(0, Math.floor(percentageForMessage / 5) * 5);
+        let percentage = 0;
+        if (MAX_CAPACITY > 0) { 
+            percentage = Math.max(0, Math.min((count / MAX_CAPACITY) * 100, 100));
+        }
 
-        console.log(`Atualizando termômetro. Capacidade/Contador: ${capacity}, Porcentagem p/ Barra: ${percentage.toFixed(0)}%`);
+        const roundedPercentage = Math.max(0, Math.round(percentage / 5) * 5);
+
+        console.log(`Atualizando termômetro. Contador: ${count}, Max: ${MAX_CAPACITY}, Porcentagem: ${percentage.toFixed(1)}%, (Usando frase de ${roundedPercentage}%)`);
 
         thermometerFill.style.width = `${percentage}%`;
-        thermometerLabel.textContent = `${percentage.toFixed(0)}%`;
+        
+        thermometerLabel.textContent = `${percentage.toFixed(0)}%`; 
+        
         thermometerFill.classList.toggle('full', percentage >= 100);
+        
         movementMessage.textContent = movementMessages[roundedPercentage] || movementMessages[0];
     };
+    
 
     const buscarContadorExterno = async () => {
         const url = `${API_SERVER_EXTERNAL}/api/contador/`;
@@ -199,11 +245,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const numeroContador = dados.length > 0 ? dados[0].contador : 0;
             
             console.log(`Contador externo recebido: ${numeroContador}`);
-            updateThermometer(numeroContador);
+            updateThermometer(numeroContador); 
 
         } catch (error) {
             console.error('Falha ao buscar o contador externo:', error);
-            updateThermometer(0); 
+            updateThermometer(0);
         }
     };
 

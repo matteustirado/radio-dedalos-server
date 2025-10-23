@@ -1,6 +1,20 @@
 import 'https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    
+    const getUnitFromPath = () => {
+        const path = window.location.pathname.toLowerCase();
+        if (path.includes('editgamerxbh.html')) {
+            return 'bh';
+        }
+        
+        return 'sp';
+    };
+
+    const unit = getUnitFromPath();
+    console.log(`[editGamerx.js] Configurando editor para unidade: ${unit}`);
+    
+
     const optionsCountInput = document.getElementById('options-count');
     const optionsContainer = document.getElementById('options-container');
     const form = document.getElementById('game-config-form');
@@ -12,8 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorMessage = document.getElementById('error-message');
     const errorText = document.getElementById('error-text');
     const logoutBtn = document.getElementById('logout-btn');
-
-    const unit = 'sp';
 
     const showMessage = (element, textElement, message, type = 'success') => {
         textElement.textContent = message;
@@ -192,10 +204,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const value = e.target.value;
         const count = parseInt(value, 10);
 
-        if (value === '' || isNaN(count) || count < 1 || count > 9) { 
+        if (value === '' || isNaN(count) || count < 1 || count > 9) {
             optionsContainer.innerHTML = '';
-            if (value !== '' && (count < 1 || count > 9)) { 
-                 showMessage(errorMessage, errorText, 'Número de opções deve ser entre 1 e 9.', 'danger'); 
+            if (value !== '' && (count < 1 || count > 9)) {
+                 showMessage(errorMessage, errorText, 'Número de opções deve ser entre 1 e 9.', 'danger');
             } else {
                  errorMessage.classList.add('hidden');
             }
@@ -224,8 +236,8 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
 
         const count = parseInt(optionsCountInput.value, 10);
-        if (isNaN(count) || count < 1 || count > 9) { 
-            showMessage(errorMessage, errorText, 'Número de opções inválido. Deve ser entre 1 e 9.', 'danger'); 
+        if (isNaN(count) || count < 1 || count > 9) {
+            showMessage(errorMessage, errorText, 'Número de opções inválido. Deve ser entre 1 e 9.', 'danger');
             return;
         }
 

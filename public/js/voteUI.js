@@ -8,8 +8,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingText = voteScreen.querySelector('.loading-text');
     const errorText = voteScreen.querySelector('.error-text');
 
-    const unit = 'sp';
-    const WS_SERVER_EXTERNAL = 'https://placar-80b3f72889ba.herokuapp.com/';
+    const detectUnitConfig = () => {
+        const path = window.location.pathname.toLowerCase();
+        if (path.includes('votebh.html')) {
+            return {
+                unit: 'bh',
+                wsServer: 'https://placarbh-cf51a4a5b78a.herokuapp.com/'
+            };
+        }
+        return {
+            unit: 'sp',
+            wsServer: 'https://placar-80b3f72889ba.herokuapp.com/'
+        };
+    };
+
+    const config = detectUnitConfig();
+    const unit = config.unit;
+    const WS_SERVER_EXTERNAL = config.wsServer;
+
+    console.log(`[voteUI.js] Configurando votação para unidade: ${unit}`);
+    console.log(`[voteUI.js] Conectando ao WebSocket: ${WS_SERVER_EXTERNAL}`);
 
     let voteCasted = false;
     let currentPulseiraId = null;
@@ -141,7 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
             visualWrapper.classList.add('hidden');
 
             if (option.type === 'image' && option.value) {
-                imageEl.src = `/assets/uploads/game_options/${unit}/${option.value}?t=${Date.now()}`;
+                const imageUrl = `/assets/uploads/game_options/${unit}/${option.value}?t=${Date.now()}`;
+                imageEl.src = imageUrl;
                 imageEl.alt = option.label;
                 imageEl.classList.remove('hidden');
                 visualWrapper.classList.remove('hidden');
@@ -202,11 +221,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const externalSocket = io(WS_SERVER_EXTERNAL);
 
         externalSocket.on('connect', () => {
-            console.log('Conectado ao servidor WebSocket externo (Placar).');
+            console.log('Conectado ao servidor WebSocket externo.');
         });
 
         externalSocket.on('disconnect', () => {
-            console.log('Desconectado do servidor WebSocket externo (Placar).');
+            console.log('Desconectado do servidor WebSocket externo.');
         });
 
         externalSocket.on('connect_error', (err) => {

@@ -52,6 +52,7 @@ app.use((req, res, next) => {
 app.get('/api', (request, response) => {
     response.send('API da Rádio Dédalos está no ar!');
 });
+
 app.use('/api/auth', authRoutes);
 app.use('/api/songs', songRoutes);
 app.use('/api/artists', artistRoutes);

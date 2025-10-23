@@ -15,6 +15,7 @@ body {
     width: 100%;
     max-width: 1200px;
     backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
 }
 
 .placard-background-logo {
@@ -65,33 +66,31 @@ body {
 }
 
 .score-board {
-    display: grid; 
+    display: grid;
     gap: 1rem;
     margin-bottom: 0;
     padding: 0 1rem;
 }
 
+
 .vertical-layout {
-    grid-template-columns: repeat(2, 1fr); 
+    grid-template-columns: repeat(2, 1fr);
     justify-items: center;
     align-items: flex-start;
-    height: 350px;
     gap: 1.5rem 1rem;
     height: auto;
 }
-
 .vertical-layout .placard-option {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%; 
-    height: 250px; 
+    width: 100%;
+    height: 250px;
     text-align: center;
 }
-
 .vertical-layout .placard-bar-container {
-    width: 100%; 
-    max-width: 100px; 
+    width: 100%;
+    max-width: 100px;
     height: 100%;
     border: 2px solid var(--border-color);
     border-bottom: none;
@@ -104,7 +103,6 @@ body {
     background-color: rgba(255, 255, 255, 0.05);
 }
 .vertical-layout .placard-bar-track { display: none; }
-
 .vertical-layout .placard-bar {
     position: absolute;
     bottom: 0;
@@ -125,7 +123,6 @@ body {
 .vertical-layout .placard-bar::after {
     border-radius: 40%; animation-duration: 6s; opacity: 0.7;
 }
-
 .vertical-layout .placard-content-wrapper {
     position: relative;
     z-index: 2;
@@ -136,21 +133,19 @@ body {
     height: 100%;
     padding: 0.75rem 0;
 }
-
 .vertical-layout .placard-percentage {
     color: white;
     font-weight: 600;
-    font-size: 1.5rem; 
+    font-size: 1.5rem;
     text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
     opacity: 0;
     transition: opacity 0.5s ease;
-    margin-bottom: 2rem; 
+    margin-bottom: 2rem;
     flex-shrink: 0;
 }
 .vertical-layout .placard-bar:not([style*="height: 0%"]) ~ .placard-content-wrapper .placard-percentage {
     opacity: 1;
 }
-
 .vertical-layout .placard-info {
     display: flex;
     flex-direction: column;
@@ -158,7 +153,6 @@ body {
     margin-top: auto;
     padding-bottom: 1rem;
 }
-
 .vertical-layout .placard-visual {
     width: 45px;
     height: 45px;
@@ -169,7 +163,7 @@ body {
     flex-shrink: 0;
 }
 .vertical-layout .placard-emoji {
-    font-size: 2.2rem; 
+    font-size: 2.2rem;
     line-height: 1;
 }
 .vertical-layout .placard-image {
@@ -180,98 +174,283 @@ body {
     border: 1px solid rgba(255,255,255,0.2);
 }
 .vertical-layout .placeholder { opacity: 0.3; background-color: rgba(255,255,255,0.1); border-radius: 50%; }
-
 .vertical-layout .placard-label {
     font-weight: 500;
     color: var(--color-text);
-    font-size: 0.9rem; 
+    font-size: 0.9rem;
     word-break: break-word;
     line-height: 1.2;
 }
 
-.horizontal-layout {
-    display: flex; 
+
+#placard-main-wrapper.horizontal-layout-wrapper {
+    width: 100vw;
+    height: 90vh; 
+    max-width: 1080px;
+    padding: 6rem 3rem;
+    border-radius: 0;
+    box-sizing: border-box;
+    display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+}
+
+.horizontal-layout-wrapper .placard-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
+    flex-grow: 1;
+}
+
+.horizontal-layout-wrapper .placard-title {
+    font-size: 5rem;
+    margin-bottom: 5rem;
+    flex-shrink: 0;
+}
+
+.horizontal-layout {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: stretch;
     min-height: auto;
-    gap: 1.5rem;
+    gap: 3rem; 
+    flex-grow: 1;
 }
 
 .horizontal-layout .placard-option {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
     width: 100%;
-    height: auto;
+    height: 90px; 
+    border: 2px solid var(--border-color);
+    border-radius: 45px; 
+    position: relative;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
-.horizontal-layout .placard-info {
+.horizontal-layout .placard-bar-track {
+    position: absolute; top:0; left: 0; width: 100%; height: 100%;
+    border-radius: inherit; 
+}
+
+.horizontal-layout .placard-bar {
+    position: absolute; top: 0; left: 0; height: 100%;
+    width: 0%; 
+    border-radius: inherit; 
+    transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    background-color: var(--color-primary);
+}
+
+.horizontal-layout .placard-content-wrapper-horizontal {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem; 
+    box-sizing: border-box;
+}
+
+.horizontal-layout .placard-center-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 120px;
-    flex-shrink: 0;
     text-align: center;
-    margin-right: 1rem;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
+}
+
+.horizontal-layout .placard-percentage {
+    color: white;
+    font-weight: 700;
+    font-size: 2rem; 
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+.horizontal-layout .placard-bar:not([style*="width: 0%"]) ~ .placard-content-wrapper-horizontal .placard-percentage {
+    opacity: 1;
+}
+.horizontal-layout .placard-bar[style*="width: 0%"] ~ .placard-content-wrapper-horizontal .placard-percentage {
+    opacity: 1;
+}
+
+.horizontal-layout .placard-label {
+    font-weight: 600;
+    font-size: 1.2rem; 
+    color: var(--color-text);
+    line-height: 1.2;
 }
 
 .horizontal-layout .placard-visual {
-    width: 70px;
-    height: 70px;
+    width: 70px; 
+    height: 70px; 
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 0.5rem;
     flex-shrink: 0;
 }
 .horizontal-layout .placard-emoji {
-    font-size: 3.5rem;
+    font-size: 3.5rem; 
     line-height: 1;
 }
 .horizontal-layout .placard-image {
-    width: 100%; height: 100%; border-radius: 50%;
+    width: 100%; height: 100%; border-radius: 50%; 
     object-fit: cover; border: 1px solid rgba(255,255,255,0.2);
 }
 .horizontal-layout .placeholder { opacity: 0.3; background-color: rgba(255,255,255,0.1); border-radius: 50%; }
 
 
-.horizontal-layout .placard-label {
-    font-weight: 500;
+
+.horizontal-layout.count-1 { gap: 0; }
+.horizontal-layout.count-2 { gap: 7rem; }
+
+.horizontal-layout.count-1 .placard-option,
+.horizontal-layout.count-2 .placard-option {
+    height: 15rem; 
+    border-radius: 7.5rem;
+}
+.horizontal-layout.count-1 .placard-visual,
+.horizontal-layout.count-2 .placard-visual {
+    width: 120px; 
+    height: 120px;
+}
+.horizontal-layout.count-1 .placard-emoji,
+.horizontal-layout.count-2 .placard-emoji {
+    font-size: 6rem;
+}
+.horizontal-layout.count-1 .placard-percentage,
+.horizontal-layout.count-2 .placard-percentage {
+    font-size: 3.5rem;
+}
+.horizontal-layout.count-1 .placard-label,
+.horizontal-layout.count-2 .placard-label {
+    font-size: 1.8rem;
+}
+
+
+.horizontal-layout.count-3 { gap: 5rem; }
+.horizontal-layout.count-3 .placard-option {
+    height: 12rem;
+    border-radius: 6rem;
+}
+.horizontal-layout.count-3 .placard-visual {
+    width: 100px;
+    height: 100px;
+}
+.horizontal-layout.count-3 .placard-emoji {
+    font-size: 5rem;
+}
+.horizontal-layout.count-3 .placard-percentage {
+    font-size: 3rem;
+}
+.horizontal-layout.count-3 .placard-label {
+    font-size: 1.6rem;
+}
+
+
+.horizontal-layout.count-4 { gap: 4rem; }
+.horizontal-layout.count-4 .placard-option {
+    height: 10rem;
+    border-radius: 5rem;
+}
+.horizontal-layout.count-4 .placard-visual {
+    width: 80px;
+    height: 80px;
+}
+.horizontal-layout.count-4 .placard-emoji {
+    font-size: 4rem;
+}
+.horizontal-layout.count-4 .placard-percentage {
+    font-size: 2.5rem;
+}
+.horizontal-layout.count-4 .placard-label {
+    font-size: 1.4rem;
+}
+
+
+.horizontal-layout.count-5 { 
+    gap: 3rem; 
+}
+.horizontal-layout.count-5 .placard-option {
+    height: 9rem; 
+    border-radius: 4.5rem;
+}
+.horizontal-layout.count-5 .placard-percentage {
+    font-size: 2.2rem; 
+}
+.horizontal-layout.count-5 .placard-label {
+    font-size: 1.3rem; 
+}
+
+
+
+.horizontal-layout.count-6 { 
+    gap: 2.5rem; 
+    
+}
+
+
+.horizontal-layout.count-7 { gap: 2rem; }
+.horizontal-layout.count-7 .placard-option {
+    height: 80px;
+    border-radius: 40px;
+}
+.horizontal-layout.count-7 .placard-visual {
+    width: 60px;
+    height: 60px;
+}
+.horizontal-layout.count-7 .placard-emoji {
+    font-size: 3rem;
+}
+.horizontal-layout.count-7 .placard-percentage {
+    font-size: 1.8rem;
+}
+.horizontal-layout.count-7 .placard-label {
+    font-size: 1.1rem;
+}
+
+
+.horizontal-layout.count-8 { gap: 1.5rem; }
+.horizontal-layout.count-8 .placard-option {
+    height: 70px;
+    border-radius: 35px;
+}
+.horizontal-layout.count-8 .placard-visual {
+    width: 50px;
+    height: 50px;
+}
+.horizontal-layout.count-8 .placard-emoji {
+    font-size: 2.5rem;
+}
+.horizontal-layout.count-8 .placard-percentage {
+    font-size: 1.6rem;
+}
+.horizontal-layout.count-8 .placard-label {
     font-size: 1rem;
-    color: var(--color-text);
-    word-break: break-word;
-    line-height: 1.2;
-    max-width: 90%;
 }
 
-.horizontal-layout .placard-bar-container {
-    flex-grow: 1; height: 50px; border: 2px solid var(--border-color);
-    border-radius: 25px; position: relative; overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
-    background-color: rgba(255, 255, 255, 0.05);
+
+.horizontal-layout.count-9 { gap: 1.2rem; }
+.horizontal-layout.count-9 .placard-option {
+    height: 65px;
+    border-radius: 32.5px;
 }
-.horizontal-layout .placard-bar-track {
-    position: absolute; top:0; left: 0; width: 100%; height: 100%;
+.horizontal-layout.count-9 .placard-visual {
+    width: 45px;
+    height: 45px;
+}
+.horizontal-layout.count-9 .placard-emoji {
+    font-size: 2.2rem;
+}
+.horizontal-layout.count-9 .placard-percentage {
+    font-size: 1.5rem;
+}
+.horizontal-layout.count-9 .placard-label {
+    font-size: 0.9rem;
 }
 
-.horizontal-layout .placard-bar {
-    position: absolute; top: 0; left: 0; height: 100%;
-    width: 0%; border-radius: 25px;
-    transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-    background-color: var(--color-primary);
-}
 
-.horizontal-layout .placard-percentage {
-    position: relative; z-index: 2; color: white;
-    font-weight: 600; font-size: 1.2rem;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
-    opacity: 0; transition: opacity 0.5s ease;
-    padding: 0 0.75rem;
-}
-.horizontal-layout .placard-bar:not([style*="width: 0%"]) .placard-percentage {
-    opacity: 1;
-}
 
 [data-option-index="0"] .placard-bar { background-color: #ef4444; }
 [data-option-index="1"] .placard-bar { background-color: #a855f7; }
@@ -283,9 +462,15 @@ body {
 [data-option-index="7"] .placard-bar { background-color: #14b8a6; }
 [data-option-index="8"] .placard-bar { background-color: #f97316; }
 
+
 .movement-thermometer {
     padding-top: 3rem;
     border-top: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+.horizontal-layout-wrapper .movement-thermometer {
+    padding-top: 5rem;
+    margin-top: 3rem;
 }
 
 .section-title {
@@ -295,8 +480,13 @@ body {
     border: none;
     padding: 0;
     margin-bottom: 1rem;
+    display: flex;
     justify-content: center;
 }
+.horizontal-layout-wrapper .section-title {
+    font-size: 2rem;
+}
+
 
 .thermometer-bar-container {
     width: 100%;
@@ -311,6 +501,10 @@ body {
     align-items: center;
     justify-content: center;
 }
+.horizontal-layout-wrapper .thermometer-bar-container {
+    height: 60px;
+    border-radius: 30px;
+}
 
 .thermometer-fill {
     height: 100%;
@@ -324,6 +518,9 @@ body {
     z-index: 1;
     animation: pulse-glow 2s infinite alternate;
 }
+.horizontal-layout-wrapper .thermometer-fill {
+    border-radius: 30px;
+}
 
 .thermometer-fill.full { animation: pulse-glow-intense 1s infinite alternate; }
 
@@ -334,6 +531,10 @@ body {
     position: relative;
     z-index: 2;
 }
+.horizontal-layout-wrapper .thermometer-label {
+    font-size: 1.8rem;
+}
+
 
 .movement-message {
     font-size: 1.5rem;
@@ -343,6 +544,10 @@ body {
     text-align: center;
     text-shadow: 0 0 10px var(--color-primary);
 }
+.horizontal-layout-wrapper .movement-message {
+    font-size: 2.2rem;
+}
+
 
 @keyframes wave {
     0% { transform: translateX(-50%) rotate(-10deg); }
@@ -361,52 +566,151 @@ body {
     display: none;
 }
 
-.vertical-layout {
-    grid-template-columns: repeat(2, 1fr);
-    align-items: flex-start;
-    gap: 1.5rem 1rem;
-    height: auto;
-}
-.vertical-layout .placard-option { width: 100%; height: 200px; }
-.vertical-layout .placard-bar-container { width: 100%; max-width: 100px; height: 100%; }
-.vertical-layout .placard-percentage { font-size: 1.2rem; margin-bottom: 1.5rem; }
-.vertical-layout .placard-visual { width: 40px; height: 40px; }
-.vertical-layout .placard-emoji { font-size: 2rem; }
-.vertical-layout .placard-label { font-size: 0.8rem; }
 
-.vertical-layout.count-3,
-.vertical-layout.count-5,
-.vertical-layout.count-7,
-.vertical-layout.count-9 {
-    grid-template-columns: repeat(2, 1fr);
+
+@media (max-width: 1024px) {
+    .horizontal-layout-wrapper .vertical-layout { display: none; }
+    
+    .vertical-layout { gap: 0.5rem; }
+    .vertical-layout .placard-option { width: 100px; }
+    .vertical-layout .placard-bar-container { width: 70px; }
+    .vertical-layout .placard-visual { width: 35px; height: 35px; }
+    .vertical-layout .placard-emoji { font-size: 1.8rem; }
+    .vertical-layout .placard-label { font-size: 0.8rem; }
+    .vertical-layout .placard-percentage { font-size: 1.1rem; margin-bottom: 2rem; }
 }
 
-.horizontal-layout { gap: 1rem; }
-.horizontal-layout .placard-info { width: 80px; }
-.horizontal-layout .placard-visual { width: 40px; height: 40px; }
-.horizontal-layout .placard-emoji { font-size: 2rem; }
-.horizontal-layout .placard-label { font-size: 0.75rem; }
-.horizontal-layout .placard-bar-container { height: 30px; }
-.horizontal-layout .placard-percentage { font-size: 0.8rem; }
-.movement-message { font-size: 1.2rem; }
-.thermometer-bar-container { height: 30px; }
+@media (max-width: 768px) {
+    #placard-main-wrapper { padding: 2rem 1rem; }
+    .placard-title { font-size: 2.2rem; margin-bottom: 1.5rem; }
+
+    .vertical-layout {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        align-items: flex-start;
+        gap: 1.5rem 1rem;
+        height: auto;
+    }
+    .vertical-layout .placard-option { width: 100%; height: 250px; }
+    .vertical-layout .placard-bar-container { width: 100%; max-width: 100px; height: 100%; }
+    .vertical-layout .placard-percentage { font-size: 1.5rem; margin-bottom: 2rem; }
+    .vertical-layout .placard-visual { width: 45px; height: 45px; }
+    .vertical-layout .placard-emoji { font-size: 2.2rem; }
+    .vertical-layout .placard-label { font-size: 0.9rem; }
+    
+    .horizontal-layout-wrapper {
+        padding: 4rem 1.5rem;
+    }
+    .horizontal-layout-wrapper .placard-title {
+        font-size: 3.5rem;
+        margin-bottom: 4rem;
+    }
+    
+    
+    
+    
+    .horizontal-layout { gap: 2.5rem; }
+    .horizontal-layout .placard-option { height: 80px; border-radius: 40px; }
+    .horizontal-layout .placard-visual { width: 60px; height: 60px; }
+    .horizontal-layout .placard-emoji { font-size: 3rem; }
+    .horizontal-layout .placard-percentage { font-size: 1.6rem; }
+    .horizontal-layout .placard-label { font-size: 1.1rem; }
+
+    
+    .horizontal-layout.count-1 { gap: 0; }
+    .horizontal-layout.count-2 { gap: 4rem; }
+    .horizontal-layout.count-1 .placard-option,
+    .horizontal-layout.count-2 .placard-option { 
+        height: 10rem; 
+        border-radius: 5rem;
+    }
+    .horizontal-layout.count-1 .placard-visual,
+    .horizontal-layout.count-2 .placard-visual { 
+        width: 80px; height: 80px; 
+    }
+    .horizontal-layout.count-1 .placard-emoji,
+    .horizontal-layout.count-2 .placard-emoji { 
+        font-size: 4rem; 
+    }
+    .horizontal-layout.count-1 .placard-percentage,
+    .horizontal-layout.count-2 .placard-percentage { 
+        font-size: 2.5rem; 
+    }
+    .horizontal-layout.count-1 .placard-label,
+    .horizontal-layout.count-2 .placard-label { 
+        font-size: 1.5rem; 
+    }
+
+    
+    .horizontal-layout.count-3,
+    .horizontal-layout.count-4,
+    .horizontal-layout.count-5 { 
+        gap: 3rem; 
+    }
+    .horizontal-layout.count-3 .placard-option,
+    .horizontal-layout.count-4 .placard-option,
+    .horizontal-layout.count-5 .placard-option { 
+        height: 9rem; 
+        border-radius: 4.5rem;
+    }
+
+    
+    .horizontal-layout.count-7,
+    .horizontal-layout.count-8,
+    .horizontal-layout.count-9 { gap: 1.5rem; }
+    .horizontal-layout.count-7 .placard-option,
+    .horizontal-layout.count-8 .placard-option,
+    .horizontal-layout.count-9 .placard-option { 
+        height: 70px; 
+        border-radius: 35px; 
+    }
+    .horizontal-layout.count-7 .placard-visual,
+    .horizontal-layout.count-8 .placard-visual,
+    .horizontal-layout.count-9 .placard-visual { 
+        width: 50px; height: 50px; 
+    }
+    .horizontal-layout.count-7 .placard-emoji,
+    .horizontal-layout.count-8 .placard-emoji,
+    .horizontal-layout.count-9 .placard-emoji { 
+        font-size: 2.5rem; 
+    }
+    .horizontal-layout.count-7 .placard-percentage,
+    .horizontal-layout.count-8 .placard-percentage,
+    .horizontal-layout.count-9 .placard-percentage { 
+        font-size: 1.4rem; 
+    }
+    .horizontal-layout.count-7 .placard-label,
+    .horizontal-layout.count-8 .placard-label,
+    .horizontal-layout.count-9 .placard-label { 
+        font-size: 1rem; 
+    }
+
+
+     .movement-thermometer { padding-top: 3rem; }
+     .horizontal-layout-wrapper .movement-thermometer { padding-top: 4rem; margin-top: 2rem; }
+     .thermometer-bar-container { height: 40px; }
+     .movement-message { font-size: 1.5rem; }
+}
+
 
 
 @media (min-width: 769px) {
+    .horizontal-layout-wrapper .vertical-layout { display: none; }
+    
     .vertical-layout {
-        display: grid; 
-        grid-template-columns: repeat(3, 1fr); 
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
         align-items: flex-start;
         height: auto;
         gap: 2rem;
     }
     .vertical-layout .placard-option {
         width: 100%;
-        height: 300px; 
+        height: 300px;
     }
     .vertical-layout .placard-bar-container {
         width: 100%;
-        max-width: 150px; 
+        max-width: 150px;
         height: 100%;
     }
     .vertical-layout .placard-percentage { font-size: 1.8rem; margin-bottom: 2rem; }
@@ -414,30 +718,43 @@ body {
     .vertical-layout .placard-emoji { font-size: 3rem; }
     .vertical-layout .placard-label { font-size: 1rem; }
 
-    .vertical-layout.count-2 {
-        grid-template-columns: repeat(2, 1fr);
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    .vertical-layout.count-2 .placard-option { height: 350px; }
-    .vertical-layout.count-2 .placard-bar-container { max-width: 200px; }
-    .vertical-layout.count-2 .placard-percentage { font-size: 2rem; margin-bottom: 3rem; }
-    .vertical-layout.count-2 .placard-visual { width: 80px; height: 80px; }
-    .vertical-layout.count-2 .placard-emoji { font-size: 4rem; }
-    .vertical-layout.count-2 .placard-label { font-size: 1.5rem; }
-
     .vertical-layout.count-3 {
         grid-template-columns: repeat(3, 1fr);
-        gap: 4rem; 
+        gap: 4rem;
     }
-    .vertical-layout.count-3 .placard-option { height: 350px; width: 100%; }
+    .vertical-layout.count-3 .placard-option { height: 350px; }
     .vertical-layout.count-3 .placard-bar-container { max-width: 150px; }
     .vertical-layout.count-3 .placard-percentage { font-size: 2rem; margin-bottom: 3rem; }
     .vertical-layout.count-3 .placard-visual { width: 70px; height: 70px; }
     .vertical-layout.count-3 .placard-emoji { font-size: 3.5rem; }
     .vertical-layout.count-3 .placard-label { font-size: 1.5rem; }
 
+    .vertical-layout.count-2 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5rem;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    .vertical-layout.count-2 .placard-option { height: 350px; }
+    .vertical-layout.count-2 .placard-bar-container { max-width: 180px; }
+    .vertical-layout.count-2 .placard-percentage { font-size: 2rem; margin-bottom: 3rem; }
+    .vertical-layout.count-2 .placard-visual { width: 80px; height: 80px; }
+    .vertical-layout.count-2 .placard-emoji { font-size: 4rem; }
+    .vertical-layout.count-2 .placard-label { font-size: 1.5rem; }
+    
+    .vertical-layout.count-1 {
+        grid-template-columns: 1fr;
+        gap: 0;
+        max-width: 350px;
+        margin: 0 auto;
+    }
+    .vertical-layout.count-1 .placard-option { height: 350px; }
+    .vertical-layout.count-1 .placard-bar-container { max-width: 200px; }
+    .vertical-layout.count-1 .placard-percentage { font-size: 2.2rem; margin-bottom: 3rem; }
+    .vertical-layout.count-1 .placard-visual { width: 90px; height: 90px; }
+    .vertical-layout.count-1 .placard-emoji { font-size: 4.5rem; }
+    .vertical-layout.count-1 .placard-label { font-size: 1.6rem; }
+    
     .vertical-layout.count-4 {
         grid-template-columns: repeat(4, 1fr);
         gap: 1.5rem;
@@ -450,15 +767,15 @@ body {
         gap: 1rem;
     }
     .vertical-layout.count-5 .placard-option { height: 280px; }
-    .vertical-layout.count-5 .placard-bar-container { max-width: 150px; }
+    .vertical-layout.count-5 .placard-bar-container { max-width: 130px; }
     .vertical-layout.count-5 .placard-label { font-size: 0.9rem; }
 
     .vertical-layout.count-6 {
-        grid-template-columns: repeat(3, 1fr); 
+        grid-template-columns: repeat(3, 1fr);
         gap: 2rem;
     }
     .vertical-layout.count-6 .placard-option { height: 300px; }
-
+    
     .vertical-layout.count-7,
     .vertical-layout.count-8,
     .vertical-layout.count-9 {
@@ -468,8 +785,9 @@ body {
     .vertical-layout.count-7 .placard-option,
     .vertical-layout.count-8 .placard-option,
     .vertical-layout.count-9 .placard-option { height: 250px; }
+    
     .vertical-layout.count-9 .placard-bar-container { max-width: 120px; }
-    .vertical-layout.count-9 .placard-percentage { font-size: 1.2rem; }
+    .vertical-layout.count-9 .placard-percentage { font-size: 1.2rem; margin-bottom: 1.5rem; }
     .vertical-layout.count-9 .placard-visual { width: 45px; height: 45px; }
     .vertical-layout.count-9 .placard-emoji { font-size: 2.2rem; }
     .vertical-layout.count-9 .placard-label { font-size: 0.9rem; }
