@@ -1,8 +1,6 @@
 const socketService = require('../../services/socketService');
 const GameVoteModel = require('../models/gameVoteModel'); 
 
-const gameVotes = {};
-
 class GameController {
 
     static async registerVote(request, response) {
@@ -14,30 +12,22 @@ class GameController {
                 return response.status(400).json({ message: 'Dados incompletos para registrar o voto (pulseiraId, optionLabel, unit).' });
             }
 
-            
-            if (!gameVotes[unit]) {
-                gameVotes[unit] = {};
-            }
-            if (!gameVotes[unit][optionLabel]) {
-                gameVotes[unit][optionLabel] = 0;
-            }
-            gameVotes[unit][optionLabel]++;
-
-            console.log(`[GameController] Voto em memória para ${unit}: Opção='${optionLabel}', Pulseira='${pulseiraId}'. Contagem:`, gameVotes[unit]);
-
-            
+            // 1. Salva o novo voto no banco de dados
             try {
                 await GameVoteModel.create({ unit, pulseiraId, optionLabel });
                 console.log(`[GameController] Voto de ${pulseiraId} salvo no banco de dados.`);
             } catch (dbError) {
                 console.error("[GameController] Falha ao salvar voto no banco de dados:", dbError);
-                
             }
 
-            
+            // 2. Busca a contagem TOTAL de votos (persistente) no banco de dados
+            const updatedVoteCounts = await GameVoteModel.getVoteCounts(unit);
+            console.log(`[GameController] Contagem atualizada do banco para ${unit}:`, updatedVoteCounts);
+
+            // 3. Emite o evento Socket.IO com a contagem persistente
             const io = socketService.getIo();
             if (io) {
-                io.emit('placardUpdate', { unit: unit, votes: gameVotes[unit] });
+                io.emit('placardUpdate', { unit: unit, votes: updatedVoteCounts });
                 console.log(`[GameController] Evento 'placardUpdate' emitido para unidade ${unit}.`);
             } else {
                 console.warn('[GameController] Socket.IO não inicializado. Não foi possível emitir atualização do placar.');
@@ -51,33 +41,25 @@ class GameController {
         }
     }
 
-     static resetVotes(request, response) {
+     static async resetVotes(request, response) {
          try {
             const { unit } = request.params;
-            if (unit && gameVotes[unit]) {
-                gameVotes[unit] = {};
-                console.log(`[GameController] Votos em memória resetados para unidade ${unit}.`);
-                 const io = socketService.getIo();
-                 if (io) {
-                     io.emit('placardUpdate', { unit: unit, votes: gameVotes[unit] });
-                 }
-                response.status(200).json({ message: `Votos para ${unit} resetados.` });
-            } else if (unit) {
-                response.status(404).json({ message: `Nenhum voto em memória encontrado para a unidade ${unit}.` });
+            
+            // Limpa os votos no banco de dados
+            await GameVoteModel.clearVotes(unit);
+            console.log(`[GameController] Votos no banco de dados resetados para unidade ${unit}.`);
+             
+            // Emite um objeto de votos vazio para zerar o placar no cliente
+            const io = socketService.getIo();
+            if (io) {
+                io.emit('placardUpdate', { unit: unit, votes: {} }); 
             }
-             else {
-                 Object.keys(gameVotes).forEach(key => {
-                     gameVotes[key] = {};
-                     const io = socketService.getIo();
-                     if (io) {
-                         io.emit('placardUpdate', { unit: key, votes: gameVotes[key] });
-                     }
-                 });
-                 console.log(`[GameController] Todos os votos em memória foram resetados.`);
-                 response.status(200).json({ message: 'Todos os votos em memória foram resetados.' });
-            }
+             
+             console.log(`[GameController] Sinal de reset emitido para unidade ${unit}.`);
+             response.status(200).json({ message: `Votos para ${unit} resetados com sucesso.` });
+             
          } catch(error) {
-             console.error("Erro ao resetar votos em memória:", error);
+             console.error("Erro ao resetar votos:", error);
              response.status(500).json({ message: 'Erro interno ao resetar votos.' });
          }
      }
