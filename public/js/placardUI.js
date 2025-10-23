@@ -42,13 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const MAX_CAPACITY = MAX_CAPACITIES[unit] || 210; 
     
-    console.log(`[placardUI.js] Configurando placar para unidade: ${unit}`);
-    console.log(`[placardUI.js] Capacidade Máxima (100%) definida para: ${MAX_CAPACITY}`);
-    
-
-    console.log(`[placardUI.js] WS Externo: ${WS_SERVER_EXTERNAL}`);
-    console.log(`[placardUI.js] API Externa: ${API_SERVER_EXTERNAL}`);
-
     const movementMessages = {
         0: "A diversão está só começando! 🎉",
         5: "A galera tá chegando... Que tal um drink pra começar? 🍻",
@@ -167,7 +160,6 @@ document.addEventListener('DOMContentLoaded', () => {
             placardContainer.appendChild(optionElement);
         });
         
-        console.log(`Estrutura do placar (${currentConfig.placard_orientation}) renderizada com ${currentConfig.options.length} opções.`);
         if (thermometerFill) thermometerFill.parentElement.parentElement.style.opacity = '1';
     };
 
@@ -177,8 +169,6 @@ document.addEventListener('DOMContentLoaded', () => {
         currentVotes = votesData || {};
         let totalVotes = 0;
         Object.values(currentVotes).forEach(count => totalVotes += Number(count));
-
-        console.log("Atualizando placar. Votos recebidos:", currentVotes, "Total:", totalVotes);
         
         currentConfig.options.forEach(option => {
             const optionElement = placardContainer.querySelector(`.placard-option[data-option-label="${option.label}"]`);
@@ -216,8 +206,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const roundedPercentage = Math.max(0, Math.round(percentage / 5) * 5);
 
-        console.log(`Atualizando termômetro. Contador: ${count}, Max: ${MAX_CAPACITY}, Porcentagem: ${percentage.toFixed(1)}%, (Usando frase de ${roundedPercentage}%)`);
-
         thermometerFill.style.width = `${percentage}%`;
         
         thermometerLabel.textContent = `${percentage.toFixed(0)}%`; 
@@ -244,53 +232,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const dados = await response.json();
             const numeroContador = dados.length > 0 ? dados[0].contador : 0;
             
-            console.log(`Contador externo recebido: ${numeroContador}`);
             updateThermometer(numeroContador); 
 
         } catch (error) {
-            console.error('Falha ao buscar o contador externo:', error);
             updateThermometer(0);
         }
     };
 
     const setupInternalSocketListeners = () => {
-        console.log("Conectando ao Socket.IO local (Votos)...");
         const socket = io();
 
-        socket.on('connect', () => {
-            console.log('Conectado ao servidor Socket.IO local.');
-        });
-        socket.on('disconnect', () => {
-            console.log('Desconectado do servidor Socket.IO local.');
-        });
-        socket.on('connect_error', (err) => {
-             console.error('Erro ao conectar ao Socket.IO local:', err.message);
-        });
         socket.on('placardUpdate', (data) => {
             if (data && data.unit === unit && data.votes) {
-                console.log('Evento "placardUpdate" (Votos) recebido:', data);
                 updatePlacardVotes(data.votes);
             }
         });
     };
 
     const setupExternalSocketListeners = () => {
-        console.log(`Conectando ao WebSocket externo (Contador): ${WS_SERVER_EXTERNAL}`);
         const externalSocket = io(WS_SERVER_EXTERNAL, {
             transports: ['websocket', 'polling']
         });
-        externalSocket.on('connect', () => {
-            console.log('Placar conectado ao WebSocket externo (Placar).');
-        });
-        externalSocket.on('disconnect', () => {
-            console.log('Placar desconectado do WebSocket externo (Placar).');
-        });
-        externalSocket.on('connect_error', (err) => {
-             console.error('Erro de conexão WebSocket externo:', err.message);
-        });
         
-        externalSocket.on('new_id', (data) => {
-            console.log('GATILHO "new_id" (externo) recebido!', data);
+        externalSocket.on('new_id', () => {
             buscarContadorExterno();
         });
     };
@@ -299,18 +263,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const initializePlacard = async () => {
         showLoading();
         try {
-            console.log(`Buscando configuração inicial de /api/game-config/${unit}`);
             const config = await apiFetch(`/game-config/${unit}`);
-            console.log('Configuração inicial recebida:', JSON.stringify(config, null, 2));
             currentConfig = config;
             renderPlacardStructure();
             
+            // Corrige o problema de inicialização buscando os votos do DB
+            const initialVotes = await apiFetch(`/game/counts/${unit}`);
+            updatePlacardVotes(initialVotes);
+
             setupInternalSocketListeners();
             setupExternalSocketListeners();
             
             buscarContadorExterno();
         } catch (error) {
-            console.error("Erro ao inicializar o placar:", error);
             showError(error.message);
         }
     };
