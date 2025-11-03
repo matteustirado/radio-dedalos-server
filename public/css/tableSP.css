@@ -539,6 +539,10 @@ main > .card-style:last-child {
   text-transform: uppercase;
   text-align: center;
   color: var(--color-text);
+  background-color: rgba(10, 10, 15, 0.7);
+  border: 1px solid rgba(245, 166, 35, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
 }
 .column-title .column-time {
   display: block;
@@ -548,7 +552,8 @@ main > .card-style:last-child {
   text-transform: none;
 }
 .price-column.active .column-title {
-  color: var(--color-primary);
+  color: var(--color-text-muted);
+  background: linear-gradient(to right, #ff0022, #ff4d00);
 }
 .prices-content {
   border-radius: 12px;
@@ -790,6 +795,7 @@ main > .card-style:last-child {
 .price-column.active .price-card.layout-active .price-card-details .price-features li {
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9), 0 0 8px var(--color-primary);
   width: fit-content;
+  padding: 0;
 }
 .price-column.active .price-card.layout-active .price-value {
   background: linear-gradient(to right, #ff0022, #ff4d00);
@@ -830,6 +836,21 @@ main > .card-style:last-child {
 .price-card.layout-active.marmita {
   justify-content: flex-start;
 }
+.card-background-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  opacity: 0.4;
+  border-radius: 16px;
+  object-position: bottom right;
+}
+.price-card.layout-active.amiga .card-background-video {
+  object-position: bottom left;
+}
 @media (max-width: 900px) {
   .pricing-columns-container {
     flex-direction: column;
@@ -852,10 +873,12 @@ main > .card-style:last-child {
   }
   .price-card.layout-active {
     flex-direction: column !important;
-    background-image: none !important;
     align-items: center;
     padding: 1.5rem;
     justify-content: center;
+  }
+  .price-card.layout-active .card-background-video {
+    display: none;
   }
   .price-card-details {
     text-align: center !important;
@@ -865,28 +888,13 @@ main > .card-style:last-child {
    .price-card-details .price-features {
     align-items: center !important;
   }
-  .price-card.layout-active .price-card-details h3,
-  .price-card.layout-active .price-card-details .price-value,
-  .price-card.layout-active .price-card-details .price-per-person-label,
-  .price-card.layout-active .price-card-details .price-per-person-value,
-  .price-card.layout-active .price-card-details .price-total-label,
-  .price-card.layout-active .price-card-details .price-features li {
-    background-color: transparent;
-    padding: 0;
-  }
-  .price-column.active .price-card.layout-active .price-value {
-    background: linear-gradient(to right, #ff0022, #ff4d00);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-  }
-  .price-column.active .price-card.layout-active .price-per-person-value {
-    background: linear-gradient(to right, #ff0022, #ff4d00);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
+  .price-column.active .price-card.layout-active .price-card-details h3,
+  .price-column.active .price-card.layout-active .price-card-details .price-value,
+  .price-column.active .price-card.layout-active .price-card-details .price-per-person-label,
+  .price-column.active .price-card.layout-active .price-card-details .price-per-person-value,
+  .price-column.active .price-card.layout-active .price-card-details .price-total-label,
+  .price-column.active .price-card.layout-active .price-card-details .price-features li {
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
   }
   .price-column:not(.active) .price-features {
     display: none;
