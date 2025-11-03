@@ -542,6 +542,7 @@ main > .card-style:last-child {
   background-color: rgba(10, 10, 15, 0.7);
   border: 1px solid rgba(245, 166, 35, 0.1);
   border-radius: 12px;
+  padding: 1rem;
 }
 .column-title .column-time {
   display: block;
@@ -551,7 +552,8 @@ main > .card-style:last-child {
   text-transform: none;
 }
 .price-column.active .column-title {
-  color: var(--color-primary);
+  color: var(--color-text-muted);
+  background-color: linear-gradient(to right, #ff0022, #ff4d00);
 }
 .prices-content {
   border-radius: 12px;
