@@ -3,6 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const locationSlug = 'sp';
     const weekDays = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
 
+    const colManha = document.getElementById('column-manha');
+    const colTarde = document.getElementById('column-tarde');
+    const colNoite = document.getElementById('column-noite');
+    const allColumns = [colManha, colTarde, colNoite];
+
     function isHoliday(date) {
         if (!pricingData.feriados) return false;
         const d = String(date.getDate()).padStart(2, '0');
@@ -21,15 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return (h >= 6 && h < 14) ? 'manha' : (h >= 14 && h < 20) ? 'tarde' : 'noite';
     }
 
-    function updatePrices(day, period) {
-        if (!pricingData.dias || !pricingData.dias[day] || !pricingData.dias[day].prices) {
-            document.querySelectorAll('.price-card .price').forEach(span => span.textContent = '--');
-            document.querySelectorAll('.dynamic-message').forEach(el => el.remove());
-            document.querySelectorAll('.price-per-person').forEach(el => el.textContent = '');
-            return;
-        }
-        const dayData = pricingData.dias[day];
-        const priceCards = document.querySelectorAll('.price-card');
+    function populatePriceColumn(columnElement, dayData, period) {
+        if (!columnElement) return;
+
+        const priceCards = columnElement.querySelectorAll('.price-card');
+        
         priceCards.forEach(card => {
             const titleElement = card.querySelector('h3');
             const type = titleElement.textContent.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('mao amiga', 'amiga').replace(/\s+/g, '');
@@ -38,48 +39,92 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (type === 'amiga') key = 'amiga';
             else if (type === 'marmita') key = 'marmita';
             
-            const priceSpan = card.querySelector('.price');
-            const pricePerPersonDiv = card.querySelector('.price-per-person');
-            const priceValue = dayData.prices?.[key]?.[period];
+            const priceValue = dayData?.prices?.[key]?.[period];
 
-            priceSpan.textContent = priceValue?.toFixed(2).replace('.', ',') || '--';
+            if (key === 'player') {
+                const priceSpan = card.querySelector('.price');
+                if (priceSpan) priceSpan.textContent = priceValue?.toFixed(2).replace('.', ',') || '--';
+            
+            } else {
+                const perPersonSpan = card.querySelector('.price-per-person-dynamic');
+                const totalSpan = card.querySelector('.price-total-dynamic');
 
-            if (pricePerPersonDiv) {
-                if (priceValue) {
-                    let perPersonPrice;
-                    if (key === 'amiga') {
-                        perPersonPrice = (priceValue / 2).toFixed(2).replace('.', ',');
-                        pricePerPersonDiv.textContent = `(R$ ${perPersonPrice} por pessoa)`;
-                    } else if (key === 'marmita') {
-                        perPersonPrice = (priceValue / 3).toFixed(2).replace('.', ',');
-                        pricePerPersonDiv.textContent = `(R$ ${perPersonPrice} por pessoa)`;
+                if (perPersonSpan && totalSpan) {
+                    if (priceValue) {
+                        const divisor = (key === 'amiga') ? 2 : 3;
+                        perPersonSpan.textContent = (priceValue / divisor).toFixed(2).replace('.', ',');
+                        totalSpan.textContent = priceValue.toFixed(2).replace('.', ',');
                     } else {
-                        pricePerPersonDiv.textContent = '';
+                        perPersonSpan.textContent = '--';
+                        totalSpan.textContent = '--';
                     }
-                } else {
-                    pricePerPersonDiv.textContent = '';
                 }
             }
             
             const featuresList = card.querySelector('.price-features');
-            let messageItem = featuresList.querySelector('.dynamic-message');
-            if (messageItem) messageItem.remove();
-            if (dayData.messages?.[key]?.message) {
-                const newListItem = document.createElement('li');
-                newListItem.className = 'dynamic-message';
-                newListItem.textContent = dayData.messages[key].message;
-                featuresList.appendChild(newListItem);
+            if (featuresList) {
+                let messageItem = featuresList.querySelector('.dynamic-message');
+                if (messageItem) messageItem.remove();
+                
+                if (dayData?.messages?.[key]?.message) {
+                    const newListItem = document.createElement('li');
+                    newListItem.className = 'dynamic-message';
+                    newListItem.textContent = dayData.messages[key].message;
+                    featuresList.appendChild(newListItem);
+                }
             }
         });
     }
 
+    function updatePrices(day) {
+        const dayData = pricingData.dias ? pricingData.dias[day] : null;
+
+        if (!dayData) {
+            populatePriceColumn(colManha, null, 'manha');
+            populatePriceColumn(colTarde, null, 'tarde');
+            populatePriceColumn(colNoite, null, 'noite');
+            return;
+        }
+
+        populatePriceColumn(colManha, dayData, 'manha');
+        populatePriceColumn(colTarde, dayData, 'tarde');
+        populatePriceColumn(colNoite, dayData, 'noite');
+    }
+
+    function updateActivePeriod(period) {
+        allColumns.forEach(col => col.classList.remove('active', 'left-col', 'right-col'));
+
+        switch (period) {
+            case 'manha':
+                colNoite.classList.add('left-col');
+                colManha.classList.add('active');
+                colTarde.classList.add('right-col');
+                break;
+            case 'tarde':
+                colManha.classList.add('left-col');
+                colTarde.classList.add('active');
+                colNoite.classList.add('right-col');
+                break;
+            case 'noite':
+            default:
+                colTarde.classList.add('left-col');
+                colNoite.classList.add('active');
+                colManha.classList.add('right-col');
+                break;
+        }
+    }
+
     function updateInterface() {
         if (!pricingData || !pricingData.dias) return;
+        
         const currentDay = getCurrentDay();
         const currentPeriod = getCurrentPeriod();
+        
         document.querySelectorAll('.tab-button').forEach(b => b.classList.toggle('active', b.dataset.tab === currentDay));
-        document.querySelectorAll('.period-option').forEach(o => o.classList.toggle('active', o.dataset.period === currentPeriod));
-        updatePrices(currentDay, currentPeriod);
+        
+        updatePrices(currentDay);
+
+        updateActivePeriod(currentPeriod);
     }
 
     async function fetchAndRenderSlides(day) {
@@ -117,22 +162,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function autoRefreshPeriod() {
         const correctPeriod = getCurrentPeriod();
-        const activePeriodElement = document.querySelector('.period-option.active');
-        const activePeriod = activePeriodElement ? activePeriodElement.dataset.period : null;
+        const activePeriodId = `column-${correctPeriod}`;
+        const activeElement = document.querySelector('.price-column.active');
 
-        if (correctPeriod !== activePeriod) {
-            const day = document.querySelector('.tab-button.active')?.dataset.tab || getCurrentDay();
-            
-            if(activePeriodElement) {
-                activePeriodElement.classList.remove('active');
-            }
-
-            const newActivePeriodElement = document.querySelector(`.period-option[data-period="${correctPeriod}"]`);
-            if (newActivePeriodElement) {
-                newActivePeriodElement.classList.add('active');
-            }
-            
-            updatePrices(day, correctPeriod);
+        if (!activeElement || activeElement.id !== activePeriodId) {
+            updateActivePeriod(correctPeriod);
         }
     }
 
@@ -140,27 +174,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const correctDay = getCurrentDay();
         const activeDayElement = document.querySelector('.tab-button.active');
         const activeDay = activeDayElement ? activeDayElement.dataset.tab : null;
+        
         if (correctDay !== activeDay) {
-            updateInterface();
+            updateInterface(); 
             fetchAndRenderSlides(correctDay);
         }
     }
 
     document.querySelectorAll('.tab-button').forEach(button => button.addEventListener('click', (e) => {
         const day = e.target.dataset.tab;
-        const period = document.querySelector('.period-option.active')?.dataset.period || 'manha';
+        
         document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
         e.target.classList.add('active');
-        updatePrices(day, period);
+        
+        updatePrices(day);
+        
         fetchAndRenderSlides(day);
-    }));
-
-    document.querySelectorAll('.period-option').forEach(option => option.addEventListener('click', (e) => {
-        const period = e.currentTarget.dataset.period;
-        const day = document.querySelector('.tab-button.active')?.dataset.tab || 'segunda';
-        document.querySelectorAll('.period-option').forEach(opt => opt.classList.remove('active'));
-        e.currentTarget.classList.add('active');
-        updatePrices(day, period);
     }));
 
     fetchAndRenderPrices();

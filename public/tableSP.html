@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -12,7 +11,6 @@
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/tableSP.css">
 </head>
-
 <body>
     <div class="multi">
         <div class="multichrome-background">
@@ -43,37 +41,238 @@
                     <button class="tab-button" data-tab="domingo">DOMINGO</button>
                     <button class="tab-button" data-tab="feriados">FERIADOS</button>
                 </div>
-                <div class="period-slider">
-                    <div class="period-options">
-                        <div class="period-option" data-period="manha" data-time="06h às 13h59">Manhã/Tarde</div>
-                        <div class="period-option" data-period="tarde" data-time="14h às 19h59">Tarde/Noite</div>
-                        <div class="period-option" data-period="noite" data-time="20h às 05h59">Noite/Madrugada</div>
-                    </div>
-                </div>
                 <div class="pricing-content">
-                    <div class="price-cards">
-                        <div class="price-card">
-                            <h3>Player</h3>
-                            <div class="price-value">R$ <span class="price">--</span></div>
-                            <ul class="price-features">
-                                <li>Entrada individual</li>
-                            </ul>
+                    <div class="pricing-columns-container">
+                        <div id="column-manha" class="price-column">
+                            <h3 class="column-title">MANHÃ/TARDE <span class="column-time">06H ÀS 13H59</span></h3>
+                            <div class="inactive-view">
+                                <div class="price-card">
+                                    <h3>Player</h3>
+                                    <div class="price-value">R$ <span class="price">--</span></div>
+                                    <ul class="price-features">
+                                        <li>Entrada individual</li>
+                                    </ul>
+                                </div>
+                                <div class="price-card">
+                                    <h3>Mão Amiga</h3>
+                                    <div class="price-details-new">
+                                        <span class="price-per-person-label">cada um paga</span>
+                                        <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                        <span class="price-total-label">valor total da dupla R$ <span class="price-total-dynamic">--</span></span>
+                                    </div>
+                                    <ul class="price-features">
+                                        <li>Entrada para duas pessoas</li>
+                                    </ul>
+                                </div>
+                                <div class="price-card">
+                                    <h3>Marmita</h3>
+                                    <div class="price-details-new">
+                                        <span class="price-per-person-label">cada um paga</span>
+                                        <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                        <span class="price-total-label">valor total do trio R$ <span class="price-total-dynamic">--</span></span>
+                                    </div>
+                                    <ul class="price-features">
+                                        <li>Entrada para três pessoas</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="active-view">
+                                <div class="active-price-row player-row">
+                                    <div class="price-card">
+                                        <h3>Player</h3>
+                                        <div class="price-value">R$ <span class="price">--</span></div>
+                                        <ul class="price-features">
+                                            <li>Entrada individual</li>
+                                        </ul>
+                                    </div>
+                                    <div class="price-image">
+                                        <img src="assets/img/logo.png" alt="Player"> </div>
+                                </div>
+                                <div class="active-price-row amiga-row">
+                                    <div class="price-card">
+                                        <h3>Mão Amiga</h3>
+                                        <div class="price-details-new">
+                                            <span class="price-per-person-label">cada um paga</span>
+                                            <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                            <span class="price-total-label">valor total da dupla R$ <span class="price-total-dynamic">--</span></span>
+                                        </div>
+                                        <ul class="price-features">
+                                            <li>Entrada para duas pessoas</li>
+                                        </ul>
+                                    </div>
+                                    <div class="price-image">
+                                        <img src="assets/img/logo.png" alt="Mão Amiga"> </div>
+                                </div>
+                                <div class="active-price-row marmita-row">
+                                    <div class="price-card">
+                                        <h3>Marmita</h3>
+                                        <div class="price-details-new">
+                                            <span class="price-per-person-label">cada um paga</span>
+                                            <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                            <span class="price-total-label">valor total do trio R$ <span class="price-total-dynamic">--</span></span>
+                                        </div>
+                                        <ul class="price-features">
+                                            <li>Entrada para três pessoas</li>
+                                        </ul>
+                                    </div>
+                                    <div class="price-image">
+                                        <img src="assets/img/logo.png" alt="Marmita"> </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="price-card">
-                            <h3>Mão Amiga</h3>
-                            <div class="price-value">R$ <span class="price">--</span></div>
-                            <div class="price-per-person"></div>
-                            <ul class="price-features">
-                                <li>Entrada para duas pessoas</li>
-                            </ul>
+                        <div id="column-tarde" class="price-column">
+                            <h3 class="column-title">TARDE/NOITE <span class="column-time">14H ÀS 19H59</span></h3>
+                            <div class="inactive-view">
+                                <div class="price-card">
+                                    <h3>Player</h3>
+                                    <div class="price-value">R$ <span class="price">--</span></div>
+                                    <ul class="price-features">
+                                        <li>Entrada individual</li>
+                                    </ul>
+                                </div>
+                                <div class="price-card">
+                                    <h3>Mão Amiga</h3>
+                                    <div class="price-details-new">
+                                        <span class="price-per-person-label">cada um paga</span>
+                                        <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                        <span class="price-total-label">valor total da dupla R$ <span class="price-total-dynamic">--</span></span>
+                                    </div>
+                                    <ul class="price-features">
+                                        <li>Entrada para duas pessoas</li>
+                                    </ul>
+                                </div>
+                                <div class="price-card">
+                                    <h3>Marmita</h3>
+                                    <div class="price-details-new">
+                                        <span class="price-per-person-label">cada um paga</span>
+                                        <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                        <span class="price-total-label">valor total do trio R$ <span class="price-total-dynamic">--</span></span>
+                                    </div>
+                                    <ul class="price-features">
+                                        <li>Entrada para três pessoas</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="active-view">
+                                <div class="active-price-row player-row">
+                                    <div class="price-card">
+                                        <h3>Player</h3>
+                                        <div class="price-value">R$ <span class="price">--</span></div>
+                                        <ul class="price-features">
+                                            <li>Entrada individual</li>
+                                        </ul>
+                                    </div>
+                                    <div class="price-image">
+                                        <img src="assets/img/logo.png" alt="Player"> </div>
+                                </div>
+                                <div class="active-price-row amiga-row">
+                                    <div class="price-card">
+                                        <h3>Mão Amiga</h3>
+                                        <div class="price-details-new">
+                                            <span class="price-per-person-label">cada um paga</span>
+                                            <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                            <span class="price-total-label">valor total da dupla R$ <span class="price-total-dynamic">--</span></span>
+                                        </div>
+                                        <ul class="price-features">
+                                            <li>Entrada para duas pessoas</li>
+                                        </ul>
+                                    </div>
+                                    <div class="price-image">
+                                        <img src="assets/img/logo.png" alt="Mão Amiga"> </div>
+                                </div>
+                                <div class="active-price-row marmita-row">
+                                    <div class="price-card">
+                                        <h3>Marmita</h3>
+                                        <div class="price-details-new">
+                                            <span class="price-per-person-label">cada um paga</span>
+                                            <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                            <span class="price-total-label">valor total do trio R$ <span class="price-total-dynamic">--</span></span>
+                                        </div>
+                                        <ul class="price-features">
+                                            <li>Entrada para três pessoas</li>
+                                        </ul>
+                                    </div>
+                                    <div class="price-image">
+                                        <img src="assets/img/logo.png" alt="Marmita"> </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="price-card">
-                            <h3>Marmita</h3>
-                            <div class="price-value">R$ <span class="price">--</span></div>
-                            <div class="price-per-person"></div>
-                            <ul class="price-features">
-                                <li>Entrada para três pessoas</li>
-                            </ul>
+                        <div id="column-noite" class="price-column">
+                            <h3 class="column-title">NOITE/MADRUGADA <span class="column-time">20H ÀS 05H59</span></h3>
+                            <div class="inactive-view">
+                                <div class="price-card">
+                                    <h3>Player</h3>
+                                    <div class="price-value">R$ <span class="price">--</span></div>
+                                    <ul class="price-features">
+                                        <li>Entrada individual</li>
+                                    </ul>
+                                </div>
+                                <div class="price-card">
+                                    <h3>Mão Amiga</h3>
+                                    <div class="price-details-new">
+                                        <span class="price-per-person-label">cada um paga</span>
+                                        <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                        <span class="price-total-label">valor total da dupla R$ <span class="price-total-dynamic">--</span></span>
+                                    </div>
+                                    <ul class="price-features">
+                                        <li>Entrada para duas pessoas</li>
+                                    </ul>
+                                </div>
+                                <div class="price-card">
+                                    <h3>Marmita</h3>
+                                    <div class="price-details-new">
+                                        <span class="price-per-person-label">cada um paga</span>
+                                        <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                        <span class="price-total-label">valor total do trio R$ <span class="price-total-dynamic">--</span></span>
+                                    </div>
+                                    <ul class="price-features">
+                                        <li>Entrada para três pessoas</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="active-view">
+                                <div class="active-price-row player-row">
+                                    <div class="price-card">
+                                        <h3>Player</h3>
+                                        <div class="price-value">R$ <span class="price">--</span></div>
+                                        <ul class="price-features">
+                                            <li>Entrada individual</li>
+                                        </ul>
+                                    </div>
+                                    <div class="price-image">
+                                        <img src="assets/img/logo.png" alt="Player"> </div>
+                                </div>
+                                <div class="active-price-row amiga-row">
+                                    <div class="price-card">
+                                        <h3>Mão Amiga</h3>
+                                        <div class="price-details-new">
+                                            <span class="price-per-person-label">cada um paga</span>
+                                            <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                            <span class="price-total-label">valor total da dupla R$ <span class="price-total-dynamic">--</span></span>
+                                        </div>
+                                        <ul class="price-features">
+                                            <li>Entrada para duas pessoas</li>
+                                        </ul>
+                                    </div>
+                                    <div class="price-image">
+                                        <img src="assets/img/logo.png" alt="Mão Amiga"> </div>
+                                </div>
+                                <div class="active-price-row marmita-row">
+                                    <div class="price-card">
+                                        <h3>Marmita</h3>
+                                        <div class="price-details-new">
+                                            <span class="price-per-person-label">cada um paga</span>
+                                            <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                            <span class="price-total-label">valor total do trio R$ <span class="price-total-dynamic">--</span></span>
+                                        </div>
+                                        <ul class="price-features">
+                                            <li>Entrada para três pessoas</li>
+                                        </ul>
+                                    </div>
+                                    <div class="price-image">
+                                        <img src="assets/img/logo.png" alt="Marmita"> </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="price-notes">
