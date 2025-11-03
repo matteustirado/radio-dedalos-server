@@ -62,7 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             const featuresList = card.querySelector('.price-features');
-            if (featuresList) {
+            
+            if (featuresList) { 
                 let messageItem = featuresList.querySelector('.dynamic-message');
                 if (messageItem) messageItem.remove();
                 
