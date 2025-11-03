@@ -601,6 +601,7 @@ main > .card-style:last-child {
   margin: 0.5rem;
   color: #ffffff;
   position: relative;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 .price-value {
   font-size: 2.2rem;
@@ -611,6 +612,7 @@ main > .card-style:last-child {
   -webkit-text-fill-color: transparent;
   margin: 0.5rem 0;
   position: relative;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 .price-details-new {
   display: flex;
@@ -626,6 +628,7 @@ main > .card-style:last-child {
   text-transform: uppercase;
   color: var(--color-primary);
   line-height: 1.2;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 .price-per-person-value {
   font-size: 2.2rem;
@@ -635,12 +638,14 @@ main > .card-style:last-child {
   background-clip: text;
   color: transparent;
   line-height: 1.1;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 .price-total-label {
   font-size: 0.9rem;
   color: #ffffff;
   margin-top: 0.5rem;
   font-weight: 500;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 .price-features {
   list-style: none;
@@ -651,6 +656,7 @@ main > .card-style:last-child {
   margin: 0.5rem;
   color: #b3b3b3;
   font-size: 0.9rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
 .price-notes {
   text-align: center;
@@ -716,20 +722,48 @@ main > .card-style:last-child {
 .price-card.layout-active {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   min-height: 200px;
   padding: 1.5rem 2rem;
   gap: 1.5rem;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: bottom right;
 }
 .price-column.active .price-card.layout-active {
   box-shadow: 0 0 25px rgba(255, 77, 0, 0.7);
 }
+.price-card.layout-active.player-bg {
+  background-image: url('../img/single.png');
+  background-position: bottom right;
+}
+.price-card.layout-active.amiga-bg {
+  background-image: url('../img/mao.png');
+  background-position: bottom left;
+}
+.price-card.layout-active.marmita-bg {
+  background-image: url('../img/marmita.png');
+  background-position: bottom right;
+}
 .price-card-details {
-  flex: 1 1 55%;
-  padding: 0 1rem;
+  flex: 1 1 auto;
+  padding: 0 0.5rem;
   display: flex;
   flex-direction: column;
+  z-index: 1;
+}
+.price-column.active .price-card.layout-active .price-card-details h3,
+.price-column.active .price-card.layout-active .price-card-details .price-value,
+.price-column.active .price-card.layout-active .price-card-details .price-per-person-label,
+.price-column.active .price-card.layout-active .price-card-details .price-per-person-value,
+.price-column.active .price-card.layout-active .price-card-details .price-total-label,
+.price-column.active .price-card.layout-active .price-card-details .price-features li {
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 0 0.4rem;
+  border-radius: 4px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 .price-card-details.text-left {
   text-align: left;
@@ -745,24 +779,18 @@ main > .card-style:last-child {
 .price-card-details.text-right .price-features li {
   text-align: right;
 }
-.price-card-image {
-  flex: 1 1 45%;
-  max-width: 250px;
-}
-.price-card-image img {
-  width: 100%;
-  height: auto;
-  border-radius: 0.5rem;
-  object-fit: contain;
-}
 .price-card.layout-active.player {
   flex-direction: row;
+  justify-content: flex-start;
 }
 .price-card.layout-active.amiga {
   flex-direction: row-reverse;
+  justify-content: flex-end;
+  background-position: bottom left;
 }
 .price-card.layout-active.marmita {
   flex-direction: row;
+  justify-content: flex-start;
 }
 @media (max-width: 900px) {
   .pricing-columns-container {
@@ -786,15 +814,25 @@ main > .card-style:last-child {
   }
   .price-card.layout-active {
     flex-direction: column !important;
-  }
-  .price-card.layout-active .price-card-image {
-    display: none;
+    background-image: none !important;
+    align-items: center;
+    padding: 1.5rem;
   }
   .price-card-details {
     text-align: center !important;
     align-items: center !important;
+    padding: 0;
   }
    .price-card-details .price-features {
     align-items: center !important;
+  }
+  .price-card.layout-active .price-card-details h3,
+  .price-card.layout-active .price-card-details .price-value,
+  .price-card.layout-active .price-card-details .price-per-person-label,
+  .price-card.layout-active .price-card-details .price-per-person-value,
+  .price-card.layout-active .price-card-details .price-total-label,
+  .price-card.layout-active .price-card-details .price-features li {
+    background-color: transparent;
+    padding: 0;
   }
 }
