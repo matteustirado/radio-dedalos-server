@@ -540,8 +540,8 @@ main > .card-style:last-child {
   text-align: center;
   color: var(--color-text);
   padding: 1rem;
-  background: linear-gradient(145deg, rgba(10, 10, 15, 0.9), rgba(10, 10, 15, 0.9));
   border-radius: 12px;
+  background: linear-gradient(145deg, rgba(10, 10, 15, 0.9), rgba(10, 10, 15, 0.9));
 }
 .column-title .column-time {
   display: block;
@@ -552,7 +552,6 @@ main > .card-style:last-child {
 }
 .price-column.active .column-title {
   color: var(--color-primary);
-  box-shadow: 0 0 25px rgba(255, 77, 0, 0.7);
 }
 .prices-content {
   border-radius: 12px;
@@ -572,7 +571,8 @@ main > .card-style:last-child {
   width: 100%;
   max-width: 900px;
   height: auto;
-  background: linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(10, 10, 15, 0.95));
+  background-color: rgba(26, 26, 26, 0.95);
+  background-image: linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(10, 10, 15, 0.95));
   border-radius: 16px;
   padding: 1.5rem;
   text-align: center;
@@ -725,34 +725,35 @@ main > .card-style:last-child {
 }
 .price-card.layout-active {
   display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  justify-content: space-between;
   min-height: 200px;
   padding: 1.5rem 2rem;
   gap: 1.5rem;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: bottom right;
-}
-.price-column.active .price-card.layout-active {
   box-shadow: 0 0 25px rgba(255, 77, 0, 0.7);
+  align-items: flex-end;
 }
 .price-card.layout-active.player-bg {
-  background-image: url('public/assets/img/single.png');
-  background-position: bottom right;
+  background-image: url('../assets/img/single.png'), linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(10, 10, 15, 0.95));
+  background-position: bottom right, 0 0;
+  background-repeat: no-repeat, no-repeat;
+  background-size: contain, auto;
 }
 .price-card.layout-active.amiga-bg {
-  background-image: url('..assets/img/mao.png');
-  background-position: bottom left;
+  background-image: url('../assets/img/mao.png'), linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(10, 10, 15, 0.95));
+  background-position: bottom left, 0 0;
+  background-repeat: no-repeat, no-repeat;
+  background-size: contain, auto;
 }
 .price-card.layout-active.marmita-bg {
-  background-image: url('..public/assets/img/marmita.png');
-  background-position: bottom right;
+  background-image: url('../assets/img/marmita.png'), linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(10, 10, 15, 0.95));
+  background-position: bottom right, 0 0;
+  background-repeat: no-repeat, no-repeat;
+  background-size: contain, auto;
 }
 .price-card-details {
   flex: 1 1 auto;
-  padding: 0 0.5rem;
   display: flex;
   flex-direction: column;
   z-index: 1;
@@ -768,6 +769,19 @@ main > .card-style:last-child {
   border-radius: 4px;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
+  width: fit-content;
+}
+.price-column.active .price-card.layout-active .price-value {
+  background: transparent;
+  color: var(--color-primary);
+  -webkit-text-fill-color: var(--color-primary);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+}
+.price-column.active .price-card.layout-active .price-per-person-value {
+  background: transparent;
+  color: var(--color-primary);
+  -webkit-text-fill-color: var(--color-primary);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 .price-card-details.text-left {
   text-align: left;
@@ -784,16 +798,12 @@ main > .card-style:last-child {
   text-align: right;
 }
 .price-card.layout-active.player {
-  flex-direction: row;
   justify-content: flex-start;
 }
 .price-card.layout-active.amiga {
-  flex-direction: row-reverse;
   justify-content: flex-end;
-  background-position: bottom left;
 }
 .price-card.layout-active.marmita {
-  flex-direction: row;
   justify-content: flex-start;
 }
 @media (max-width: 900px) {
@@ -821,6 +831,7 @@ main > .card-style:last-child {
     background-image: none !important;
     align-items: center;
     padding: 1.5rem;
+    justify-content: center;
   }
   .price-card-details {
     text-align: center !important;
@@ -838,5 +849,19 @@ main > .card-style:last-child {
   .price-card.layout-active .price-card-details .price-features li {
     background-color: transparent;
     padding: 0;
+  }
+  .price-column.active .price-card.layout-active .price-value {
+    background: linear-gradient(to right, #ff0022, #ff4d00);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+  .price-column.active .price-card.layout-active .price-per-person-value {
+    background: linear-gradient(to right, #ff0022, #ff4d00);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
   }
 }
