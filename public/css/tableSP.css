@@ -539,6 +539,9 @@ main > .card-style:last-child {
   text-transform: uppercase;
   text-align: center;
   color: var(--color-text);
+  padding: 1rem;
+  background: linear-gradient(145deg, rgba(10, 10, 15, 0.9), rgba(10, 10, 15, 0.9));
+  border-radius: 12px;
 }
 .column-title .column-time {
   display: block;
@@ -549,6 +552,7 @@ main > .card-style:last-child {
 }
 .price-column.active .column-title {
   color: var(--color-primary);
+  box-shadow: 0 0 25px rgba(255, 77, 0, 0.7);
 }
 .prices-content {
   border-radius: 12px;
