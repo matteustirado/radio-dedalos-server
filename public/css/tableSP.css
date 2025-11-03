@@ -739,15 +739,15 @@ main > .card-style:last-child {
   box-shadow: 0 0 25px rgba(255, 77, 0, 0.7);
 }
 .price-card.layout-active.player-bg {
-  background-image: url('../img/single.png');
+  background-image: url('public/assets/img/single.png');
   background-position: bottom right;
 }
 .price-card.layout-active.amiga-bg {
-  background-image: url('../img/mao.png');
+  background-image: url('..assets/img/mao.png');
   background-position: bottom left;
 }
 .price-card.layout-active.marmita-bg {
-  background-image: url('../img/marmita.png');
+  background-image: url('..public/assets/img/marmita.png');
   background-position: bottom right;
 }
 .price-card-details {
