@@ -725,8 +725,8 @@ main > .card-style:last-child {
 }
 .price-card.layout-active {
   display: flex;
-  min-height: 200px;
-  padding: 1.5rem 2rem;
+  min-height: 245px;
+  padding: 0.7rem 1rem;
   gap: 1.5rem;
   background-size: contain;
   background-repeat: no-repeat;
