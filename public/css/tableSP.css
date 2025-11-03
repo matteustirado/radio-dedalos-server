@@ -553,7 +553,7 @@ main > .card-style:last-child {
 }
 .price-column.active .column-title {
   color: var(--color-text-muted);
-  background-color: linear-gradient(to right, #ff0022, #ff4d00);
+  background: linear-gradient(to right, #ff0022, #ff4d00);
 }
 .prices-content {
   border-radius: 12px;
