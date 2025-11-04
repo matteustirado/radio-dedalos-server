@@ -619,7 +619,6 @@ main > .card-style:last-child {
   -webkit-text-fill-color: transparent;
   margin: 0.5rem 0;
   position: relative;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 .price-details-new {
   display: flex;
@@ -667,7 +666,6 @@ main > .card-style:last-child {
   background-clip: text;
   color: transparent;
   line-height: 1.1;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 .price-total-label {
   font-size: 0.9rem;
