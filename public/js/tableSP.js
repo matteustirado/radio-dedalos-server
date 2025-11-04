@@ -67,6 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 let messageItem = featuresList.querySelector('.dynamic-message');
                 if (messageItem) messageItem.remove();
                 
+                if (key === 'player') {
+                    featuresList.innerHTML = '<li>Entrada individual</li>';
+                } else if (key === 'amiga') {
+                    featuresList.innerHTML = '<li>Entrada para duas pessoas</li>';
+                } else if (key === 'marmita') {
+                    featuresList.innerHTML = '<li>Entrada para três pessoas</li>';
+                }
+
                 if (dayData?.messages?.[key]?.message) {
                     const newListItem = document.createElement('li');
                     newListItem.className = 'dynamic-message';

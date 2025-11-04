@@ -796,7 +796,7 @@ main > .card-style:last-child {
 .price-column.active .price-card.layout-active .price-card-details .price-per-person-value,
 .price-column.active .price-card.layout-active .price-card-details .price-total-label,
 .price-column.active .price-card.layout-active .price-card-details .price-features li {
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9), 0 0 8px var(--color-primary);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9), 0 0 12px #ffc107;
   width: fit-content;
   padding: 0;
 }
