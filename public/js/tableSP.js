@@ -130,9 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentPeriod = getCurrentPeriod();
         
         document.querySelectorAll('.tab-button').forEach(b => b.classList.toggle('active', b.dataset.tab === currentDay));
-        
         updatePrices(currentDay);
-
         updateActivePeriod(currentPeriod);
     }
 
@@ -197,7 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
         e.target.classList.add('active');
         
         updatePrices(day);
-        
         fetchAndRenderSlides(day);
     }));
 
