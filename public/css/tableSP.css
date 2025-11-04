@@ -662,7 +662,7 @@ main > .card-style:last-child {
 .price-per-person-value {
   font-size: 2.2rem;
   font-weight: 700;
-  background: linear-gradient(to right, #ff4d00, #ffc107);
+  background: linear-gradient(to right, #c8941d, #ffc107);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
