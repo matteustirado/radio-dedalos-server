@@ -802,14 +802,12 @@ main > .card-style:last-child {
   background-clip: text;
   color: linear-gradient(to right, #ff4d00, #ffc107);
   -webkit-text-fill-color: transparent;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 .price-column.active .price-card.layout-active .price-per-person-value {
   -webkit-background-clip: text;
   background-clip: text;
   color: linear-gradient(to right, #ff4d00, #ffc107);
   -webkit-text-fill-color: transparent;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 .price-card-details.text-left {
   text-align: left;
