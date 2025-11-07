@@ -3,6 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const locationSlug = 'bh';
     const weekDays = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
 
+    const colManha = document.getElementById('column-manha');
+    const colTarde = document.getElementById('column-tarde');
+    const colNoite = document.getElementById('column-noite');
+    const allColumns = [colManha, colTarde, colNoite];
+
     function isHoliday(date) {
         if (!pricingData.feriados) return false;
         const d = String(date.getDate()).padStart(2, '0');
@@ -28,15 +33,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return (h >= 6 && h < 14) ? 'manha' : (h >= 14 && h < 20) ? 'tarde' : 'noite';
     }
 
-    function updatePrices(day, period) {
-        if (!pricingData.dias || !pricingData.dias[day] || !pricingData.dias[day].prices) {
-            document.querySelectorAll('.price-card .price').forEach(span => span.textContent = '--');
-            document.querySelectorAll('.dynamic-message').forEach(el => el.remove());
-            document.querySelectorAll('.price-per-person').forEach(el => el.textContent = '');
-            return;
-        }
-        const dayData = pricingData.dias[day];
-        const priceCards = document.querySelectorAll('.price-card');
+    function populatePriceColumn(columnElement, day, period) {
+        if (!columnElement) return;
+
+        const dayData = pricingData.dias ? pricingData.dias[day] : null;
+        
+        const priceCards = columnElement.querySelectorAll('.price-card');
+        
         priceCards.forEach(card => {
             const titleElement = card.querySelector('h3');
             const type = titleElement.textContent.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('mao amiga', 'amiga').replace(/\s+/g, '');
@@ -44,61 +47,95 @@ document.addEventListener('DOMContentLoaded', () => {
             if (type === 'player') key = 'player';
             else if (type === 'amiga') key = 'amiga';
             else if (type === 'marmita') key = 'marmita';
-
-            const priceValue = dayData.prices?.[key]?.[period];
+            
+            const priceValue = dayData?.prices?.[key]?.[period];
             const priceValueDiv = card.querySelector('.price-value');
-            const pricePerPersonDiv = card.querySelector('.price-per-person');
-
-            if (day === 'segunda' && (period === 'manha' || period === 'tarde') && priceValue === 0) {
-                priceValueDiv.textContent = 'FREE';
-                priceValueDiv.style.fontSize = '2rem';
-                 if (pricePerPersonDiv) {
-                    pricePerPersonDiv.textContent = '';
+            
+            if (key === 'player') {
+                if (priceValueDiv) {
+                    if (day === 'segunda' && (period === 'manha' || period === 'tarde') && priceValue === 0) {
+                        priceValueDiv.textContent = 'FREE';
+                        priceValueDiv.style.fontSize = '2rem';
+                    }
+                    else if (priceValue !== undefined && priceValue !== null) {
+                        priceValueDiv.innerHTML = `R$ <span class="price">${priceValue.toFixed(2).replace('.', ',')}</span>`;
+                        priceValueDiv.style.fontSize = '2.2rem';
+                    }
+                    else {
+                        priceValueDiv.innerHTML = `R$ <span class="price">--</span>`;
+                        priceValueDiv.style.fontSize = '2.2rem';
+                    }
                 }
-            }
-            else if (priceValue !== undefined && priceValue !== null) {
-                priceValueDiv.innerHTML = `R$ <span class="price">${priceValue.toFixed(2).replace('.', ',')}</span>`;
-                priceValueDiv.style.fontSize = '2.2rem';
-                 if (pricePerPersonDiv) {
-                    let perPersonPrice;
-                    if (key === 'amiga') {
-                        perPersonPrice = (priceValue / 2).toFixed(2).replace('.', ',');
-                        pricePerPersonDiv.textContent = `(R$ ${perPersonPrice} por pessoa)`;
-                    } else if (key === 'marmita') {
-                        perPersonPrice = (priceValue / 3).toFixed(2).replace('.', ',');
-                        pricePerPersonDiv.textContent = `(R$ ${perPersonPrice} por pessoa)`;
+            } else {
+                const perPersonSpan = card.querySelector('.price-per-person-dynamic');
+                const totalSpan = card.querySelector('.price-total-dynamic');
+
+                if (perPersonSpan && totalSpan) {
+                    if (priceValue) {
+                        const divisor = (key === 'amiga') ? 2 : 3;
+                        perPersonSpan.textContent = (priceValue / divisor).toFixed(2).replace('.', ',');
+                        totalSpan.textContent = priceValue.toFixed(2).replace('.', ',');
                     } else {
-                        pricePerPersonDiv.textContent = '';
+                        perPersonSpan.textContent = '--';
+                        totalSpan.textContent = '--';
                     }
                 }
             }
-            else {
-                priceValueDiv.innerHTML = `R$ <span class="price">--</span>`;
-                priceValueDiv.style.fontSize = '2.2rem';
-                if (pricePerPersonDiv) {
-                    pricePerPersonDiv.textContent = '';
-                }
-            }
-
+            
             const featuresList = card.querySelector('.price-features');
-            let messageItem = featuresList.querySelector('.dynamic-message');
-            if (messageItem) messageItem.remove();
-            if (dayData.messages?.[key]?.message) {
-                const newListItem = document.createElement('li');
-                newListItem.className = 'dynamic-message';
-                newListItem.textContent = dayData.messages[key].message;
-                featuresList.appendChild(newListItem);
+            
+            if (featuresList) { 
+                let messageItem = featuresList.querySelector('.dynamic-message');
+                if (messageItem) messageItem.remove(); 
+                
+                if (dayData?.messages?.[key]?.message) {
+                    const newListItem = document.createElement('li');
+                    newListItem.className = 'dynamic-message';
+                    newListItem.textContent = dayData.messages[key].message;
+                    featuresList.appendChild(newListItem);
+                }
             }
         });
     }
 
+    function updatePrices(day) {
+        populatePriceColumn(colManha, day, 'manha');
+        populatePriceColumn(colTarde, day, 'tarde');
+        populatePriceColumn(colNoite, day, 'noite');
+    }
+
+    function updateActivePeriod(period) {
+        allColumns.forEach(col => col.classList.remove('active', 'left-col', 'right-col'));
+
+        switch (period) {
+            case 'manha':
+                colNoite.classList.add('left-col');
+                colManha.classList.add('active');
+                colTarde.classList.add('right-col');
+                break;
+            case 'tarde':
+                colManha.classList.add('left-col');
+                colTarde.classList.add('active');
+                colNoite.classList.add('right-col');
+                break;
+            case 'noite':
+            default:
+                colTarde.classList.add('left-col');
+                colNoite.classList.add('active');
+                colManha.classList.add('right-col');
+                break;
+        }
+    }
+
     function updateInterface() {
         if (!pricingData || !pricingData.dias) return;
+        
         const currentDay = getCurrentDay();
         const currentPeriod = getCurrentPeriod(currentDay);
+        
         document.querySelectorAll('.tab-button').forEach(b => b.classList.toggle('active', b.dataset.tab === currentDay));
-        document.querySelectorAll('.period-option').forEach(o => o.classList.toggle('active', o.dataset.period === currentPeriod));
-        updatePrices(currentDay, currentPeriod);
+        updatePrices(currentDay);
+        updateActivePeriod(currentPeriod);
     }
 
     async function fetchAndRenderSlides(day) {
@@ -128,27 +165,21 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             pricingData = await apiFetch(`/prices/${locationSlug}`);
             updateInterface();
-        } catch (error) {
+        } catch (error)
+        {
             console.error("Erro ao buscar preços:", error);
             document.querySelector('.pricing-container').innerHTML = `<p style="color: white; text-align: center;">Não foi possível carregar os preços.</p>`;
         }
     }
-
+    
     function autoRefreshPeriod() {
         const day = getCurrentDay();
         const correctPeriod = getCurrentPeriod(day);
-        const activePeriodElement = document.querySelector('.period-option.active');
-        const activePeriod = activePeriodElement ? activePeriodElement.dataset.period : null;
+        const activePeriodId = `column-${correctPeriod}`;
+        const activeElement = document.querySelector('.price-column.active');
 
-        if (correctPeriod !== activePeriod) {
-            if(activePeriodElement) {
-                activePeriodElement.classList.remove('active');
-            }
-            const newActivePeriodElement = document.querySelector(`.period-option[data-period="${correctPeriod}"]`);
-            if (newActivePeriodElement) {
-                newActivePeriodElement.classList.add('active');
-            }
-            updatePrices(day, correctPeriod);
+        if (!activeElement || activeElement.id !== activePeriodId) {
+            updateActivePeriod(correctPeriod);
         }
     }
 
@@ -165,24 +196,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.tab-button').forEach(button => button.addEventListener('click', (e) => {
         const day = e.target.dataset.tab;
-        const period = document.querySelector('.period-option.active')?.dataset.period || getCurrentPeriod(day);
+        
         document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
         e.target.classList.add('active');
-        updatePrices(day, period);
+        
+        updatePrices(day);
         fetchAndRenderSlides(day);
-    }));
-
-    document.querySelectorAll('.period-option').forEach(option => option.addEventListener('click', (e) => {
-        const period = e.currentTarget.dataset.period;
-        const day = document.querySelector('.tab-button.active')?.dataset.tab || getCurrentDay();
-        document.querySelectorAll('.period-option').forEach(opt => opt.classList.remove('active'));
-        e.currentTarget.classList.add('active');
-        updatePrices(day, period);
     }));
 
     fetchAndRenderPrices();
     fetchAndRenderSlides(getCurrentDay());
-
+    
     setInterval(autoRefreshPeriod, 60000);
     setInterval(autoRefreshDay, 60000);
 

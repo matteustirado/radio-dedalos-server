@@ -39,37 +39,208 @@
                     <button class="tab-button" data-tab="feriados">FERIADOS</button>
                 </div>
 
-                <div class="period-options">
-                    <div class="period-option" data-period="manha" data-time="06h às 13h59">Manhã/Tarde</div>
-                    <div class="period-option" data-period="tarde" data-time="14h às 19h59">Tarde/Noite</div>
-                    <div class="period-option" data-period="noite" data-time="20h às 05h59">Noite/Madrugada</div>
-                </div>
-
                 <div class="pricing-content">
-                    <div class="price-cards">
-                        <div class="price-card">
-                            <h3>Player</h3>
-                            <div class="price-value">R$ <span class="price">--</span></div>
-                            <ul class="price-features">
-                                <li>Entrada individual</li>
-                            </ul>
+                    
+                    <div class="pricing-columns-container">
+                        
+                        <div id="column-manha" class="price-column">
+                            <h3 class="column-title">MANHÃ/TARDE <span class="column-time">06H ÀS 13H59</span></h3>
+                            
+                            <div class="inactive-view">
+                                <div class="price-card">
+                                    <h3>Player</h3>
+                                    <div class="price-value">R$ <span class="price">--</span></div>
+                                </div>
+                                <div class="price-card">
+                                    <h3>Mão Amiga</h3>
+                                    <div class="price-details-new">
+                                        <span class="price-per-person-label">cada um paga</span>
+                                        <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                        <span class="price-total-label">valor total da dupla R$ <span class="price-total-dynamic">--</span></span>
+                                    </div>
+                                </div>
+                                <div class="price-card">
+                                    <h3>Marmita</h3>
+                                    <div class="price-details-new">
+                                        <span class="price-per-person-label">cada um paga</span>
+                                        <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                        <span class="price-total-label">valor total do trio R$ <span class="price-total-dynamic">--</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="active-view">
+                                <div class="price-card layout-active player">
+                                    <video src="assets/img/single.mp4" class="card-background-video" autoplay loop muted playsinline></video>
+                                    <div class="price-card-details text-left">
+                                        <h3>Player</h3>
+                                        <div class="price-value">R$ <span class="price">--</span></div>
+                                        <ul class="price-features">
+                                            <li class="static-feature">Entrada individual</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="price-card layout-active amiga">
+                                    <video src="assets/img/mao.mp4" class="card-background-video" autoplay loop muted playsinline></video>
+                                    <div class="price-card-details text-right">
+                                        <h3>Mão Amiga</h3>
+                                        <div class="price-details-new">
+                                            <span class="price-per-person-label">cada um paga</span>
+                                            <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                            <span class="price-total-label">valor total da dupla R$ <span class="price-total-dynamic">--</span></span>
+                                        </div>
+                                        <ul class="price-features">
+                                            </ul>
+                                    </div>
+                                </div>
+                                <div class="price-card layout-active marmita">
+                                    <video src="assets/img/marmita.mp4" class="card-background-video" autoplay loop muted playsinline></video>
+                                    <div class="price-card-details text-left">
+                                        <h3>Marmita</h3>
+                                        <div class="price-details-new">
+                                            <span class="price-per-person-label">cada um paga</span>
+                                            <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                            <span class="price-total-label">valor total do trio R$ <span class="price-total-dynamic">--</span></span>
+                                        </div>
+                                        <ul class="price-features">
+                                             </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="price-card">
-                            <h3>Mão Amiga</h3>
-                            <div class="price-value">R$ <span class="price">--</span></div>
-                            <div class="price-per-person"></div>
-                            <ul class="price-features">
-                                <li>Entrada para duas pessoas</li>
-                            </ul>
+
+                        <div id="column-tarde" class="price-column">
+                            <h3 class="column-title">TARDE/NOITE <span class="column-time">14H ÀS 19H59</span></h3>
+
+                            <div class="inactive-view">
+                                <div class="price-card">
+                                    <h3>Player</h3>
+                                    <div class="price-value">R$ <span class="price">--</span></div>
+                                </div>
+                                <div class="price-card">
+                                    <h3>Mão Amiga</h3>
+                                    <div class="price-details-new">
+                                        <span class="price-per-person-label">cada um paga</span>
+                                        <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                        <span class="price-total-label">valor total da dupla R$ <span class="price-total-dynamic">--</span></span>
+                                    </div>
+                                </div>
+                                <div class="price-card">
+                                    <h3>Marmita</h3>
+                                    <div class="price-details-new">
+                                        <span class="price-per-person-label">cada um paga</span>
+                                        <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                        <span class="price-total-label">valor total do trio R$ <span class="price-total-dynamic">--</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="active-view">
+                                <div class="price-card layout-active player">
+                                    <video src="assets/img/single.mp4" class="card-background-video" autoplay loop muted playsinline></video>
+                                    <div class="price-card-details text-left">
+                                        <h3>Player</h3>
+                                        <div class="price-value">R$ <span class="price">--</span></div>
+                                        <ul class="price-features">
+                                            <li class="static-feature">Entrada individual</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="price-card layout-active amiga">
+                                    <video src="assets/img/mao.mp4" class="card-background-video" autoplay loop muted playsinline></video>
+                                    <div class="price-card-details text-right">
+                                        <h3>Mão Amiga</h3>
+                                        <div class="price-details-new">
+                                            <span class="price-per-person-label">cada um paga</span>
+                                            <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                            <span class="price-total-label">valor total da dupla R$ <span class="price-total-dynamic">--</span></span>
+                                        </div>
+                                        <ul class="price-features">
+                                            </ul>
+                                    </div>
+                                </div>
+                                <div class="price-card layout-active marmita">
+                                    <video src="assets/img/marmita.mp4" class="card-background-video" autoplay loop muted playsinline></video>
+                                    <div class="price-card-details text-left">
+                                        <h3>Marmita</h3>
+                                        <div class="price-details-new">
+                                            <span class="price-per-person-label">cada um paga</span>
+                                            <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                            <span class="price-total-label">valor total do trio R$ <span class="price-total-dynamic">--</span></span>
+                                        </div>
+                                        <ul class="price-features">
+                                            </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="price-card">
-                            <h3>Marmita</h3>
-                            <div class="price-value">R$ <span class="price">--</span></div>
-                            <div class="price-per-person"></div>
-                            <ul class="price-features">
-                                <li>Entrada para três pessoas</li>
-                            </ul>
+
+                        <div id="column-noite" class="price-column">
+                            <h3 class="column-title">NOITE/MADRUGADA <span class="column-time">20H ÀS 05H59</span></h3>
+                            
+                            <div class="inactive-view">
+                                <div class="price-card">
+                                    <h3>Player</h3>
+                                    <div class="price-value">R$ <span class="price">--</span></div>
+                                </div>
+                                <div class="price-card">
+                                    <h3>Mão Amiga</h3>
+                                    <div class="price-details-new">
+                                        <span class="price-per-person-label">cada um paga</span>
+                                        <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                        <span class="price-total-label">valor total da dupla R$ <span class="price-total-dynamic">--</span></span>
+                                    </div>
+                                </div>
+                                <div class="price-card">
+                                    <h3>Marmita</h3>
+                                    <div class="price-details-new">
+                                        <span class="price-per-person-label">cada um paga</span>
+                                        <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                        <span class="price-total-label">valor total do trio R$ <span class="price-total-dynamic">--</span></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="active-view">
+                                <div class="price-card layout-active player">
+                                    <video src="assets/img/single.mp4" class="card-background-video" autoplay loop muted playsinline></video>
+                                    <div class="price-card-details text-left">
+                                        <h3>Player</h3>
+                                        <div class="price-value">R$ <span class="price">--</span></div>
+                                        <ul class="price-features">
+                                            <li class="static-feature">Entrada individual</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="price-card layout-active amiga">
+                                    <video src="assets/img/mao.mp4" class="card-background-video" autoplay loop muted playsinline></video>
+                                    <div class="price-card-details text-right">
+                                        <h3>Mão Amiga</h3>
+                                        <div class="price-details-new">
+                                            <span class="price-per-person-label">cada um paga</span>
+                                            <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                            <span class="price-total-label">valor total da dupla R$ <span class="price-total-dynamic">--</span></span>
+                                        </div>
+                                        <ul class="price-features">
+                                            </ul>
+                                    </div>
+                                </div>
+                                <div class="price-card layout-active marmita">
+                                    <video src="assets/img/marmita.mp4" class="card-background-video" autoplay loop muted playsinline></video>
+                                    <div class="price-card-details text-left">
+                                        <h3>Marmita</h3>
+                                        <div class="price-details-new">
+                                            <span class="price-per-person-label">cada um paga</span>
+                                            <div class="price-per-person-value">R$ <span class="price-per-person-dynamic">--</span></div>
+                                            <span class="price-total-label">valor total do trio R$ <span class="price-total-dynamic">--</span></span>
+                                        </div>
+                                        <ul class="price-features">
+                                            </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                     <div class="price-notes">
                         <p>* Meia noite de dom para seg vira a tabela de segunda</p>
@@ -78,12 +249,13 @@
                     </div>
                 </div>
             </div>
-        </section>
+            
+            </section>
     </main>
 
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/api.js"></script>
     <script src="js/tableBH.js"></script>
-</body>
+    </body>
 </html>
