@@ -399,8 +399,7 @@ main > .card-style:last-child {
 }
 .table-page-container {
   max-width: 1100px;
-  margin: 1rem;
-  padding: 1.5rem;
+  padding: 1rem;
   box-sizing: border-box;
   position: relative;
   z-index: 1;
