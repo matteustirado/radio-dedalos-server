@@ -86,7 +86,7 @@ button {
   cursor: pointer;
 }
 :root {
-  --color-primary: #ff4d00;
+  --color-primary: #ff8c00;
   --color-secondary: #ffcc00;
   --color-success: #22c55e;
   --color-danger: #ef4444;
@@ -400,63 +400,31 @@ main > .card-style:last-child {
   border-color: var(--color-danger);
   box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.4);
 }
-.pricing-page-wrapper {
-  padding: 20px;
+.table-page-container {
+  max-width: 1100px;
+  margin: 1rem;
+  padding: 3rem;
   box-sizing: border-box;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  background-color: var(--bg-panel);
+  backdrop-filter: blur(10px);
+  border-radius: 0.75rem;
 }
-.pricing-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 2rem 2rem 0 2rem;
-}
-.section-title-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-.pricing-page-title {
-  max-width: 100%;
+.table-page-title {
   font-size: 3rem;
   font-weight: 700;
   text-align: center;
-  position: relative;
+  margin-bottom: 2rem;
   background: linear-gradient(135deg, #ff0022, #ff4d00, #ffcc00);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-.pricing-content {
-  border-radius: 12px;
-  padding: 2rem 0 0 0;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  width: 100%;
-}
-.pricing-section::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image:
-    linear-gradient(rgba(245, 166, 35, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(245, 166, 35, 0.03) 1px, transparent 1px);
-  background-size: 30px 30px;
-  opacity: 0.3;
-  z-index: -2;
 }
 .pricing-container {
-  z-index: 2;
-  margin: 0 auto;
-  padding: 0;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 .pricing-tabs {
   display: flex;
@@ -469,38 +437,67 @@ main > .card-style:last-child {
   -webkit-backdrop-filter: blur(8px);
   flex-wrap: wrap;
 }
-.pricing-tabs .tab-button {
-  padding: 0.6rem 1rem;
-  font-size: 0.9rem;
+.tab-button {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
   font-weight: 600;
   text-transform: uppercase;
   cursor: pointer;
   border-radius: 7px;
   margin: 0.2rem;
   transition: all 0.3s ease;
-  position: relative;
   color: rgba(255, 255, 255, 0.7);
   background: none;
   border: none;
   letter-spacing: 1px;
 }
-.pricing-tabs .tab-button::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 2px;
-  transition: width 0.3s ease;
+.tab-button:hover {
+  color: #fff;
 }
 .tab-button.active {
   background: linear-gradient(to right, #ff0022, #ff4d00);
   color: #ffffff;
+  box-shadow: 0 4px 15px rgba(234, 88, 12, 0.2);
 }
-.pricing-tabs .tab-button.active::after {
-  width: 70%;
-  background: linear-gradient(to right, #ff0022, #ff4d00);
+.period-options {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 0 auto;
+  max-width: 800px;
+}
+.period-option {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  background: rgba(10, 10, 15, 0.30);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  text-align: center;
+  text-transform: uppercase;
+}
+.period-option:hover {
+  color: #ffffff;
+  background-color: rgba(245, 166, 35, 0.1);
+}
+.period-option::after {
+  content: attr(data-time);
+  display: block;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 0.2rem;
+  font-weight: 400;
+  text-transform: none;
+}
+.period-option.active {
+  background: linear-gradient(to right, #c2410c, #ea580c);
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(234, 88, 12, 0.2);
+}
+.period-option.active::after {
+  color: rgba(255, 255, 255, 0.8);
 }
 .pricing-columns-container {
   display: flex;
@@ -529,6 +526,7 @@ main > .card-style:last-child {
   transform: scale(1);
   opacity: 1;
   border-radius: 16px;
+  gap: 1rem;
 }
 .price-column.right-col {
   order: 2;
@@ -591,7 +589,7 @@ main > .card-style:last-child {
   border-color: rgba(245, 166, 35, 0.05);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   min-height: 0;
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1rem;
 }
 .price-card:hover {
   transform: translateY(-8px) scale(1.03);
@@ -630,26 +628,26 @@ main > .card-style:last-child {
   margin: 0.5rem 0;
 }
 .price-column:not(.active) .price-card h3 {
-  font-size: 1.2rem;
-  margin: 0.25rem;
+  font-size: 1.0rem;
+  margin: 0.1rem;
 }
 .price-column:not(.active) .price-card .price-value {
-  font-size: 1.8rem;
-  margin: 0.25rem 0;
+  font-size: 1.5rem;
+  margin: 0.1rem 0;
 }
 .price-column:not(.active) .price-card .price-details-new {
-   min-height: 3.5rem;
-   margin: 0.25rem 0;
+   min-height: 3rem;
+   margin: 0.1rem 0;
 }
 .price-column:not(.active) .price-card .price-per-person-label {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 .price-column:not(.active) .price-card .price-per-person-value {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
 }
 .price-column:not(.active) .price-card .price-total-label {
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  margin-top: 0.1rem;
 }
 .price-per-person-label {
   font-size: 1.1rem;
@@ -703,35 +701,6 @@ main > .card-style:last-child {
   line-height: 1.5;
   margin: 0.5rem 0;
 }
-.slider-container {
-  width: 100%;
-  max-width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-  border-radius: 10px;
-}
-.slider {
-  width: 100%;
-  position: relative;
-}
-.slider img {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  transition: opacity 0.8s ease-in-out;
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  border-radius: 10px;
-}
-.slider img.active {
-  position: relative;
-  opacity: 1;
-}
 .inactive-view {
   display: flex;
   flex-direction: column;
@@ -763,23 +732,21 @@ main > .card-style:last-child {
   box-shadow: 0 0 25px rgba(255, 77, 0, 0.7);
   align-items: flex-end;
 }
-.price-card.layout-active.player-bg {
-  background-image: url('../assets/img/single.png'), linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(10, 10, 15, 0.95));
-  background-position: bottom right, 0 0;
-  background-repeat: no-repeat, no-repeat;
-  background-size: contain, auto;
+.card-background-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  opacity: 0.4;
+  border-radius: 16px;
+  object-position: bottom right;
 }
-.price-card.layout-active.amiga-bg {
-  background-image: url('../assets/img/mao.png'), linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(10, 10, 15, 0.95));
-  background-position: bottom left, 0 0;
-  background-repeat: no-repeat, no-repeat;
-  background-size: contain, auto;
-}
-.price-card.layout-active.marmita-bg {
-  background-image: url('../assets/img/marmita.png'), linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(10, 10, 15, 0.95));
-  background-position: bottom right, 0 0;
-  background-repeat: no-repeat, no-repeat;
-  background-size: contain, auto;
+.price-card.layout-active.amiga .card-background-video {
+  object-position: bottom left;
 }
 .price-card-details {
   flex: 1 1 auto;
@@ -804,7 +771,6 @@ main > .card-style:last-child {
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 .price-card-details.text-left {
   text-align: left;
@@ -829,22 +795,6 @@ main > .card-style:last-child {
 .price-card.layout-active.marmita {
   justify-content: flex-start;
 }
-.card-background-video {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: translate(-50%, -50%);
-  z-index: 0;
-  opacity: 0.4;
-  border-radius: 16px;
-  object-position: bottom right;
-}
-.price-card.layout-active.amiga .card-background-video {
-  object-position: bottom left;
-}
 @media (max-width: 900px) {
   .pricing-columns-container {
     flex-direction: column;
@@ -867,7 +817,6 @@ main > .card-style:last-child {
   }
   .price-card.layout-active {
     flex-direction: column !important;
-    background-image: none !important;
     align-items: center;
     padding: 1.5rem;
     justify-content: center;
