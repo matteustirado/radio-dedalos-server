@@ -385,9 +385,6 @@ main > .card-style:last-child {
   opacity: 1;
 }
 @media (min-width: 768px) {
-  body {
-    padding: 2rem;
-  }
   #app-container {
     padding: 2rem;
   }
@@ -403,11 +400,10 @@ main > .card-style:last-child {
 .table-page-container {
   max-width: 1100px;
   margin: 1rem;
-  padding: 3rem;
+  padding: 1.5rem;
   box-sizing: border-box;
   position: relative;
   z-index: 1;
-  background-color: var(--bg-panel);
   backdrop-filter: blur(10px);
   border-radius: 0.75rem;
 }
@@ -569,7 +565,8 @@ main > .card-style:last-child {
 }
 .price-card {
   width: 100%;
-  max-width: 900px;
+  max-width: 700px;
+  max-height: 180px;
   height: auto;
   background-image: linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(10, 10, 15, 0.95));
   border-radius: 16px;
@@ -602,14 +599,14 @@ main > .card-style:last-child {
     0 0 40px rgba(247, 107, 28, 0.1);
 }
 .price-card h3 {
-  font-size: 1.4rem;
+  font-size: 1rem;
   margin: 0.5rem;
   color: #ffffff;
   position: relative;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 .price-value {
-  font-size: 2.2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   background: linear-gradient(to right, #ff0022, var(--color-primary));
   -webkit-background-clip: text;
@@ -643,14 +640,14 @@ main > .card-style:last-child {
   font-size: 0.8rem;
 }
 .price-column:not(.active) .price-card .price-per-person-value {
-  font-size: 1.5rem;
+  font-size: 1rem;
 }
 .price-column:not(.active) .price-card .price-total-label {
   font-size: 0.7rem;
   margin-top: 0.1rem;
 }
 .price-per-person-label {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   text-transform: uppercase;
   color: var(--color-primary);
@@ -658,7 +655,7 @@ main > .card-style:last-child {
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 .price-per-person-value {
-  font-size: 2.2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   background: linear-gradient(to right, #ff0022, var(--color-primary));
   -webkit-background-clip: text;
@@ -680,9 +677,8 @@ main > .card-style:last-child {
   flex-grow: 1;
 }
 .price-features li {
-  margin: 0.5rem;
   color: #b3b3b3;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
 .inactive-view .price-features {
