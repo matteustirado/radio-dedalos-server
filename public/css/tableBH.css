@@ -518,6 +518,7 @@ main > .card-style:last-child {
 .price-column.active {
   order: 1;
   max-width: 800px;
+  min-width: 350px;
   transform: scale(1);
   opacity: 1;
   border-radius: 16px;
@@ -566,6 +567,7 @@ main > .card-style:last-child {
   width: 100%;
   max-width: 700px;
   max-height: 180px;
+  min-width: 250px;
   background-image: linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(10, 10, 15, 0.95));
   border-radius: 16px;
   padding: 1.5rem;
