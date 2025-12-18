@@ -1,4 +1,6 @@
 const GameConfigModel = require('../models/gameConfigModel');
+const GameVoteModel = require('../models/gameVoteModel'); // [Adicionado] Importar modelo de votos
+const socketService = require('../../services/socketService'); // [Adicionado] Importar serviço de socket
 const path = require('path');
 const fs = require('fs');
 
@@ -97,11 +99,25 @@ class GameConfigController {
                   throw new Error("Dados de opções inválidos recebidos.");
              }
 
-             console.log('[GameConfigController] Calling saveConfig with imageFilenames map:', JSON.stringify(imageFilenames));
+            console.log('[GameConfigController] Calling saveConfig with imageFilenames map:', JSON.stringify(imageFilenames));
             await GameConfigModel.saveConfig(unit, configData, imageFilenames);
 
-             console.log('[GameConfigController] Config saved successfully.');
-            response.status(200).json({ message: 'Configuração atualizada com sucesso.' });
+            // ---------------------------------------------------------------------
+            // [NOVO] Lógica para zerar os votos ao atualizar a configuração
+            // ---------------------------------------------------------------------
+            console.log(`[GameConfigController] Resetting votes for unit ${unit} due to config update.`);
+            await GameVoteModel.clearVotes(unit);
+
+            // Atualiza o placar em tempo real para todos os clientes conectados
+            const io = socketService.getIo();
+            if (io) {
+                io.emit('placardUpdate', { unit: unit, votes: {} });
+                console.log(`[GameConfigController] Placard update (reset) emitted for ${unit}.`);
+            }
+            // ---------------------------------------------------------------------
+
+            console.log('[GameConfigController] Config saved successfully.');
+            response.status(200).json({ message: 'Configuração atualizada e votação reiniciada com sucesso.' });
 
         } catch (error) {
             console.error("Erro ao atualizar configuração do game:", error);
