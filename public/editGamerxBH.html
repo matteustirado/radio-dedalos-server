@@ -72,6 +72,29 @@
                 <div id="options-container" class="options-grid">
                     </div>
 
+                <div class="card-style" style="margin-top: 2rem; border-color: var(--color-info);">
+                    <div class="section-title">
+                        <i class="fas fa-flask icon"></i>
+                        Teste de Votação (Simulação)
+                    </div>
+                    <p style="color: var(--color-text-muted); margin-bottom: 1rem;">
+                        Envie um voto fictício para ver o placar reagir instantaneamente.
+                        <br><small>Nota: Ao salvar a configuração abaixo, esses votos serão zerados.</small>
+                    </p>
+                    
+                    <div class="form-group">
+                        <label for="test-vote-select">Escolha a opção para votar:</label>
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <select id="test-vote-select" class="form-input" style="flex: 1; min-width: 200px;">
+                                <option value="" disabled selected>Carregando opções...</option>
+                            </select>
+                            
+                            <button type="button" id="test-vote-btn" class="button primary-button" style="background-color: var(--color-info);">
+                                <i class="fas fa-paper-plane"></i> Enviar Voto
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 <div class="form-actions sticky-footer">
                     <button type="button" class="button ghost-button" onclick="window.location.href='/index.html'">
                         Cancelar
@@ -82,31 +105,7 @@
                     </button>
                 </div>
             </form>
-
-            <div class="card-style" style="margin-top: 2rem; border-color: var(--color-info);">
-                <div class="section-title">
-                    <i class="fas fa-flask icon"></i>
-                    Teste de Votação (Simulação)
-                </div>
-                <p style="color: var(--color-text-muted); margin-bottom: 1rem;">
-                    Envie um voto fictício para ver o placar reagir instantaneamente.
-                    <br><small>Nota: Ao salvar a configuração acima, esses votos serão zerados.</small>
-                </p>
-                
-                <div class="form-group">
-                    <label for="test-vote-select">Escolha a opção para votar:</label>
-                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                        <select id="test-vote-select" class="form-input" style="flex: 1; min-width: 200px;">
-                            <option value="" disabled selected>Carregando opções...</option>
-                        </select>
-                        
-                        <button id="test-vote-btn" class="button primary-button" style="background-color: var(--color-info);">
-                            <i class="fas fa-paper-plane"></i> Enviar Voto
-                        </button>
-                    </div>
-                </div>
-            </div>
-            </main>
+        </main>
 
         <footer class="site-footer">
             <p>&copy; 2025 Rádio Dédalos - <a href="#" class="devsyon-link">DEVsyon</a></p>
