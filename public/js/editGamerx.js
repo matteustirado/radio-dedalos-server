@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (path.includes('editgamerxbh.html')) {
             return 'bh';
         }
-        
         return 'sp';
     };
 
@@ -26,6 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorMessage = document.getElementById('error-message');
     const errorText = document.getElementById('error-text');
     const logoutBtn = document.getElementById('logout-btn');
+
+    // [NOVO] Seletores para a área de teste
+    const testVoteSelect = document.getElementById('test-vote-select');
+    const testVoteBtn = document.getElementById('test-vote-btn');
 
     const showMessage = (element, textElement, message, type = 'success') => {
         textElement.textContent = message;
@@ -177,12 +180,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // [NOVO] Função para atualizar o dropdown de teste
+    const updateTestDropdown = (options) => {
+        if (!testVoteSelect) return;
+        
+        testVoteSelect.innerHTML = '';
+        if (options && options.length > 0) {
+            options.forEach((opt, index) => {
+                const optionEl = document.createElement('option');
+                optionEl.value = opt.label;
+                optionEl.textContent = `${index + 1}. ${opt.label}`;
+                testVoteSelect.appendChild(optionEl);
+            });
+        } else {
+            const emptyEl = document.createElement('option');
+            emptyEl.textContent = "Nenhuma opção configurada";
+            testVoteSelect.appendChild(emptyEl);
+        }
+    };
+
      const loadConfig = async () => {
         try {
             const config = await apiFetch(`/game-config/${unit}`);
             if (config && config.options) {
                 optionsCountInput.value = config.options.length;
                 renderOptions(config.options.length, config.options);
+                
+                // [NOVO] Atualiza o dropdown quando carregar a config
+                updateTestDropdown(config.options);
 
                 const orientationRadio = document.querySelector(`input[name="placard-orientation"][value="${config.placard_orientation}"]`);
                 if (orientationRadio) {
@@ -190,6 +215,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } else {
                  optionsContainer.innerHTML = '';
+                 // [NOVO] Limpa o dropdown se não tiver config
+                 updateTestDropdown([]);
             }
         } catch (error) {
             const notFoundMessage = 'Configuração não encontrada para esta unidade.';
@@ -197,6 +224,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 showMessage(errorMessage, errorText, `Erro ao carregar configuração: ${error.message}`, 'danger');
             }
              optionsContainer.innerHTML = '';
+             // [NOVO] Limpa o dropdown em caso de erro
+             updateTestDropdown([]);
         }
     };
 
@@ -312,6 +341,43 @@ document.addEventListener('DOMContentLoaded', () => {
             saveBtn.disabled = false;
         }
     });
+
+    // [NOVO] Listener do Botão de Teste
+    if (testVoteBtn) {
+        testVoteBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            const selectedLabel = testVoteSelect.value;
+            
+            if (!selectedLabel) {
+                showMessage(errorMessage, errorText, 'Selecione uma opção para testar.', 'danger');
+                return;
+            }
+
+            const originalText = testVoteBtn.innerHTML;
+            testVoteBtn.disabled = true;
+            testVoteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+
+            try {
+                // Envia o voto para a API (mesma rota que as pulseiras)
+                await apiFetch(`/game/vote/${unit}`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        // Gera um ID aleatório para cada teste contar como um voto único se necessário
+                        pulseiraId: 'TESTE_ADMIN_' + Math.floor(Math.random() * 1000), 
+                        optionLabel: selectedLabel
+                    })
+                });
+
+                showMessage(successMessage, successText, `Voto de teste para "${selectedLabel}" enviado!`);
+            } catch (error) {
+                showMessage(errorMessage, errorText, `Erro no teste: ${error.message}`, 'danger');
+            } finally {
+                testVoteBtn.disabled = false;
+                testVoteBtn.innerHTML = originalText;
+            }
+        });
+    }
 
     logoutBtn.addEventListener('click', logout);
 
