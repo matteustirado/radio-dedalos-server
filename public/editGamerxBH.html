@@ -18,41 +18,42 @@
         <div class="multichrome-light"></div>
     </div>
 
-    <div id="app-container">
+    <main id="app-container" class="gradient-border">
+        
         <header id="panel-header">
-            <div class="header-title">
-                <h1><i class="fas fa-gamepad icon"></i> Configuração Gamer (BH)</h1>
-                <p class="subtitle">Gerencie as opções de votação do placar BH</p>
+            <div>
+                <h1 class="header-title gradient-text"><i class="fas fa-gamepad"></i> Configuração Gamer (BH)</h1>
+                <p class="header-subtitle">Gerencie as opções de votação e o placar da unidade BH</p>
             </div>
-            <button id="logout-btn" class="button ghost-button small">
-                <i class="fas fa-sign-out-alt"></i> Sair
-            </button>
+            <div class="header-buttons">
+                <button id="logout-btn" class="button ghost-button small">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
         </header>
 
-        <main>
-            <div id="success-message" class="alert success-alert hidden">
-                <i class="fas fa-check-circle"></i>
-                <span id="success-text"></span>
-            </div>
-            <div id="error-message" class="alert danger-alert hidden">
-                <i class="fas fa-exclamation-circle"></i>
-                <span id="error-text"></span>
+        <div id="success-message" class="alert success-alert hidden">
+            <i class="fas fa-check-circle"></i> <span id="success-text"></span>
+        </div>
+        <div id="error-message" class="alert danger-alert hidden">
+            <i class="fas fa-exclamation-circle"></i> <span id="error-text"></span>
+        </div>
+
+        <section class="card-style">
+            <div class="section-title">
+                <i class="fas fa-sliders-h icon"></i>
+                Configurações do Jogo
             </div>
 
             <form id="game-config-form">
-                <div class="card-style">
-                    <div class="section-title">
-                        <i class="fas fa-sliders-h icon"></i>
-                        Layout e Estrutura
-                    </div>
-
+                <div class="form-grid">
                     <div class="form-group">
                         <label>Orientação do Placar</label>
                         <div class="radio-group">
                             <label class="radio-label">
                                 <input type="radio" name="placard-orientation" value="horizontal" checked>
                                 <span class="radio-custom"></span>
-                                Horizontal (Barra de Progresso)
+                                Horizontal (Barra)
                             </label>
                             <label class="radio-label">
                                 <input type="radio" name="placard-orientation" value="vertical">
@@ -65,37 +66,15 @@
                     <div class="form-group">
                         <label for="options-count">Número de Opções (1-9)</label>
                         <input type="number" id="options-count" class="form-input" min="1" max="9" value="0">
-                        <small class="form-hint">Define quantas opções aparecerão para votação.</small>
+                        <small class="form-hint">Quantidade de opções disponíveis para votação.</small>
                     </div>
                 </div>
 
-                <div id="options-container" class="options-grid">
-                    </div>
+                <hr class="section-divider" style="margin: 1.5rem 0; border-color: var(--border-color);">
 
-                <div class="card-style" style="margin-top: 2rem; border-color: var(--color-info);">
-                    <div class="section-title">
-                        <i class="fas fa-flask icon"></i>
-                        Teste de Votação (Simulação)
-                    </div>
-                    <p style="color: var(--color-text-muted); margin-bottom: 1rem;">
-                        Envie um voto fictício para ver o placar reagir instantaneamente.
-                        <br><small>Nota: Ao salvar a configuração abaixo, esses votos serão zerados.</small>
-                    </p>
-                    
-                    <div class="form-group">
-                        <label for="test-vote-select">Escolha a opção para votar:</label>
-                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                            <select id="test-vote-select" class="form-input" style="flex: 1; min-width: 200px;">
-                                <option value="" disabled selected>Carregando opções...</option>
-                            </select>
-                            
-                            <button type="button" id="test-vote-btn" class="button primary-button" style="background-color: var(--color-info);">
-                                <i class="fas fa-paper-plane"></i> Enviar Voto
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-actions sticky-footer">
+                <div id="options-container" class="options-grid"></div>
+
+                <div class="form-actions" style="margin-top: 2rem;">
                     <button type="button" class="button ghost-button" onclick="window.location.href='/index.html'">
                         Cancelar
                     </button>
@@ -105,12 +84,38 @@
                     </button>
                 </div>
             </form>
-        </main>
+        </section>
 
-        <footer class="site-footer">
-            <p>&copy; 2025 Rádio Dédalos - <a href="#" class="devsyon-link">DEVsyon</a></p>
-        </footer>
-    </div>
+        <section class="card-style" style="margin-top: 1.5rem; border: 1px solid var(--color-info);">
+            <div class="section-title" style="color: var(--color-text);">
+                <i class="fas fa-flask icon" style="color: var(--color-info);"></i>
+                Simulador de Votação
+            </div>
+            
+            <p style="color: var(--color-text-muted); margin-bottom: 1.5rem;">
+                Envie votos fictícios para testar a animação do placar em tempo real.
+                <br><small><i class="fas fa-info-circle"></i> Dica: Salve a configuração acima para zerar o placar após os testes.</small>
+            </p>
+            
+            <div class="form-group">
+                <label for="test-vote-select">Opção para votar:</label>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <select id="test-vote-select" class="form-input" style="flex: 1; min-width: 200px;">
+                        <option value="" disabled selected>Carregando opções...</option>
+                    </select>
+                    
+                    <button type="button" id="test-vote-btn" class="button primary-button" style="background-color: var(--color-info);">
+                        <i class="fas fa-paper-plane"></i> Enviar Voto Teste
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2025 Rádio Dédalos - <a href="#" class="devsyon-link">DEVsyon</a></p>
+    </footer>
 
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
