@@ -629,7 +629,7 @@ body {
         gap: 2rem;
     }
     .vertical-layout .placard-option { width: 100%; height: 300px; }
-    .vertical-layout .placard-bar-container { width: 100%; max-width: 150px; height: 100%; }
+    .vertical-layout .placard-bar-container { width: 100%; max-width: 200px; height: 100%; }
     .vertical-layout .placard-percentage { font-size: 2.5rem; margin-bottom: 2rem; }
     .vertical-layout .placard-visual { width: 60px; height: 60px; }
     .vertical-layout .placard-emoji { font-size: 3rem; }
