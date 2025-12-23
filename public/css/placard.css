@@ -4,7 +4,7 @@ body {
     align-items: center;
     min-height: 100vh;
     overflow: hidden;
-    background-color: #050505; /* Fundo mais escuro para o Neon */
+    background-color: #050505;
 }
 
 #placard-main-wrapper {
@@ -108,27 +108,31 @@ body {
     background-color: rgba(0, 0, 0, 0.3);
 }
 .vertical-layout .placard-bar-track { display: none; }
+
 .vertical-layout .placard-bar {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 0%;
-    transition: height 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    /* ALTERAÇÃO: Altura sempre 100% para preencher o fundo */
+    height: 100% !important; 
+    transition: none; /* Remove transição de altura pois é fixa */
     background-color: var(--bar-color);
-    box-shadow: 0 0 25px var(--bar-color); /* Efeito Neon na Barra */
+    box-shadow: 0 0 25px var(--bar-color);
+    opacity: 0.8; /* Leve transparência para não ofuscar tudo */
 }
+
+/* Animação de fundo para dar vida à barra estática */
 .vertical-layout .placard-bar::before,
 .vertical-layout .placard-bar::after {
     content: '';
     position: absolute;
     width: 300%; height: 300%; top: 0; left: 50%;
     background: inherit; border-radius: 45%;
-    animation: wave 2s ease-in-out infinite alternate;
+    animation: wave 4s ease-in-out infinite alternate;
+    opacity: 0.5;
 }
-.vertical-layout .placard-bar::after {
-    border-radius: 40%; animation-duration: 6s; opacity: 0.7;
-}
+
 .vertical-layout .placard-content-wrapper {
     position: relative;
     z-index: 2;
@@ -142,16 +146,13 @@ body {
 .vertical-layout .placard-percentage {
     color: white;
     font-weight: 700;
-    font-size: 1.5rem;
+    font-size: 2rem; /* Aumentado */
     text-shadow: 0 0 10px rgba(0,0,0,0.9);
-    opacity: 0;
-    transition: opacity 0.5s ease;
+    opacity: 1 !important; /* Sempre visível */
     margin-bottom: 2rem;
     flex-shrink: 0;
 }
-.vertical-layout .placard-bar:not([style*="height: 0%"]) ~ .placard-content-wrapper .placard-percentage {
-    opacity: 1;
-}
+
 .vertical-layout .placard-info {
     display: flex;
     flex-direction: column;
@@ -177,17 +178,18 @@ body {
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid var(--bar-color); /* Borda Neon na Imagem */
+    border: 2px solid #fff;
     box-shadow: 0 0 10px var(--bar-color);
 }
 .vertical-layout .placeholder { opacity: 0.3; background-color: rgba(255,255,255,0.1); border-radius: 50%; }
 .vertical-layout .placard-label {
-    font-weight: 600;
+    font-weight: 800; /* Mais preenchedor */
     color: #fff;
-    font-size: 0.9rem;
+    font-size: 1.2rem; /* Aumentado */
     word-break: break-word;
-    line-height: 1.2;
+    line-height: 1.1;
     text-shadow: 0 0 5px rgba(0,0,0,0.8);
+    text-transform: uppercase;
 }
 
 /* ================== Horizontal Layout ================== */
@@ -230,27 +232,27 @@ body {
 .horizontal-layout .placard-option {
     width: 100%;
     height: 90px; 
-    border: 2px solid rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3); /* Borda mais visível */
     border-radius: 45px; 
     position: relative;
     overflow: hidden;
     background-color: rgba(0, 0, 0, 0.4);
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+    box-shadow: 0 0 30px rgba(0,0,0,0.5); /* Sombra externa */
 }
 
 .horizontal-layout .placard-bar-track {
-    position: absolute; top:0; left: 0; width: 100%; height: 100%;
-    border-radius: inherit; 
+    display: none;
 }
 
 .horizontal-layout .placard-bar {
     position: absolute; top: 0; left: 0; height: 100%;
-    width: 0%; 
+    /* ALTERAÇÃO: Largura sempre 100% */
+    width: 100% !important; 
     border-radius: inherit; 
-    transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1);
     background-color: var(--bar-color);
-    box-shadow: 0 0 30px var(--bar-color); /* Brilho intenso Neon */
-    opacity: 0.9;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.5); /* Sombra interna para profundidade */
+    opacity: 0.85; /* Opacidade alta para cor vibrante */
+    transition: none;
 }
 
 .horizontal-layout .placard-content-wrapper-horizontal {
@@ -261,7 +263,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 1.5rem; 
+    padding: 0 2.5rem; /* Mais espaçamento lateral */
     box-sizing: border-box;
 }
 
@@ -270,31 +272,28 @@ body {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    text-shadow: 0 0 5px rgba(0,0,0,1);
+    flex-grow: 1; /* Ocupa o espaço central */
 }
 
 .horizontal-layout .placard-percentage {
     color: white;
-    font-weight: 800;
-    font-size: 2rem; 
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    text-shadow: 0 0 10px rgba(0,0,0,0.8);
-}
-.horizontal-layout .placard-bar:not([style*="width: 0%"]) ~ .placard-content-wrapper-horizontal .placard-percentage {
-    opacity: 1;
-}
-.horizontal-layout .placard-bar[style*="width: 0%"] ~ .placard-content-wrapper-horizontal .placard-percentage {
-    opacity: 1;
+    font-weight: 900; /* Extra bold */
+    font-size: 2.5rem; 
+    opacity: 1 !important; /* Sempre visível */
+    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    line-height: 1;
 }
 
 .horizontal-layout .placard-label {
-    font-weight: 700;
-    font-size: 1.2rem; 
+    font-weight: 900; /* Extra bold para preencher */
+    font-size: 2rem;  /* Fonte base aumentada */
     color: #ffffff;
-    line-height: 1.2;
+    line-height: 1;
     text-transform: uppercase;
     letter-spacing: 1px;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+    margin-top: 0.2rem;
+    width: 100%; /* Garante que ocupa largura total disponível */
 }
 
 .horizontal-layout .placard-visual {
@@ -306,36 +305,32 @@ body {
     flex-shrink: 0;
 }
 
-/* TRATAMENTO DE EMOJIS - NEON SILHOUETTE
-   Transforma emojis coloridos em formas brancas com brilho da cor da barra
-*/
+/* TRATAMENTO DE EMOJIS - WHITE HOT NEON */
 .placard-emoji {
     font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     font-size: 3.5rem; 
     line-height: 1;
-    transition: all 0.3s ease;
-    
-    /* Filtro para deixar o emoji branco chapado */
-    filter: brightness(0) invert(1) drop-shadow(0 0 5px var(--bar-color)) drop-shadow(0 0 15px var(--bar-color));
+    filter: grayscale(100%) brightness(250%) contrast(120%) drop-shadow(0 0 5px var(--bar-color)) drop-shadow(0 0 15px var(--bar-color));
     opacity: 1;
 }
 
-/* Quando estiver dentro do layout horizontal, aumentar intensidade */
 .horizontal-layout .placard-emoji {
-    filter: brightness(0) invert(1) drop-shadow(0 0 8px var(--bar-color)) drop-shadow(0 0 20px var(--bar-color));
-    font-size: 4rem;
+    filter: grayscale(100%) brightness(300%) contrast(150%) drop-shadow(0 0 8px var(--bar-color)) drop-shadow(0 0 25px var(--bar-color));
+    font-size: 4.5rem;
 }
 
 .horizontal-layout .placard-image {
     width: 100%; height: 100%; border-radius: 50%; 
     object-fit: cover; 
-    border: 2px solid var(--bar-color);
+    border: 3px solid #fff; /* Borda branca para destacar no fundo colorido */
     box-shadow: 0 0 15px var(--bar-color);
 }
 .horizontal-layout .placeholder { opacity: 0.3; background-color: rgba(255,255,255,0.1); border-radius: 50%; }
 
 
 /* ================== Counts Variations ================== */
+/* Ajustando tamanhos para ser "Mais Preenchedor" */
+
 .horizontal-layout.count-1 { gap: 0; }
 .horizontal-layout.count-2 { gap: 7rem; }
 
@@ -346,20 +341,20 @@ body {
 }
 .horizontal-layout.count-1 .placard-visual,
 .horizontal-layout.count-2 .placard-visual {
-    width: 120px; 
-    height: 120px;
+    width: 140px; 
+    height: 140px;
 }
 .horizontal-layout.count-1 .placard-emoji,
 .horizontal-layout.count-2 .placard-emoji {
-    font-size: 7rem;
+    font-size: 8rem;
 }
 .horizontal-layout.count-1 .placard-percentage,
 .horizontal-layout.count-2 .placard-percentage {
-    font-size: 4rem;
+    font-size: 5rem;
 }
 .horizontal-layout.count-1 .placard-label,
 .horizontal-layout.count-2 .placard-label {
-    font-size: 2.5rem;
+    font-size: 4rem; /* Texto Gigante */
 }
 
 
@@ -369,17 +364,17 @@ body {
     border-radius: 6rem;
 }
 .horizontal-layout.count-3 .placard-visual {
-    width: 100px;
-    height: 100px;
+    width: 110px;
+    height: 110px;
 }
 .horizontal-layout.count-3 .placard-emoji {
-    font-size: 6rem;
+    font-size: 7rem;
 }
 .horizontal-layout.count-3 .placard-percentage {
-    font-size: 3.5rem;
+    font-size: 4rem;
 }
 .horizontal-layout.count-3 .placard-label {
-    font-size: 2rem;
+    font-size: 3.5rem; /* Texto Muito Grande */
 }
 
 
@@ -389,17 +384,17 @@ body {
     border-radius: 5rem;
 }
 .horizontal-layout.count-4 .placard-visual {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
 }
 .horizontal-layout.count-4 .placard-emoji {
-    font-size: 5rem;
+    font-size: 5.5rem;
 }
 .horizontal-layout.count-4 .placard-percentage {
-    font-size: 3rem;
+    font-size: 3.5rem;
 }
 .horizontal-layout.count-4 .placard-label {
-    font-size: 1.8rem;
+    font-size: 2.8rem; /* Texto Grande */
 }
 
 
@@ -409,10 +404,10 @@ body {
     border-radius: 4.5rem;
 }
 .horizontal-layout.count-5 .placard-percentage {
-    font-size: 2.5rem; 
+    font-size: 3rem; 
 }
 .horizontal-layout.count-5 .placard-label {
-    font-size: 1.5rem; 
+    font-size: 2.4rem; 
 }
 
 
@@ -421,66 +416,65 @@ body {
 
 .horizontal-layout.count-7 { gap: 2rem; }
 .horizontal-layout.count-7 .placard-option {
-    height: 80px;
-    border-radius: 40px;
+    height: 90px;
+    border-radius: 45px;
 }
 .horizontal-layout.count-7 .placard-visual {
-    width: 60px;
-    height: 60px;
+    width: 65px;
+    height: 65px;
 }
 .horizontal-layout.count-7 .placard-emoji {
-    font-size: 3.5rem;
+    font-size: 4rem;
 }
 .horizontal-layout.count-7 .placard-percentage {
-    font-size: 1.8rem;
+    font-size: 2rem;
 }
 .horizontal-layout.count-7 .placard-label {
-    font-size: 1.2rem;
+    font-size: 1.8rem; /* Texto Encorpado */
 }
 
 
 .horizontal-layout.count-8 { gap: 1.5rem; }
 .horizontal-layout.count-8 .placard-option {
-    height: 70px;
-    border-radius: 35px;
+    height: 80px;
+    border-radius: 40px;
 }
 .horizontal-layout.count-8 .placard-visual {
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
 }
 .horizontal-layout.count-8 .placard-emoji {
-    font-size: 3rem;
+    font-size: 3.5rem;
 }
 .horizontal-layout.count-8 .placard-percentage {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
 }
 .horizontal-layout.count-8 .placard-label {
-    font-size: 1rem;
+    font-size: 1.6rem;
 }
 
 
 .horizontal-layout.count-9 { gap: 1.2rem; }
 .horizontal-layout.count-9 .placard-option {
-    height: 65px;
-    border-radius: 32.5px;
+    height: 70px;
+    border-radius: 35px;
 }
 .horizontal-layout.count-9 .placard-visual {
-    width: 45px;
-    height: 45px;
+    width: 50px;
+    height: 50px;
 }
 .horizontal-layout.count-9 .placard-emoji {
-    font-size: 2.5rem;
+    font-size: 3rem;
 }
 .horizontal-layout.count-9 .placard-percentage {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
 }
 .horizontal-layout.count-9 .placard-label {
-    font-size: 0.9rem;
+    font-size: 1.4rem;
 }
 
 
 /* ================== Neon Colors Scheme ================== */
-/* Cores intensas para ambiente noturno (Cyberpunk/Neon) */
 [data-option-index="0"] { --bar-color: #ff0055; } /* Neon Pink/Red */
 [data-option-index="1"] { --bar-color: #00ffea; } /* Neon Cyan */
 [data-option-index="2"] { --bar-color: #ffcc00; } /* Neon Yellow */
@@ -508,7 +502,7 @@ body {
 }
 
 .section-title {
-    display: none; /* Garante que o título não apareça se o HTML antigo for usado por engano */
+    display: none;
 }
 
 .thermometer-bar-container {
@@ -534,7 +528,6 @@ body {
     height: 100%;
     width: 0%;
     border-radius: 10px;
-    /* Gradiente Neon */
     background: linear-gradient(90deg, #0011ff 0%, #b700ff 50%, #ff0055 100%);
     transition: width 0.5s ease-in-out;
     position: absolute;
@@ -564,7 +557,6 @@ body {
 .horizontal-layout-wrapper .thermometer-label {
     font-size: 1.8rem;
 }
-
 
 .movement-message {
     font-size: 1.5rem;
@@ -606,8 +598,8 @@ body {
     .vertical-layout .placard-bar-container { width: 70px; }
     .vertical-layout .placard-visual { width: 35px; height: 35px; }
     .vertical-layout .placard-emoji { font-size: 1.8rem; }
-    .vertical-layout .placard-label { font-size: 0.8rem; }
-    .vertical-layout .placard-percentage { font-size: 1.1rem; margin-bottom: 2rem; }
+    .vertical-layout .placard-label { font-size: 1rem; }
+    .vertical-layout .placard-percentage { font-size: 1.5rem; margin-bottom: 2rem; }
 }
 
 @media (max-width: 768px) {
@@ -629,9 +621,10 @@ body {
     .horizontal-layout .placard-option { height: 80px; border-radius: 40px; }
     .horizontal-layout .placard-visual { width: 60px; height: 60px; }
     .horizontal-layout .placard-emoji { font-size: 3rem; }
-    .horizontal-layout .placard-percentage { font-size: 1.6rem; }
-    .horizontal-layout .placard-label { font-size: 1.1rem; }
+    .horizontal-layout .placard-percentage { font-size: 2rem; }
+    .horizontal-layout .placard-label { font-size: 1.5rem; }
 
+    /* Ajustes Mobile para Texto Grande */
     .horizontal-layout.count-1 { gap: 0; }
     .horizontal-layout.count-2 { gap: 4rem; }
     .horizontal-layout.count-1 .placard-option,
@@ -643,9 +636,9 @@ body {
     .horizontal-layout.count-1 .placard-emoji,
     .horizontal-layout.count-2 .placard-emoji { font-size: 4rem; }
     .horizontal-layout.count-1 .placard-percentage,
-    .horizontal-layout.count-2 .placard-percentage { font-size: 2.5rem; }
+    .horizontal-layout.count-2 .placard-percentage { font-size: 3rem; }
     .horizontal-layout.count-1 .placard-label,
-    .horizontal-layout.count-2 .placard-label { font-size: 1.5rem; }
+    .horizontal-layout.count-2 .placard-label { font-size: 2.5rem; }
 
     .horizontal-layout.count-3, .horizontal-layout.count-4, .horizontal-layout.count-5 { gap: 3rem; }
     .horizontal-layout.count-3 .placard-option, .horizontal-layout.count-4 .placard-option, .horizontal-layout.count-5 .placard-option { 
@@ -670,11 +663,12 @@ body {
     }
     .vertical-layout .placard-option { width: 100%; height: 300px; }
     .vertical-layout .placard-bar-container { width: 100%; max-width: 150px; height: 100%; }
-    .vertical-layout .placard-percentage { font-size: 1.8rem; margin-bottom: 2rem; }
+    .vertical-layout .placard-percentage { font-size: 2.5rem; margin-bottom: 2rem; }
     .vertical-layout .placard-visual { width: 60px; height: 60px; }
     .vertical-layout .placard-emoji { font-size: 3rem; }
-    .vertical-layout .placard-label { font-size: 1rem; }
+    .vertical-layout .placard-label { font-size: 1.2rem; }
 
+    /* Ajustes específicos de grade vertical */
     .vertical-layout.count-3 { grid-template-columns: repeat(3, 1fr); gap: 4rem; }
     .vertical-layout.count-2 { grid-template-columns: repeat(2, 1fr); gap: 5rem; max-width: 700px; margin: 0 auto; }
     .vertical-layout.count-1 { grid-template-columns: 1fr; gap: 0; max-width: 350px; margin: 0 auto; }
