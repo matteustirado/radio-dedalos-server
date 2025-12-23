@@ -4,18 +4,21 @@ body {
     align-items: center;
     min-height: 100vh;
     overflow: hidden;
+    background-color: #050505; /* Fundo mais escuro para o Neon */
 }
 
 #placard-main-wrapper {
     padding: 4rem 2rem;
     position: relative;
     overflow: hidden;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.75);
     border-radius: 1.5rem;
     width: 100%;
     max-width: 1200px;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
 }
 
 .placard-background-logo {
@@ -46,12 +49,14 @@ body {
 }
 
 .placard-title {
-    font-size: 3rem;
-    font-weight: 700;
+    font-size: 4rem;
+    font-weight: 800;
     font-style: italic;
     text-align: center;
     margin-bottom: 2.5rem;
-    text-shadow: 0 0 15px rgba(255, 77, 0, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 20px rgba(255, 77, 0, 0.7);
 }
 
 .placard-message {
@@ -72,7 +77,7 @@ body {
     padding: 0 1rem;
 }
 
-
+/* ================== Vertical Layout ================== */
 .vertical-layout {
     grid-template-columns: repeat(2, 1fr);
     justify-items: center;
@@ -92,7 +97,7 @@ body {
     width: 100%;
     max-width: 100px;
     height: 100%;
-    border: 2px solid var(--border-color);
+    border: 2px solid rgba(255, 255, 255, 0.1);
     border-bottom: none;
     border-radius: 10px 10px 0 0;
     position: relative;
@@ -100,7 +105,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(0, 0, 0, 0.3);
 }
 .vertical-layout .placard-bar-track { display: none; }
 .vertical-layout .placard-bar {
@@ -110,7 +115,8 @@ body {
     width: 100%;
     height: 0%;
     transition: height 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-    background-color: var(--color-primary);
+    background-color: var(--bar-color);
+    box-shadow: 0 0 25px var(--bar-color); /* Efeito Neon na Barra */
 }
 .vertical-layout .placard-bar::before,
 .vertical-layout .placard-bar::after {
@@ -135,9 +141,9 @@ body {
 }
 .vertical-layout .placard-percentage {
     color: white;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1.5rem;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
+    text-shadow: 0 0 10px rgba(0,0,0,0.9);
     opacity: 0;
     transition: opacity 0.5s ease;
     margin-bottom: 2rem;
@@ -171,17 +177,20 @@ body {
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 2px solid var(--bar-color); /* Borda Neon na Imagem */
+    box-shadow: 0 0 10px var(--bar-color);
 }
 .vertical-layout .placeholder { opacity: 0.3; background-color: rgba(255,255,255,0.1); border-radius: 50%; }
 .vertical-layout .placard-label {
-    font-weight: 500;
-    color: var(--color-text);
+    font-weight: 600;
+    color: #fff;
     font-size: 0.9rem;
     word-break: break-word;
     line-height: 1.2;
+    text-shadow: 0 0 5px rgba(0,0,0,0.8);
 }
 
+/* ================== Horizontal Layout ================== */
 
 #placard-main-wrapper.horizontal-layout-wrapper {
     width: 100vw;
@@ -221,11 +230,12 @@ body {
 .horizontal-layout .placard-option {
     width: 100%;
     height: 90px; 
-    border: 2px solid var(--border-color);
+    border: 2px solid rgba(255, 255, 255, 0.15);
     border-radius: 45px; 
     position: relative;
     overflow: hidden;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(0, 0, 0, 0.4);
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
 }
 
 .horizontal-layout .placard-bar-track {
@@ -238,7 +248,9 @@ body {
     width: 0%; 
     border-radius: inherit; 
     transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-    background-color: var(--color-primary);
+    background-color: var(--bar-color);
+    box-shadow: 0 0 30px var(--bar-color); /* Brilho intenso Neon */
+    opacity: 0.9;
 }
 
 .horizontal-layout .placard-content-wrapper-horizontal {
@@ -258,15 +270,16 @@ body {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
+    text-shadow: 0 0 5px rgba(0,0,0,1);
 }
 
 .horizontal-layout .placard-percentage {
     color: white;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 2rem; 
     opacity: 0;
     transition: opacity 0.5s ease;
+    text-shadow: 0 0 10px rgba(0,0,0,0.8);
 }
 .horizontal-layout .placard-bar:not([style*="width: 0%"]) ~ .placard-content-wrapper-horizontal .placard-percentage {
     opacity: 1;
@@ -276,10 +289,12 @@ body {
 }
 
 .horizontal-layout .placard-label {
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1.2rem; 
-    color: var(--color-text);
+    color: #ffffff;
     line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .horizontal-layout .placard-visual {
@@ -290,18 +305,37 @@ body {
     justify-content: center;
     flex-shrink: 0;
 }
-.horizontal-layout .placard-emoji {
+
+/* TRATAMENTO DE EMOJIS - NEON SILHOUETTE
+   Transforma emojis coloridos em formas brancas com brilho da cor da barra
+*/
+.placard-emoji {
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     font-size: 3.5rem; 
     line-height: 1;
+    transition: all 0.3s ease;
+    
+    /* Filtro para deixar o emoji branco chapado */
+    filter: brightness(0) invert(1) drop-shadow(0 0 5px var(--bar-color)) drop-shadow(0 0 15px var(--bar-color));
+    opacity: 1;
 }
+
+/* Quando estiver dentro do layout horizontal, aumentar intensidade */
+.horizontal-layout .placard-emoji {
+    filter: brightness(0) invert(1) drop-shadow(0 0 8px var(--bar-color)) drop-shadow(0 0 20px var(--bar-color));
+    font-size: 4rem;
+}
+
 .horizontal-layout .placard-image {
     width: 100%; height: 100%; border-radius: 50%; 
-    object-fit: cover; border: 1px solid rgba(255,255,255,0.2);
+    object-fit: cover; 
+    border: 2px solid var(--bar-color);
+    box-shadow: 0 0 15px var(--bar-color);
 }
 .horizontal-layout .placeholder { opacity: 0.3; background-color: rgba(255,255,255,0.1); border-radius: 50%; }
 
 
-
+/* ================== Counts Variations ================== */
 .horizontal-layout.count-1 { gap: 0; }
 .horizontal-layout.count-2 { gap: 7rem; }
 
@@ -317,15 +351,15 @@ body {
 }
 .horizontal-layout.count-1 .placard-emoji,
 .horizontal-layout.count-2 .placard-emoji {
-    font-size: 6rem;
+    font-size: 7rem;
 }
 .horizontal-layout.count-1 .placard-percentage,
 .horizontal-layout.count-2 .placard-percentage {
-    font-size: 3.5rem;
+    font-size: 4rem;
 }
 .horizontal-layout.count-1 .placard-label,
 .horizontal-layout.count-2 .placard-label {
-    font-size: 1.8rem;
+    font-size: 2.5rem;
 }
 
 
@@ -339,13 +373,13 @@ body {
     height: 100px;
 }
 .horizontal-layout.count-3 .placard-emoji {
-    font-size: 5rem;
+    font-size: 6rem;
 }
 .horizontal-layout.count-3 .placard-percentage {
-    font-size: 3rem;
+    font-size: 3.5rem;
 }
 .horizontal-layout.count-3 .placard-label {
-    font-size: 1.6rem;
+    font-size: 2rem;
 }
 
 
@@ -359,36 +393,30 @@ body {
     height: 80px;
 }
 .horizontal-layout.count-4 .placard-emoji {
-    font-size: 4rem;
+    font-size: 5rem;
 }
 .horizontal-layout.count-4 .placard-percentage {
-    font-size: 2.5rem;
+    font-size: 3rem;
 }
 .horizontal-layout.count-4 .placard-label {
-    font-size: 1.4rem;
+    font-size: 1.8rem;
 }
 
 
-.horizontal-layout.count-5 { 
-    gap: 3rem; 
-}
+.horizontal-layout.count-5 { gap: 3rem; }
 .horizontal-layout.count-5 .placard-option {
     height: 9rem; 
     border-radius: 4.5rem;
 }
 .horizontal-layout.count-5 .placard-percentage {
-    font-size: 2.2rem; 
+    font-size: 2.5rem; 
 }
 .horizontal-layout.count-5 .placard-label {
-    font-size: 1.3rem; 
+    font-size: 1.5rem; 
 }
 
 
-
-.horizontal-layout.count-6 { 
-    gap: 2.5rem; 
-    
-}
+.horizontal-layout.count-6 { gap: 2.5rem; }
 
 
 .horizontal-layout.count-7 { gap: 2rem; }
@@ -401,13 +429,13 @@ body {
     height: 60px;
 }
 .horizontal-layout.count-7 .placard-emoji {
-    font-size: 3rem;
+    font-size: 3.5rem;
 }
 .horizontal-layout.count-7 .placard-percentage {
     font-size: 1.8rem;
 }
 .horizontal-layout.count-7 .placard-label {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
 }
 
 
@@ -421,7 +449,7 @@ body {
     height: 50px;
 }
 .horizontal-layout.count-8 .placard-emoji {
-    font-size: 2.5rem;
+    font-size: 3rem;
 }
 .horizontal-layout.count-8 .placard-percentage {
     font-size: 1.6rem;
@@ -441,7 +469,7 @@ body {
     height: 45px;
 }
 .horizontal-layout.count-9 .placard-emoji {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
 }
 .horizontal-layout.count-9 .placard-percentage {
     font-size: 1.5rem;
@@ -451,85 +479,87 @@ body {
 }
 
 
+/* ================== Neon Colors Scheme ================== */
+/* Cores intensas para ambiente noturno (Cyberpunk/Neon) */
+[data-option-index="0"] { --bar-color: #ff0055; } /* Neon Pink/Red */
+[data-option-index="1"] { --bar-color: #00ffea; } /* Neon Cyan */
+[data-option-index="2"] { --bar-color: #ffcc00; } /* Neon Yellow */
+[data-option-index="3"] { --bar-color: #9d00ff; } /* Neon Purple */
+[data-option-index="4"] { --bar-color: #ff3300; } /* Neon Orange */
+[data-option-index="5"] { --bar-color: #00ff00; } /* Neon Green */
+[data-option-index="6"] { --bar-color: #0099ff; } /* Electric Blue */
+[data-option-index="7"] { --bar-color: #ff00ff; } /* Magenta */
+[data-option-index="8"] { --bar-color: #ffffff; } /* Bright White */
 
-[data-option-index="0"] .placard-bar { background-color: #ef4444; }
-[data-option-index="1"] .placard-bar { background-color: #a855f7; }
-[data-option-index="2"] .placard-bar { background-color: #3b82f6; }
-[data-option-index="3"] .placard-bar { background-color: #22c55e; }
-[data-option-index="4"] .placard-bar { background-color: #eab308; }
-[data-option-index="5"] .placard-bar { background-color: #d97706; }
-[data-option-index="6"] .placard-bar { background-color: #ec4899; }
-[data-option-index="7"] .placard-bar { background-color: #14b8a6; }
-[data-option-index="8"] .placard-bar { background-color: #f97316; }
 
-
+/* ================== Movement Thermometer ================== */
 .movement-thermometer {
-    padding-top: 3rem;
-    border-top: 1px solid var(--border-color);
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     flex-shrink: 0;
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .horizontal-layout-wrapper .movement-thermometer {
-    padding-top: 5rem;
+    padding-top: 3rem;
     margin-top: 3rem;
 }
 
 .section-title {
-    font-size: 1.2rem;
-    text-align: center;
-    color: var(--color-text-muted);
-    border: none;
-    padding: 0;
-    margin-bottom: 1rem;
-    display: flex;
-    justify-content: center;
+    display: none; /* Garante que o título não apareça se o HTML antigo for usado por engano */
 }
-.horizontal-layout-wrapper .section-title {
-    font-size: 2rem;
-}
-
 
 .thermometer-bar-container {
     width: 100%;
     height: 35px;
-    background-color: var(--bg-dark-secondary);
+    background-color: rgba(0, 0, 0, 0.6);
     border-radius: 10px;
     overflow: hidden;
     margin-bottom: 1rem;
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: inset 0 0 15px rgba(0,0,0,1);
 }
 .horizontal-layout-wrapper .thermometer-bar-container {
-    height: 60px;
-    border-radius: 30px;
+    height: 50px;
+    border-radius: 25px;
 }
 
 .thermometer-fill {
     height: 100%;
     width: 0%;
     border-radius: 10px;
-    background: linear-gradient(90deg, var(--color-info) 0%, var(--color-warning) 50%, var(--color-danger) 100%);
+    /* Gradiente Neon */
+    background: linear-gradient(90deg, #0011ff 0%, #b700ff 50%, #ff0055 100%);
     transition: width 0.5s ease-in-out;
     position: absolute;
     left: 0;
     top: 0;
     z-index: 1;
     animation: pulse-glow 2s infinite alternate;
+    box-shadow: 0 0 20px rgba(183, 0, 255, 0.6);
 }
 .horizontal-layout-wrapper .thermometer-fill {
     border-radius: 30px;
 }
 
-.thermometer-fill.full { animation: pulse-glow-intense 1s infinite alternate; }
+.thermometer-fill.full { 
+    animation: pulse-glow-intense 0.5s infinite alternate; 
+    filter: brightness(1.2);
+}
 
 .thermometer-label {
-    font-weight: 700;
+    font-weight: 800;
     color: white;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.9);
+    text-shadow: 0 0 5px rgba(0,0,0,1);
     position: relative;
     z-index: 2;
+    letter-spacing: 1px;
 }
 .horizontal-layout-wrapper .thermometer-label {
     font-size: 1.8rem;
@@ -538,11 +568,13 @@ body {
 
 .movement-message {
     font-size: 1.5rem;
-    font-weight: 500;
-    color: var(--color-text);
+    font-weight: 300;
+    color: #ffffff;
     min-height: 1.5em;
     text-align: center;
-    text-shadow: 0 0 10px var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
 }
 .horizontal-layout-wrapper .movement-message {
     font-size: 2.2rem;
@@ -554,23 +586,21 @@ body {
     100% { transform: translateX(-50%) rotate(10deg); }
 }
 @keyframes pulse-glow {
-    from { box-shadow: 0 0 5px 0px var(--color-primary); }
-    to   { box-shadow: 0 0 15px 5px var(--color-primary); }
+    from { box-shadow: 0 0 5px 0px rgba(183, 0, 255, 0.5); }
+    to   { box-shadow: 0 0 20px 5px rgba(183, 0, 255, 0.8); }
 }
 @keyframes pulse-glow-intense {
-    from { box-shadow: 0 0 10px 2px var(--color-danger); }
-    to   { box-shadow: 0 0 30px 10px var(--color-danger); }
+    from { box-shadow: 0 0 10px 2px #ff0055; }
+    to   { box-shadow: 0 0 40px 10px #ff0055; }
 }
 
 .total-votes-display {
     display: none;
 }
 
-
-
+/* ================== Responsividade ================== */
 @media (max-width: 1024px) {
     .horizontal-layout-wrapper .vertical-layout { display: none; }
-    
     .vertical-layout { gap: 0.5rem; }
     .vertical-layout .placard-option { width: 100px; }
     .vertical-layout .placard-bar-container { width: 70px; }
@@ -582,7 +612,7 @@ body {
 
 @media (max-width: 768px) {
     #placard-main-wrapper { padding: 2rem 1rem; }
-    .placard-title { font-size: 2.2rem; margin-bottom: 1.5rem; }
+    .placard-title { font-size: 2.5rem; margin-bottom: 2rem; }
 
     .vertical-layout {
         display: grid;
@@ -591,23 +621,9 @@ body {
         gap: 1.5rem 1rem;
         height: auto;
     }
-    .vertical-layout .placard-option { width: 100%; height: 250px; }
-    .vertical-layout .placard-bar-container { width: 100%; max-width: 100px; height: 100%; }
-    .vertical-layout .placard-percentage { font-size: 1.5rem; margin-bottom: 2rem; }
-    .vertical-layout .placard-visual { width: 45px; height: 45px; }
-    .vertical-layout .placard-emoji { font-size: 2.2rem; }
-    .vertical-layout .placard-label { font-size: 0.9rem; }
     
-    .horizontal-layout-wrapper {
-        padding: 4rem 1.5rem;
-    }
-    .horizontal-layout-wrapper .placard-title {
-        font-size: 3.5rem;
-        margin-bottom: 4rem;
-    }
-    
-    
-    
+    .horizontal-layout-wrapper { padding: 4rem 1.5rem; }
+    .horizontal-layout-wrapper .placard-title { font-size: 3rem; margin-bottom: 3rem; }
     
     .horizontal-layout { gap: 2.5rem; }
     .horizontal-layout .placard-option { height: 80px; border-radius: 40px; }
@@ -616,83 +632,31 @@ body {
     .horizontal-layout .placard-percentage { font-size: 1.6rem; }
     .horizontal-layout .placard-label { font-size: 1.1rem; }
 
-    
     .horizontal-layout.count-1 { gap: 0; }
     .horizontal-layout.count-2 { gap: 4rem; }
     .horizontal-layout.count-1 .placard-option,
     .horizontal-layout.count-2 .placard-option { 
-        height: 10rem; 
-        border-radius: 5rem;
+        height: 10rem; border-radius: 5rem;
     }
     .horizontal-layout.count-1 .placard-visual,
-    .horizontal-layout.count-2 .placard-visual { 
-        width: 80px; height: 80px; 
-    }
+    .horizontal-layout.count-2 .placard-visual { width: 80px; height: 80px; }
     .horizontal-layout.count-1 .placard-emoji,
-    .horizontal-layout.count-2 .placard-emoji { 
-        font-size: 4rem; 
-    }
+    .horizontal-layout.count-2 .placard-emoji { font-size: 4rem; }
     .horizontal-layout.count-1 .placard-percentage,
-    .horizontal-layout.count-2 .placard-percentage { 
-        font-size: 2.5rem; 
-    }
+    .horizontal-layout.count-2 .placard-percentage { font-size: 2.5rem; }
     .horizontal-layout.count-1 .placard-label,
-    .horizontal-layout.count-2 .placard-label { 
-        font-size: 1.5rem; 
+    .horizontal-layout.count-2 .placard-label { font-size: 1.5rem; }
+
+    .horizontal-layout.count-3, .horizontal-layout.count-4, .horizontal-layout.count-5 { gap: 3rem; }
+    .horizontal-layout.count-3 .placard-option, .horizontal-layout.count-4 .placard-option, .horizontal-layout.count-5 .placard-option { 
+        height: 9rem; border-radius: 4.5rem;
     }
 
-    
-    .horizontal-layout.count-3,
-    .horizontal-layout.count-4,
-    .horizontal-layout.count-5 { 
-        gap: 3rem; 
-    }
-    .horizontal-layout.count-3 .placard-option,
-    .horizontal-layout.count-4 .placard-option,
-    .horizontal-layout.count-5 .placard-option { 
-        height: 9rem; 
-        border-radius: 4.5rem;
-    }
-
-    
-    .horizontal-layout.count-7,
-    .horizontal-layout.count-8,
-    .horizontal-layout.count-9 { gap: 1.5rem; }
-    .horizontal-layout.count-7 .placard-option,
-    .horizontal-layout.count-8 .placard-option,
-    .horizontal-layout.count-9 .placard-option { 
-        height: 70px; 
-        border-radius: 35px; 
-    }
-    .horizontal-layout.count-7 .placard-visual,
-    .horizontal-layout.count-8 .placard-visual,
-    .horizontal-layout.count-9 .placard-visual { 
-        width: 50px; height: 50px; 
-    }
-    .horizontal-layout.count-7 .placard-emoji,
-    .horizontal-layout.count-8 .placard-emoji,
-    .horizontal-layout.count-9 .placard-emoji { 
-        font-size: 2.5rem; 
-    }
-    .horizontal-layout.count-7 .placard-percentage,
-    .horizontal-layout.count-8 .placard-percentage,
-    .horizontal-layout.count-9 .placard-percentage { 
-        font-size: 1.4rem; 
-    }
-    .horizontal-layout.count-7 .placard-label,
-    .horizontal-layout.count-8 .placard-label,
-    .horizontal-layout.count-9 .placard-label { 
-        font-size: 1rem; 
-    }
-
-
-     .movement-thermometer { padding-top: 3rem; }
-     .horizontal-layout-wrapper .movement-thermometer { padding-top: 4rem; margin-top: 2rem; }
-     .thermometer-bar-container { height: 40px; }
-     .movement-message { font-size: 1.5rem; }
+    .movement-thermometer { padding-top: 3rem; }
+    .horizontal-layout-wrapper .movement-thermometer { padding-top: 3rem; margin-top: 2rem; }
+    .thermometer-bar-container { height: 40px; }
+    .movement-message { font-size: 1.4rem; }
 }
-
-
 
 @media (min-width: 769px) {
     .horizontal-layout-wrapper .vertical-layout { display: none; }
@@ -704,91 +668,20 @@ body {
         height: auto;
         gap: 2rem;
     }
-    .vertical-layout .placard-option {
-        width: 100%;
-        height: 300px;
-    }
-    .vertical-layout .placard-bar-container {
-        width: 100%;
-        max-width: 150px;
-        height: 100%;
-    }
+    .vertical-layout .placard-option { width: 100%; height: 300px; }
+    .vertical-layout .placard-bar-container { width: 100%; max-width: 150px; height: 100%; }
     .vertical-layout .placard-percentage { font-size: 1.8rem; margin-bottom: 2rem; }
     .vertical-layout .placard-visual { width: 60px; height: 60px; }
     .vertical-layout .placard-emoji { font-size: 3rem; }
     .vertical-layout .placard-label { font-size: 1rem; }
 
-    .vertical-layout.count-3 {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 4rem;
+    .vertical-layout.count-3 { grid-template-columns: repeat(3, 1fr); gap: 4rem; }
+    .vertical-layout.count-2 { grid-template-columns: repeat(2, 1fr); gap: 5rem; max-width: 700px; margin: 0 auto; }
+    .vertical-layout.count-1 { grid-template-columns: 1fr; gap: 0; max-width: 350px; margin: 0 auto; }
+    .vertical-layout.count-4 { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+    .vertical-layout.count-5 { grid-template-columns: repeat(5, 1fr); gap: 1rem; }
+    .vertical-layout.count-6 { grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+    .vertical-layout.count-7, .vertical-layout.count-8, .vertical-layout.count-9 {
+        grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
     }
-    .vertical-layout.count-3 .placard-option { height: 350px; }
-    .vertical-layout.count-3 .placard-bar-container { max-width: 150px; }
-    .vertical-layout.count-3 .placard-percentage { font-size: 2rem; margin-bottom: 3rem; }
-    .vertical-layout.count-3 .placard-visual { width: 70px; height: 70px; }
-    .vertical-layout.count-3 .placard-emoji { font-size: 3.5rem; }
-    .vertical-layout.count-3 .placard-label { font-size: 1.5rem; }
-
-    .vertical-layout.count-2 {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 5rem;
-        max-width: 700px;
-        margin: 0 auto;
-    }
-    .vertical-layout.count-2 .placard-option { height: 350px; }
-    .vertical-layout.count-2 .placard-bar-container { max-width: 180px; }
-    .vertical-layout.count-2 .placard-percentage { font-size: 2rem; margin-bottom: 3rem; }
-    .vertical-layout.count-2 .placard-visual { width: 80px; height: 80px; }
-    .vertical-layout.count-2 .placard-emoji { font-size: 4rem; }
-    .vertical-layout.count-2 .placard-label { font-size: 1.5rem; }
-    
-    .vertical-layout.count-1 {
-        grid-template-columns: 1fr;
-        gap: 0;
-        max-width: 350px;
-        margin: 0 auto;
-    }
-    .vertical-layout.count-1 .placard-option { height: 350px; }
-    .vertical-layout.count-1 .placard-bar-container { max-width: 200px; }
-    .vertical-layout.count-1 .placard-percentage { font-size: 2.2rem; margin-bottom: 3rem; }
-    .vertical-layout.count-1 .placard-visual { width: 90px; height: 90px; }
-    .vertical-layout.count-1 .placard-emoji { font-size: 4.5rem; }
-    .vertical-layout.count-1 .placard-label { font-size: 1.6rem; }
-    
-    .vertical-layout.count-4 {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1.5rem;
-    }
-    .vertical-layout.count-4 .placard-option { height: 280px; }
-    .vertical-layout.count-4 .placard-bar-container { max-width: 130px; }
-
-    .vertical-layout.count-5 {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 1rem;
-    }
-    .vertical-layout.count-5 .placard-option { height: 280px; }
-    .vertical-layout.count-5 .placard-bar-container { max-width: 130px; }
-    .vertical-layout.count-5 .placard-label { font-size: 0.9rem; }
-
-    .vertical-layout.count-6 {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 2rem;
-    }
-    .vertical-layout.count-6 .placard-option { height: 300px; }
-    
-    .vertical-layout.count-7,
-    .vertical-layout.count-8,
-    .vertical-layout.count-9 {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1.5rem;
-    }
-    .vertical-layout.count-7 .placard-option,
-    .vertical-layout.count-8 .placard-option,
-    .vertical-layout.count-9 .placard-option { height: 250px; }
-    
-    .vertical-layout.count-9 .placard-bar-container { max-width: 120px; }
-    .vertical-layout.count-9 .placard-percentage { font-size: 1.2rem; margin-bottom: 1.5rem; }
-    .vertical-layout.count-9 .placard-visual { width: 45px; height: 45px; }
-    .vertical-layout.count-9 .placard-emoji { font-size: 2.2rem; }
-    .vertical-layout.count-9 .placard-label { font-size: 0.9rem; }
 }
