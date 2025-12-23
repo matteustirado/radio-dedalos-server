@@ -112,8 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const optionElement = document.createElement('div');
             optionElement.classList.add('placard-option');
             optionElement.dataset.optionLabel = option.label;
-            // O index original é mantido para garantir que a cor permaneça a mesma
-            // mesmo se o elemento mudar de posição
             optionElement.dataset.optionIndex = index;
 
             let visualHTML = '';
@@ -143,16 +141,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             } else {
+                // ALTERAÇÃO AQUI: Estrutura "flat" para permitir space-between
                 innerHTML = `
                     <div class="placard-bar-container">
                         <div class="placard-bar-track"></div>
                         <div class="placard-bar"></div>
                         <div class="placard-content-wrapper">
                             <span class="placard-percentage">0%</span>
-                            <div class="placard-info">
-                                ${visualHTML}
-                                <span class="placard-label">${option.label}</span>
-                            </div>
+                            ${visualHTML}
+                            <span class="placard-label">${option.label}</span>
                         </div>
                     </div>
                 `;
@@ -172,11 +169,9 @@ document.addEventListener('DOMContentLoaded', () => {
         let totalVotes = 0;
         Object.values(currentVotes).forEach(count => totalVotes += Number(count));
         
-        // 1. Criar um array com os dados e os elementos DOM correspondentes
         const optionsWithData = currentConfig.options.map(option => {
             const voteCount = Number(currentVotes[option.label]) || 0;
             const percentage = totalVotes > 0 ? ((voteCount / totalVotes) * 100) : 0;
-            // Encontra o elemento existente na tela
             const element = placardContainer.querySelector(`.placard-option[data-option-label="${option.label}"]`);
             
             return {
@@ -187,23 +182,18 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         });
 
-        // 2. Ordenar o array: Maior porcentagem primeiro (Decrescente)
+        // Ordenação Decrescente (Ranking)
         optionsWithData.sort((a, b) => b.voteCount - a.voteCount);
 
-        // 3. Atualizar e Reordenar no DOM
         optionsWithData.forEach(item => {
             if (!item.element) return;
-
             const percentageText = item.percentage.toFixed(0);
             const percentageElement = item.element.querySelector('.placard-percentage');
 
-            // Atualiza apenas o texto, pois a barra é fixa em 100% via CSS agora
             if (percentageElement) {
                 percentageElement.textContent = `${percentageText}%`;
             }
-
-            // O comando appendChild move o elemento se ele já existir no DOM.
-            // Ao iterar na ordem classificada, estamos efetivamente reordenando a tela.
+            // Reordena no DOM
             placardContainer.appendChild(item.element);
         });
     };
@@ -212,24 +202,17 @@ document.addEventListener('DOMContentLoaded', () => {
          if (!thermometerFill || !thermometerLabel || !movementMessage) return;
 
         const count = Number(currentCapacity) || 0;
-        
         let percentage = 0;
         if (MAX_CAPACITY > 0) { 
             percentage = Math.max(0, Math.min((count / MAX_CAPACITY) * 100, 100));
         }
-
         const roundedPercentage = Math.max(0, Math.round(percentage / 5) * 5);
-
         thermometerFill.style.width = `${percentage}%`;
-        
         thermometerLabel.textContent = `${percentage.toFixed(0)}%`; 
-        
         thermometerFill.classList.toggle('full', percentage >= 100);
-        
         movementMessage.textContent = movementMessages[roundedPercentage] || movementMessages[0];
     };
     
-
     const buscarContadorExterno = async () => {
         const url = `${API_SERVER_EXTERNAL}/api/contador/`;
         try {
@@ -245,9 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const dados = await response.json();
             const numeroContador = dados.length > 0 ? dados[0].contador : 0;
-            
             updateThermometer(numeroContador); 
-
         } catch (error) {
             updateThermometer(0);
         }
@@ -255,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const setupInternalSocketListeners = () => {
         const socket = io();
-
         socket.on('placardUpdate', (data) => {
             if (data && data.unit === unit && data.votes) {
                 updatePlacardVotes(data.votes);
@@ -267,12 +247,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const externalSocket = io(WS_SERVER_EXTERNAL, {
             transports: ['websocket', 'polling']
         });
-        
         externalSocket.on('new_id', () => {
             buscarContadorExterno();
         });
     };
-
 
     const initializePlacard = async () => {
         showLoading();
@@ -281,13 +259,11 @@ document.addEventListener('DOMContentLoaded', () => {
             currentConfig = config;
             renderPlacardStructure();
             
-            // Corrige o problema de inicialização buscando os votos do DB
             const initialVotes = await apiFetch(`/game/counts/${unit}`);
             updatePlacardVotes(initialVotes);
 
             setupInternalSocketListeners();
             setupExternalSocketListeners();
-            
             buscarContadorExterno();
         } catch (error) {
             showError(error.message);
