@@ -112,6 +112,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const optionElement = document.createElement('div');
             optionElement.classList.add('placard-option');
             optionElement.dataset.optionLabel = option.label;
+            // O index original é mantido para garantir que a cor permaneça a mesma
+            // mesmo se o elemento mudar de posição
             optionElement.dataset.optionIndex = index;
 
             let visualHTML = '';
@@ -170,27 +172,39 @@ document.addEventListener('DOMContentLoaded', () => {
         let totalVotes = 0;
         Object.values(currentVotes).forEach(count => totalVotes += Number(count));
         
-        currentConfig.options.forEach(option => {
-            const optionElement = placardContainer.querySelector(`.placard-option[data-option-label="${option.label}"]`);
-            if (!optionElement) return;
-
-            const voteCount = currentVotes[option.label] || 0;
+        // 1. Criar um array com os dados e os elementos DOM correspondentes
+        const optionsWithData = currentConfig.options.map(option => {
+            const voteCount = Number(currentVotes[option.label]) || 0;
             const percentage = totalVotes > 0 ? ((voteCount / totalVotes) * 100) : 0;
-            const percentageText = percentage.toFixed(0);
+            // Encontra o elemento existente na tela
+            const element = placardContainer.querySelector(`.placard-option[data-option-label="${option.label}"]`);
+            
+            return {
+                option,
+                voteCount,
+                percentage,
+                element
+            };
+        });
 
-            const barElement = optionElement.querySelector('.placard-bar');
-            const percentageElement = optionElement.querySelector('.placard-percentage');
+        // 2. Ordenar o array: Maior porcentagem primeiro (Decrescente)
+        optionsWithData.sort((a, b) => b.voteCount - a.voteCount);
 
-            if (barElement) {
-                if (currentConfig.placard_orientation === 'vertical') {
-                    barElement.style.height = `${percentage}%`;
-                } else {
-                    barElement.style.width = `${percentage}%`;
-                }
-            }
+        // 3. Atualizar e Reordenar no DOM
+        optionsWithData.forEach(item => {
+            if (!item.element) return;
+
+            const percentageText = item.percentage.toFixed(0);
+            const percentageElement = item.element.querySelector('.placard-percentage');
+
+            // Atualiza apenas o texto, pois a barra é fixa em 100% via CSS agora
             if (percentageElement) {
                 percentageElement.textContent = `${percentageText}%`;
             }
+
+            // O comando appendChild move o elemento se ele já existir no DOM.
+            // Ao iterar na ordem classificada, estamos efetivamente reordenando a tela.
+            placardContainer.appendChild(item.element);
         });
     };
 
