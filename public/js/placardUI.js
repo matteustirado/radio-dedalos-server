@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingMessage = document.getElementById('placard-loading');
     const errorMessage = document.getElementById('placard-error');
     const thermometerFill = document.querySelector('.thermometer-fill');
-    const thermometerLabel = document.querySelector('.thermometer-label');
+    // REMOVIDO: const thermometerLabel = document.querySelector('.thermometer-label');
     const movementMessage = document.querySelector('.movement-message');
 
     let currentConfig = null;
@@ -141,7 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             } else {
-                // ALTERAÇÃO AQUI: Estrutura "flat" para permitir space-between
                 innerHTML = `
                     <div class="placard-bar-container">
                         <div class="placard-bar-track"></div>
@@ -199,7 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const updateThermometer = (currentCapacity) => {
-         if (!thermometerFill || !thermometerLabel || !movementMessage) return;
+         // REMOVIDO: thermometerLabel
+         if (!thermometerFill || !movementMessage) return;
 
         const count = Number(currentCapacity) || 0;
         let percentage = 0;
@@ -207,9 +207,13 @@ document.addEventListener('DOMContentLoaded', () => {
             percentage = Math.max(0, Math.min((count / MAX_CAPACITY) * 100, 100));
         }
         const roundedPercentage = Math.max(0, Math.round(percentage / 5) * 5);
+        
         thermometerFill.style.width = `${percentage}%`;
-        thermometerLabel.textContent = `${percentage.toFixed(0)}%`; 
+        
+        // REMOVIDO: thermometerLabel.textContent = ...
+        
         thermometerFill.classList.toggle('full', percentage >= 100);
+        
         movementMessage.textContent = movementMessages[roundedPercentage] || movementMessages[0];
     };
     

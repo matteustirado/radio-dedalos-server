@@ -132,16 +132,16 @@ body {
     opacity: 0.5;
 }
 
-/* Centralização Perfeita (Topo - Meio - Fundo) */
+/* Centralização: Porcentagem (Topo) - Emoji (Meio) - Texto (Fundo) */
 .vertical-layout .placard-content-wrapper {
     position: relative;
     z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between; /* Distribui itens: Topo, Centro, Base */
+    justify-content: space-between; 
     height: 100%;
-    padding: 1.5rem 0.5rem; /* Padding para não colar nas bordas */
+    padding: 1.5rem 0.5rem; 
 }
 
 .vertical-layout .placard-percentage {
@@ -154,8 +154,6 @@ body {
     flex-shrink: 0;
 }
 
-/* Removemos .placard-info, então estilizamos direto os filhos */
-
 .vertical-layout .placard-visual {
     width: auto;
     height: auto;
@@ -164,12 +162,6 @@ body {
     justify-content: center;
     margin: 0;
     flex-shrink: 0;
-}
-
-.vertical-layout .placard-emoji {
-    font-size: 3.5rem; 
-    line-height: 1;
-    filter: saturate(1.5) brightness(1.2) drop-shadow(0 0 10px var(--bar-color-base));
 }
 
 .vertical-layout .placard-image {
@@ -310,19 +302,41 @@ body {
     margin: 0;
 }
 
-/* TRATAMENTO DE EMOJIS - NEON COLORIDO (GLOBAL) */
+/* ========================================================= */
+/* TRATAMENTO DE EMOJIS - "ÍCONES NEON" (Noto Emoji)        */
+/* ========================================================= */
+/* Transforma o emoji em um símbolo de fonte (como letras) */
+
 .placard-emoji {
-    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    font-size: 3.5rem; 
+    font-family: 'Noto Emoji', sans-serif; /* Fonte do Google */
+    font-weight: 400; 
+    color: #ffffff; /* Emoji Branco (Tubo Neon) */
+    
+    /* Brilho Neon Colorido (Aura) */
+    text-shadow: 
+        0 0 10px var(--bar-color-base),
+        0 0 20px var(--bar-color-base),
+        0 0 30px var(--bar-color-base);
+        
     line-height: 1;
-    filter: saturate(1.3) brightness(1.1) drop-shadow(0 0 5px rgba(255,255,255,0.3));
     opacity: 1;
     transition: all 0.3s ease;
+    
+    /* Remove filtros antigos que estragam o vetor */
+    filter: none;
+}
+
+.vertical-layout .placard-emoji {
+    font-size: 5rem; /* Ícone grande no meio */
 }
 
 .horizontal-layout .placard-emoji {
-    filter: saturate(1.5) brightness(1.2) drop-shadow(0 0 10px var(--bar-color-base)) drop-shadow(0 0 25px var(--bar-color-base));
     font-size: 5.5rem; 
+    /* Brilho ainda mais intenso na horizontal */
+    text-shadow: 
+        0 0 10px var(--bar-color-base),
+        0 0 25px var(--bar-color-base),
+        0 0 50px var(--bar-color-base);
 }
 
 .horizontal-layout .placard-image {
@@ -346,7 +360,7 @@ body {
     border-radius: 15px;
 }
 .horizontal-layout.count-1 .placard-emoji,
-.horizontal-layout.count-2 .placard-emoji { font-size: 9rem; }
+.horizontal-layout.count-2 .placard-emoji { font-size: 10rem; }
 .horizontal-layout.count-1 .placard-percentage,
 .horizontal-layout.count-2 .placard-percentage { font-size: 4rem; }
 .horizontal-layout.count-1 .placard-label,
@@ -360,7 +374,7 @@ body {
     height: 13rem;
     border-radius: 15px;
 }
-.horizontal-layout.count-3 .placard-emoji { font-size: 7.5rem; }
+.horizontal-layout.count-3 .placard-emoji { font-size: 8rem; }
 .horizontal-layout.count-3 .placard-percentage { font-size: 3rem; }
 .horizontal-layout.count-3 .placard-label {
     font-size: 6rem;
@@ -372,7 +386,7 @@ body {
     height: 11rem;
     border-radius: 15px;
 }
-.horizontal-layout.count-4 .placard-emoji { font-size: 6rem; }
+.horizontal-layout.count-4 .placard-emoji { font-size: 6.5rem; }
 .horizontal-layout.count-4 .placard-percentage { font-size: 2.8rem; }
 .horizontal-layout.count-4 .placard-label {
     font-size: 5rem; 
@@ -518,16 +532,9 @@ body {
     filter: brightness(1.2);
 }
 
+/* Label removido visualmente */
 .thermometer-label {
-    font-weight: 800;
-    color: white;
-    text-shadow: 0 0 5px rgba(0,0,0,1);
-    position: relative;
-    z-index: 2;
-    letter-spacing: 1px;
-}
-.horizontal-layout-wrapper .thermometer-label {
-    font-size: 1.8rem;
+    display: none;
 }
 
 .movement-message {
@@ -569,7 +576,7 @@ body {
     .vertical-layout .placard-option { width: 100px; }
     .vertical-layout .placard-bar-container { width: 70px; }
     .vertical-layout .placard-visual { width: 35px; height: 35px; }
-    .vertical-layout .placard-emoji { font-size: 1.8rem; }
+    .vertical-layout .placard-emoji { font-size: 3rem; }
     .vertical-layout .placard-label { font-size: 1rem; }
     .vertical-layout .placard-percentage { font-size: 1.5rem; margin-bottom: 2rem; }
 }
@@ -629,10 +636,10 @@ body {
         gap: 2rem;
     }
     .vertical-layout .placard-option { width: 100%; height: 300px; }
-    .vertical-layout .placard-bar-container { width: 100%; max-width: 200px; height: 100%; }
+    .vertical-layout .placard-bar-container { width: 100%; max-width: 150px; height: 100%; }
     .vertical-layout .placard-percentage { font-size: 2.5rem; margin-bottom: 2rem; }
     .vertical-layout .placard-visual { width: 60px; height: 60px; }
-    .vertical-layout .placard-emoji { font-size: 3rem; }
+    .vertical-layout .placard-emoji { font-size: 5rem; }
     .vertical-layout .placard-label { font-size: 1.5rem; }
 
     .vertical-layout.count-3 { grid-template-columns: repeat(3, 1fr); gap: 4rem; }
