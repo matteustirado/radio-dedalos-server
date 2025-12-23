@@ -82,7 +82,7 @@ body {
     grid-template-columns: repeat(2, 1fr);
     justify-items: center;
     align-items: flex-start;
-    gap: 1.5rem 0.5rem; /* Gap reduzido horizontalmente */
+    gap: 1.5rem 0.5rem;
     height: auto;
 }
 .vertical-layout .placard-option {
@@ -94,13 +94,12 @@ body {
     text-align: center;
 }
 
-/* AJUSTE: Container com bordas "quase quadradas" */
 .vertical-layout .placard-bar-container {
     width: 100%;
     max-width: 100px;
     height: 100%;
     border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: 15px; /* Levemente arredondado */
+    border-radius: 15px;
     position: relative;
     overflow: hidden;
     display: flex;
@@ -120,7 +119,7 @@ body {
     background: var(--bar-gradient);
     box-shadow: 0 0 25px var(--bar-color-base);
     opacity: 0.8;
-    border-radius: 15px; /* Acompanha o container */
+    border-radius: 15px;
 }
 
 .vertical-layout .placard-bar::before,
@@ -225,7 +224,7 @@ body {
     justify-content: center;
     align-items: stretch;
     min-height: auto;
-    gap: 1.5rem; /* Gap Padrão Reduzido */
+    gap: 1.5rem; 
     flex-grow: 1;
 }
 
@@ -233,7 +232,6 @@ body {
     width: 100%;
     height: 90px; 
     border: 2px solid rgba(255, 255, 255, 0.3);
-    /* AJUSTE: Bordas levemente arredondadas */
     border-radius: 15px; 
     position: relative;
     overflow: hidden;
@@ -253,25 +251,28 @@ body {
     transition: none;
 }
 
+/* AJUSTE DE CENTRALIZAÇÃO HORIZONTAL */
 .horizontal-layout .placard-content-wrapper-horizontal {
     position: relative;
     z-index: 2;
     width: 100%;
     height: 100%;
     display: flex;
+    /* Centraliza o conteúdo principal (emoji + texto) */
+    justify-content: center;
     align-items: center;
-    justify-content: space-between;
     padding: 0 2.5rem;
     box-sizing: border-box;
+    gap: 1.5rem; /* Espaço entre emoji e texto */
 }
 
 .horizontal-layout .placard-center-content {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start; /* Alinha texto à esquerda, junto ao emoji */
     justify-content: center; 
-    text-align: center;
-    flex-grow: 1; 
+    text-align: left;
+    flex-grow: 0; /* Não ocupa mais o espaço todo */
     height: 100%; 
 }
 
@@ -284,141 +285,143 @@ body {
     letter-spacing: 2px;
     text-shadow: 0 3px 10px rgba(0,0,0,0.9);
     margin: 0;
-    width: 100%;
     display: block;
+    white-space: nowrap; /* Evita quebra de linha do texto gigante */
 }
 
+/* Porcentagem posicionada absolutamente na direita */
 .horizontal-layout .placard-percentage {
+    position: absolute;
+    right: 2.5rem;
     color: white;
     font-weight: 900; 
     font-size: 2.2rem; 
     opacity: 1 !important;
     text-shadow: 0 2px 10px rgba(0,0,0,0.8);
     line-height: 1;
-    margin-bottom: 0.2rem;
 }
 
+/* Container visual (emoji) agora fica ao lado do texto */
 .horizontal-layout .placard-visual {
-    width: 70px; 
-    height: 70px; 
+    width: auto; /* Tamanho automático */
+    height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    margin: 0;
 }
 
-/* TRATAMENTO DE EMOJIS - WHITE HOT NEON */
+/* TRATAMENTO DE EMOJIS - NEON COLORIDO (CORRETO) */
 .placard-emoji {
     font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     font-size: 3.5rem; 
     line-height: 1;
-    filter: grayscale(100%) brightness(250%) contrast(120%) drop-shadow(0 0 5px var(--bar-color-base)) drop-shadow(0 0 15px var(--bar-color-base));
+    /* Satura a cor original e adiciona brilho suave */
+    filter: saturate(1.3) brightness(1.1) drop-shadow(0 0 5px rgba(255,255,255,0.3));
     opacity: 1;
+    transition: all 0.3s ease;
 }
 
 .horizontal-layout .placard-emoji {
-    filter: grayscale(100%) brightness(300%) contrast(150%) drop-shadow(0 0 8px var(--bar-color-base)) drop-shadow(0 0 25px var(--bar-color-base));
-    font-size: 4.5rem;
+    /* Brilho intenso usando a cor da barra ao redor do emoji colorido */
+    filter: saturate(1.5) brightness(1.2) drop-shadow(0 0 10px var(--bar-color-base)) drop-shadow(0 0 25px var(--bar-color-base));
+    font-size: 5.5rem; /* Emoji grande no centro */
 }
 
 .horizontal-layout .placard-image {
-    width: 100%; height: 100%; border-radius: 50%; 
+    width: 80px; height: 80px; /* Tamanho fixo se for imagem */
+    border-radius: 50%; 
     object-fit: cover; 
     border: 3px solid #fff; 
     box-shadow: 0 0 15px var(--bar-color-base);
 }
-.horizontal-layout .placeholder { opacity: 0.3; background-color: rgba(255,255,255,0.1); border-radius: 50%; }
+.horizontal-layout .placeholder { opacity: 0.3; background-color: rgba(255,255,255,0.1); border-radius: 50%; width: 80px; height: 80px; }
 
 
-/* ================== Counts Variations (Ajuste Fino: Borda 15px & Gaps Menores) ================== */
+/* ================== Counts Variations ================== */
 
 .horizontal-layout.count-1 { gap: 0; }
-.horizontal-layout.count-2 { gap: 3rem; } /* Reduzido de 7rem */
+.horizontal-layout.count-2 { gap: 3rem; }
 
 .horizontal-layout.count-1 .placard-option,
 .horizontal-layout.count-2 .placard-option {
     height: 16rem; 
-    border-radius: 15px; /* Quase quadrado */
+    border-radius: 15px;
 }
-.horizontal-layout.count-1 .placard-visual,
-.horizontal-layout.count-2 .placard-visual {
-    width: 140px; 
-    height: 140px;
-}
+/* Ajuste de tamanhos para layout centralizado */
 .horizontal-layout.count-1 .placard-emoji,
-.horizontal-layout.count-2 .placard-emoji { font-size: 8rem; }
+.horizontal-layout.count-2 .placard-emoji { font-size: 9rem; }
 .horizontal-layout.count-1 .placard-percentage,
-.horizontal-layout.count-2 .placard-percentage { font-size: 3rem; }
+.horizontal-layout.count-2 .placard-percentage { font-size: 4rem; }
 .horizontal-layout.count-1 .placard-label,
 .horizontal-layout.count-2 .placard-label {
-    font-size: 6rem; 
+    font-size: 7rem; 
 }
 
 
-.horizontal-layout.count-3 { gap: 2rem; } /* Reduzido de 5rem */
+.horizontal-layout.count-3 { gap: 2rem; }
 .horizontal-layout.count-3 .placard-option {
     height: 13rem;
     border-radius: 15px;
 }
-.horizontal-layout.count-3 .placard-visual { width: 110px; height: 110px; }
-.horizontal-layout.count-3 .placard-emoji { font-size: 7rem; }
-.horizontal-layout.count-3 .placard-percentage { font-size: 2.5rem; }
+.horizontal-layout.count-3 .placard-emoji { font-size: 7.5rem; }
+.horizontal-layout.count-3 .placard-percentage { font-size: 3rem; }
 .horizontal-layout.count-3 .placard-label {
-    font-size: 5rem;
+    font-size: 6rem;
 }
 
 
-.horizontal-layout.count-4 { gap: 1.5rem; } /* Reduzido de 4rem */
+.horizontal-layout.count-4 { gap: 1.5rem; }
 .horizontal-layout.count-4 .placard-option {
     height: 11rem;
     border-radius: 15px;
 }
-.horizontal-layout.count-4 .placard-visual { width: 90px; height: 90px; }
-.horizontal-layout.count-4 .placard-emoji { font-size: 5.5rem; }
-.horizontal-layout.count-4 .placard-percentage { font-size: 2.2rem; }
+.horizontal-layout.count-4 .placard-emoji { font-size: 6rem; }
+.horizontal-layout.count-4 .placard-percentage { font-size: 2.8rem; }
 .horizontal-layout.count-4 .placard-label {
-    font-size: 4rem; 
+    font-size: 5rem; 
 }
 
 
-.horizontal-layout.count-5 { gap: 1.2rem; } /* Reduzido de 3rem */
+.horizontal-layout.count-5 { gap: 1.2rem; }
 .horizontal-layout.count-5 .placard-option {
     height: 9.5rem; 
     border-radius: 15px;
 }
-.horizontal-layout.count-5 .placard-percentage { font-size: 2rem; }
+.horizontal-layout.count-5 .placard-percentage { font-size: 2.5rem; }
 .horizontal-layout.count-5 .placard-label {
-    font-size: 3.5rem; 
+    font-size: 4rem; 
 }
 
 
-.horizontal-layout.count-6 { gap: 1rem; } /* Reduzido de 2.5rem */
+.horizontal-layout.count-6 { gap: 1rem; }
 .horizontal-layout.count-6 .placard-option {
     border-radius: 15px;
 }
 
-.horizontal-layout.count-7 { gap: 0.8rem; } /* Reduzido de 2rem */
+.horizontal-layout.count-7 { gap: 0.8rem; }
 .horizontal-layout.count-7 .placard-option { 
     height: 90px; 
     border-radius: 15px; 
 }
-.horizontal-layout.count-7 .placard-label { font-size: 2.5rem; }
+.horizontal-layout.count-7 .placard-label { font-size: 3rem; }
 
 
-.horizontal-layout.count-8 { gap: 0.6rem; } /* Reduzido de 1.5rem */
+.horizontal-layout.count-8 { gap: 0.6rem; }
 .horizontal-layout.count-8 .placard-option { 
     height: 80px; 
     border-radius: 15px; 
 }
-.horizontal-layout.count-8 .placard-label { font-size: 2.2rem; }
+.horizontal-layout.count-8 .placard-label { font-size: 2.5rem; }
 
 
-.horizontal-layout.count-9 { gap: 0.5rem; } /* Reduzido de 1.2rem */
+.horizontal-layout.count-9 { gap: 0.5rem; }
 .horizontal-layout.count-9 .placard-option { 
     height: 70px; 
     border-radius: 15px; 
 }
-.horizontal-layout.count-9 .placard-label { font-size: 2rem; }
+.horizontal-layout.count-9 .placard-label { font-size: 2.2rem; }
 
 
 /* ================== GRADIENT NEON COLORS ================== */
@@ -591,12 +594,10 @@ body {
     .horizontal-layout-wrapper { padding: 4rem 1.5rem; }
     .horizontal-layout-wrapper .placard-title { font-size: 3rem; margin-bottom: 3rem; }
     
-    .horizontal-layout { gap: 1rem; } /* Mobile Gap Compacto */
+    .horizontal-layout { gap: 1rem; }
     .horizontal-layout .placard-option { height: 80px; border-radius: 15px; }
-    .horizontal-layout .placard-visual { width: 60px; height: 60px; }
-    .horizontal-layout .placard-emoji { font-size: 3rem; }
-    .horizontal-layout .placard-percentage { font-size: 2rem; }
-    .horizontal-layout .placard-label { font-size: 2rem; }
+    .horizontal-layout .placard-percentage { font-size: 2rem; right: 1.5rem; } /* Ajuste mobile */
+    .horizontal-layout .placard-label { font-size: 2.5rem; }
 
     .horizontal-layout.count-1 { gap: 0; }
     .horizontal-layout.count-2 { gap: 2rem; }
@@ -604,14 +605,12 @@ body {
     .horizontal-layout.count-2 .placard-option { 
         height: 10rem; border-radius: 15px;
     }
-    .horizontal-layout.count-1 .placard-visual,
-    .horizontal-layout.count-2 .placard-visual { width: 80px; height: 80px; }
     .horizontal-layout.count-1 .placard-emoji,
-    .horizontal-layout.count-2 .placard-emoji { font-size: 4rem; }
+    .horizontal-layout.count-2 .placard-emoji { font-size: 5rem; }
     .horizontal-layout.count-1 .placard-percentage,
     .horizontal-layout.count-2 .placard-percentage { font-size: 3rem; }
     .horizontal-layout.count-1 .placard-label,
-    .horizontal-layout.count-2 .placard-label { font-size: 3rem; }
+    .horizontal-layout.count-2 .placard-label { font-size: 4rem; }
 
     .horizontal-layout.count-3, .horizontal-layout.count-4, .horizontal-layout.count-5 { gap: 1.5rem; }
     .horizontal-layout.count-3 .placard-option, .horizontal-layout.count-4 .placard-option, .horizontal-layout.count-5 .placard-option { 
@@ -641,7 +640,6 @@ body {
     .vertical-layout .placard-emoji { font-size: 3rem; }
     .vertical-layout .placard-label { font-size: 1.5rem; }
 
-    /* Ajustes específicos de grade vertical */
     .vertical-layout.count-3 { grid-template-columns: repeat(3, 1fr); gap: 4rem; }
     .vertical-layout.count-2 { grid-template-columns: repeat(2, 1fr); gap: 5rem; max-width: 700px; margin: 0 auto; }
     .vertical-layout.count-1 { grid-template-columns: 1fr; gap: 0; max-width: 350px; margin: 0 auto; }
