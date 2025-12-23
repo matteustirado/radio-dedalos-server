@@ -82,7 +82,7 @@ body {
     grid-template-columns: repeat(2, 1fr);
     justify-items: center;
     align-items: flex-start;
-    gap: 1.5rem 1rem;
+    gap: 1.5rem 0.5rem; /* Gap reduzido horizontalmente */
     height: auto;
 }
 .vertical-layout .placard-option {
@@ -94,13 +94,13 @@ body {
     text-align: center;
 }
 
-/* AJUSTE: Container totalmente arredondado */
+/* AJUSTE: Container com bordas "quase quadradas" */
 .vertical-layout .placard-bar-container {
     width: 100%;
     max-width: 100px;
     height: 100%;
     border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50px; /* 4 Cantos arredondados */
+    border-radius: 15px; /* Levemente arredondado */
     position: relative;
     overflow: hidden;
     display: flex;
@@ -115,13 +115,12 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 100% !important; /* Sempre cheia */
+    height: 100% !important; 
     transition: none; 
-    /* AJUSTE: Degradê na Vertical */
     background: var(--bar-gradient);
     box-shadow: 0 0 25px var(--bar-color-base);
     opacity: 0.8;
-    border-radius: 50px; /* 4 Cantos arredondados */
+    border-radius: 15px; /* Acompanha o container */
 }
 
 .vertical-layout .placard-bar::before,
@@ -226,7 +225,7 @@ body {
     justify-content: center;
     align-items: stretch;
     min-height: auto;
-    gap: 3rem; 
+    gap: 1.5rem; /* Gap Padrão Reduzido */
     flex-grow: 1;
 }
 
@@ -234,7 +233,8 @@ body {
     width: 100%;
     height: 90px; 
     border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 45px; 
+    /* AJUSTE: Bordas levemente arredondadas */
+    border-radius: 15px; 
     position: relative;
     overflow: hidden;
     background-color: rgba(0, 0, 0, 0.4);
@@ -247,7 +247,6 @@ body {
     position: absolute; top: 0; left: 0; height: 100%;
     width: 100% !important; 
     border-radius: inherit; 
-    /* AJUSTE: Uso de Degradê */
     background: var(--bar-gradient);
     box-shadow: inset 0 0 50px rgba(0,0,0,0.5); 
     opacity: 0.85;
@@ -270,16 +269,15 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Centraliza verticalmente */
+    justify-content: center; 
     text-align: center;
     flex-grow: 1; 
-    height: 100%; /* Ocupa altura total */
+    height: 100%; 
 }
 
-/* AJUSTE: Nomes Bem Maiores */
 .horizontal-layout .placard-label {
-    font-weight: 900; /* Extra Black */
-    font-size: 3.5rem;  /* Fonte Gigante por padrão */
+    font-weight: 900; 
+    font-size: 3.5rem;  
     color: #ffffff;
     line-height: 1;
     text-transform: uppercase;
@@ -332,15 +330,15 @@ body {
 .horizontal-layout .placeholder { opacity: 0.3; background-color: rgba(255,255,255,0.1); border-radius: 50%; }
 
 
-/* ================== Counts Variations (Ajuste Fino de Tamanhos) ================== */
+/* ================== Counts Variations (Ajuste Fino: Borda 15px & Gaps Menores) ================== */
 
 .horizontal-layout.count-1 { gap: 0; }
-.horizontal-layout.count-2 { gap: 7rem; }
+.horizontal-layout.count-2 { gap: 3rem; } /* Reduzido de 7rem */
 
 .horizontal-layout.count-1 .placard-option,
 .horizontal-layout.count-2 .placard-option {
     height: 16rem; 
-    border-radius: 8rem;
+    border-radius: 15px; /* Quase quadrado */
 }
 .horizontal-layout.count-1 .placard-visual,
 .horizontal-layout.count-2 .placard-visual {
@@ -353,40 +351,40 @@ body {
 .horizontal-layout.count-2 .placard-percentage { font-size: 3rem; }
 .horizontal-layout.count-1 .placard-label,
 .horizontal-layout.count-2 .placard-label {
-    font-size: 6rem; /* SUPER GIGANTE */
+    font-size: 6rem; 
 }
 
 
-.horizontal-layout.count-3 { gap: 5rem; }
+.horizontal-layout.count-3 { gap: 2rem; } /* Reduzido de 5rem */
 .horizontal-layout.count-3 .placard-option {
     height: 13rem;
-    border-radius: 6.5rem;
+    border-radius: 15px;
 }
 .horizontal-layout.count-3 .placard-visual { width: 110px; height: 110px; }
 .horizontal-layout.count-3 .placard-emoji { font-size: 7rem; }
 .horizontal-layout.count-3 .placard-percentage { font-size: 2.5rem; }
 .horizontal-layout.count-3 .placard-label {
-    font-size: 5rem; /* GIGANTE */
+    font-size: 5rem;
 }
 
 
-.horizontal-layout.count-4 { gap: 4rem; }
+.horizontal-layout.count-4 { gap: 1.5rem; } /* Reduzido de 4rem */
 .horizontal-layout.count-4 .placard-option {
     height: 11rem;
-    border-radius: 5.5rem;
+    border-radius: 15px;
 }
 .horizontal-layout.count-4 .placard-visual { width: 90px; height: 90px; }
 .horizontal-layout.count-4 .placard-emoji { font-size: 5.5rem; }
 .horizontal-layout.count-4 .placard-percentage { font-size: 2.2rem; }
 .horizontal-layout.count-4 .placard-label {
-    font-size: 4rem; /* MUITO GRANDE */
+    font-size: 4rem; 
 }
 
 
-.horizontal-layout.count-5 { gap: 3rem; }
+.horizontal-layout.count-5 { gap: 1.2rem; } /* Reduzido de 3rem */
 .horizontal-layout.count-5 .placard-option {
     height: 9.5rem; 
-    border-radius: 4.75rem;
+    border-radius: 15px;
 }
 .horizontal-layout.count-5 .placard-percentage { font-size: 2rem; }
 .horizontal-layout.count-5 .placard-label {
@@ -394,70 +392,68 @@ body {
 }
 
 
-.horizontal-layout.count-6 { gap: 2.5rem; }
+.horizontal-layout.count-6 { gap: 1rem; } /* Reduzido de 2.5rem */
+.horizontal-layout.count-6 .placard-option {
+    border-radius: 15px;
+}
 
-
-.horizontal-layout.count-7 { gap: 2rem; }
-.horizontal-layout.count-7 .placard-option { height: 90px; border-radius: 45px; }
+.horizontal-layout.count-7 { gap: 0.8rem; } /* Reduzido de 2rem */
+.horizontal-layout.count-7 .placard-option { 
+    height: 90px; 
+    border-radius: 15px; 
+}
 .horizontal-layout.count-7 .placard-label { font-size: 2.5rem; }
 
 
-.horizontal-layout.count-8 { gap: 1.5rem; }
-.horizontal-layout.count-8 .placard-option { height: 80px; border-radius: 40px; }
+.horizontal-layout.count-8 { gap: 0.6rem; } /* Reduzido de 1.5rem */
+.horizontal-layout.count-8 .placard-option { 
+    height: 80px; 
+    border-radius: 15px; 
+}
 .horizontal-layout.count-8 .placard-label { font-size: 2.2rem; }
 
 
-.horizontal-layout.count-9 { gap: 1.2rem; }
-.horizontal-layout.count-9 .placard-option { height: 70px; border-radius: 35px; }
+.horizontal-layout.count-9 { gap: 0.5rem; } /* Reduzido de 1.2rem */
+.horizontal-layout.count-9 .placard-option { 
+    height: 70px; 
+    border-radius: 15px; 
+}
 .horizontal-layout.count-9 .placard-label { font-size: 2rem; }
 
 
 /* ================== GRADIENT NEON COLORS ================== */
-/* Definimos --bar-gradient para o fundo (Degradê)
-   Definimos --bar-color-base para as sombras e brilhos (Cor solida)
-*/
-
-/* Opção 1: Rosa/Vermelho Intenso */
 [data-option-index="0"] { 
     --bar-gradient: linear-gradient(90deg, #ff0055 0%, #ff4d00 100%); 
     --bar-color-base: #ff0055; 
 } 
-/* Opção 2: Ciano/Azul Elétrico */
 [data-option-index="1"] { 
     --bar-gradient: linear-gradient(90deg, #00ffea 0%, #0099ff 100%); 
     --bar-color-base: #00ffea; 
 }
-/* Opção 3: Amarelo/Laranja Solar */
 [data-option-index="2"] { 
     --bar-gradient: linear-gradient(90deg, #ffcc00 0%, #ffaa00 100%); 
     --bar-color-base: #ffcc00; 
 }
-/* Opção 4: Roxo/Violeta Profundo */
 [data-option-index="3"] { 
     --bar-gradient: linear-gradient(90deg, #9d00ff 0%, #b700ff 100%); 
     --bar-color-base: #9d00ff; 
 }
-/* Opção 5: Laranja Neon/Vermelho */
 [data-option-index="4"] { 
     --bar-gradient: linear-gradient(90deg, #ff3300 0%, #ff0055 100%); 
     --bar-color-base: #ff3300; 
 }
-/* Opção 6: Verde Ácido/Lima */
 [data-option-index="5"] { 
     --bar-gradient: linear-gradient(90deg, #00ff00 0%, #adff2f 100%); 
     --bar-color-base: #00ff00; 
 }
-/* Opção 7: Azul Royal/Indigo */
 [data-option-index="6"] { 
     --bar-gradient: linear-gradient(90deg, #0099ff 0%, #0011ff 100%); 
     --bar-color-base: #0099ff; 
 }
-/* Opção 8: Magenta/Pink */
 [data-option-index="7"] { 
     --bar-gradient: linear-gradient(90deg, #ff00ff 0%, #ff00aa 100%); 
     --bar-color-base: #ff00ff; 
 }
-/* Opção 9: Branco/Prata */
 [data-option-index="8"] { 
     --bar-gradient: linear-gradient(90deg, #ffffff 0%, #cccccc 100%); 
     --bar-color-base: #ffffff; 
@@ -588,25 +584,25 @@ body {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
         align-items: flex-start;
-        gap: 1.5rem 1rem;
+        gap: 1.5rem 0.5rem;
         height: auto;
     }
     
     .horizontal-layout-wrapper { padding: 4rem 1.5rem; }
     .horizontal-layout-wrapper .placard-title { font-size: 3rem; margin-bottom: 3rem; }
     
-    .horizontal-layout { gap: 2.5rem; }
-    .horizontal-layout .placard-option { height: 80px; border-radius: 40px; }
+    .horizontal-layout { gap: 1rem; } /* Mobile Gap Compacto */
+    .horizontal-layout .placard-option { height: 80px; border-radius: 15px; }
     .horizontal-layout .placard-visual { width: 60px; height: 60px; }
     .horizontal-layout .placard-emoji { font-size: 3rem; }
     .horizontal-layout .placard-percentage { font-size: 2rem; }
-    .horizontal-layout .placard-label { font-size: 2rem; } /* Ajuste Mobile */
+    .horizontal-layout .placard-label { font-size: 2rem; }
 
     .horizontal-layout.count-1 { gap: 0; }
-    .horizontal-layout.count-2 { gap: 4rem; }
+    .horizontal-layout.count-2 { gap: 2rem; }
     .horizontal-layout.count-1 .placard-option,
     .horizontal-layout.count-2 .placard-option { 
-        height: 10rem; border-radius: 5rem;
+        height: 10rem; border-radius: 15px;
     }
     .horizontal-layout.count-1 .placard-visual,
     .horizontal-layout.count-2 .placard-visual { width: 80px; height: 80px; }
@@ -617,9 +613,9 @@ body {
     .horizontal-layout.count-1 .placard-label,
     .horizontal-layout.count-2 .placard-label { font-size: 3rem; }
 
-    .horizontal-layout.count-3, .horizontal-layout.count-4, .horizontal-layout.count-5 { gap: 3rem; }
+    .horizontal-layout.count-3, .horizontal-layout.count-4, .horizontal-layout.count-5 { gap: 1.5rem; }
     .horizontal-layout.count-3 .placard-option, .horizontal-layout.count-4 .placard-option, .horizontal-layout.count-5 .placard-option { 
-        height: 9rem; border-radius: 4.5rem;
+        height: 9rem; border-radius: 15px;
     }
 
     .movement-thermometer { padding-top: 3rem; }
@@ -645,6 +641,7 @@ body {
     .vertical-layout .placard-emoji { font-size: 3rem; }
     .vertical-layout .placard-label { font-size: 1.5rem; }
 
+    /* Ajustes específicos de grade vertical */
     .vertical-layout.count-3 { grid-template-columns: repeat(3, 1fr); gap: 4rem; }
     .vertical-layout.count-2 { grid-template-columns: repeat(2, 1fr); gap: 5rem; max-width: 700px; margin: 0 auto; }
     .vertical-layout.count-1 { grid-template-columns: 1fr; gap: 0; max-width: 350px; margin: 0 auto; }
